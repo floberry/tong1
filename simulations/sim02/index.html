@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>돌림힘 평형 시뮬레이션</title>
+    <title>에너지 효율 문제</title>
     <style>
         * {
             margin: 0;
@@ -15,485 +15,623 @@
             font-family: 'Malgun Gothic', sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             padding: 20px;
         }
         
         .container {
+            max-width: 600px;
+            margin: 0 auto;
             background: white;
             border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            padding: 40px;
-            max-width: 900px;
-            width: 100%;
+            padding: 25px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
         }
         
         h1 {
-            color: #667eea;
-            text-align: center;
-            margin-bottom: 30px;
-            font-size: 28px;
-        }
-        
-        .problem-area {
-            background: #f8f9ff;
-            border-radius: 15px;
-            padding: 25px;
-            margin-bottom: 25px;
-            border: 2px solid #667eea;
-        }
-        
-        .problem-text {
-            font-size: 16px;
-            line-height: 1.8;
             color: #333;
+            font-size: 22px;
             margin-bottom: 20px;
+            text-align: center;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 15px;
         }
         
-        .canvas-area {
+        .question-text {
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        .diagram {
+            background: linear-gradient(145deg, #f8f9fa, #e9ecef);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            text-align: center;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .device-image {
+            width: 100%;
+            max-width: 320px;
+            height: 220px;
+            margin: 0 auto 20px;
+            background: linear-gradient(145deg, #ffffff, #f0f0f0);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .device-visual {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .energy-flow {
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .energy-box {
+            display: inline-block;
+            padding: 14px 24px;
+            margin: 5px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            position: relative;
+            transition: transform 0.3s;
+        }
+        
+        .energy-box:hover {
+            transform: translateY(-2px);
+        }
+        
+        .electric {
+            background: linear-gradient(145deg, #ff8787, #ff6b6b);
+            color: white;
+        }
+        
+        .light {
+            background: linear-gradient(145deg, #ffe066, #ffd93d);
+            color: #333;
+        }
+        
+        .sound {
+            background: linear-gradient(145deg, #8ce99a, #6bcf7f);
+            color: white;
+        }
+        
+        .heat {
+            background: linear-gradient(145deg, #ffa07a, #ff8787);
+            color: white;
+        }
+        
+        .motion {
+            background: linear-gradient(145deg, #74c0fc, #4dabf7);
+            color: white;
+        }
+        
+        .unknown {
+            background: linear-gradient(145deg, #c5c5c5, #adb5bd);
+            color: white;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .arrow {
+            font-size: 28px;
+            color: #667eea;
+            margin: 0 10px;
+        }
+        
+        .options-label {
+            background: linear-gradient(145deg, #f8f9fa, #e9ecef);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+            font-weight: bold;
+            border: 2px dashed #667eea;
+        }
+        
+        .statements {
+            background: linear-gradient(145deg, #f8f9fa, #e9ecef);
+            padding: 18px;
+            border-radius: 12px;
+            margin: 15px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        
+        .statement {
+            padding: 14px;
+            margin: 12px 0;
             background: white;
             border-radius: 10px;
-            padding: 20px;
-            margin: 20px 0;
-            display: flex;
-            justify-content: center;
-        }
-        
-        canvas {
-            border: 2px solid #ddd;
-            border-radius: 8px;
-        }
-        
-        .input-area {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            margin-bottom: 20px;
-        }
-        
-        .input-group {
-            margin-bottom: 20px;
-        }
-        
-        label {
-            display: block;
-            font-weight: bold;
-            color: #555;
-            margin-bottom: 8px;
             font-size: 15px;
+            line-height: 1.6;
+            border-left: 5px solid #ddd;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            cursor: pointer;
+            transition: all 0.3s;
+            user-select: none;
         }
         
-        input[type="number"] {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: border-color 0.3s;
+        .statement:hover {
+            border-left-color: #667eea;
+            background: linear-gradient(145deg, #ffffff, #f0f4ff);
+            transform: translateX(5px);
         }
         
-        input[type="number"]:focus {
-            outline: none;
-            border-color: #667eea;
+        .statement.selected {
+            border-left-color: #667eea;
+            background: linear-gradient(145deg, #e0e7ff, #d0d9ff);
+            font-weight: bold;
         }
         
-        .button-group {
+        .statement.correct {
+            border-left-color: #51cf66;
+            background: linear-gradient(145deg, #d3f9d8, #b2f2bb);
+        }
+        
+        .statement.incorrect {
+            border-left-color: #ff6b6b;
+            background: linear-gradient(145deg, #ffe3e3, #ffc9c9);
+        }
+        
+        .buttons {
             display: flex;
-            gap: 15px;
-            margin-top: 25px;
+            gap: 10px;
+            margin-top: 20px;
         }
         
         button {
             flex: 1;
-            padding: 15px;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
             font-size: 16px;
             font-weight: bold;
-            border: none;
-            border-radius: 10px;
             cursor: pointer;
             transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
         
-        .btn-new {
-            background: #667eea;
+        .new-problem-btn {
+            background: linear-gradient(145deg, #7c8de8, #667eea);
             color: white;
         }
         
-        .btn-new:hover {
-            background: #5568d3;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        .new-problem-btn:hover {
+            background: linear-gradient(145deg, #667eea, #5568d3);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 18px rgba(102,126,234,0.35);
         }
         
-        .btn-check {
-            background: #48bb78;
+        .submit-btn {
+            background: linear-gradient(145deg, #69db7c, #51cf66);
             color: white;
         }
         
-        .btn-check:hover {
-            background: #38a169;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(72, 187, 120, 0.4);
+        .submit-btn:hover {
+            background: linear-gradient(145deg, #51cf66, #40c057);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 18px rgba(81,207,102,0.35);
         }
         
-        .btn-solution {
-            background: #f39c12;
-            color: white;
+        .submit-btn:disabled {
+            background: linear-gradient(145deg, #dee2e6, #ccc);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
         
-        .btn-solution:hover {
-            background: #e67e22;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(243, 156, 18, 0.4);
-        }
-        
-        .feedback {
+        .result {
             margin-top: 20px;
             padding: 20px;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: bold;
+            border-radius: 12px;
             text-align: center;
+            font-size: 17px;
+            font-weight: bold;
             display: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
         
-        .feedback.correct {
-            background: #c6f6d5;
-            color: #22543d;
-            border: 2px solid #48bb78;
+        .result.show {
             display: block;
         }
         
-        .feedback.incorrect {
-            background: #fed7d7;
-            color: #742a2a;
-            border: 2px solid #f56565;
-            display: block;
+        .result.correct {
+            background: linear-gradient(145deg, #d3f9d8, #b2f2bb);
+            color: #2b8a3e;
+            border: 3px solid #51cf66;
         }
         
-        .feedback.solution {
-            background: #fef5e7;
-            color: #7d6608;
-            border: 2px solid #f39c12;
-            display: block;
-            text-align: left;
+        .result.incorrect {
+            background: linear-gradient(145deg, #ffe3e3, #ffc9c9);
+            color: #c92a2a;
+            border: 3px solid #ff6b6b;
         }
         
-        .solution-step {
-            margin: 10px 0;
-            padding: 10px;
-            background: white;
-            border-radius: 5px;
-            border-left: 3px solid #f39c12;
-        }
-        
-        .hint {
-            background: #fef5e7;
-            border-left: 4px solid #f39c12;
-            padding: 15px;
+        .explanation {
             margin-top: 15px;
-            border-radius: 5px;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            text-align: left;
             font-size: 14px;
-            color: #555;
+            line-height: 1.6;
+            color: #333;
+            font-weight: normal;
+            box-shadow: inset 0 2px 6px rgba(0,0,0,0.08);
+        }
+        
+        .explanation strong {
+            color: #c92a2a;
+            display: block;
+            margin-bottom: 8px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🔧 돌림힘 평형 문제 연습</h1>
+        <h1>⚡ 에너지 전환과 효율 문제</h1>
         
-        <div class="problem-area">
-            <div class="problem-text" id="problemText"></div>
-            
-            <div class="canvas-area">
-                <canvas id="balanceCanvas" width="700" height="250"></canvas>
-            </div>
-            
-            <div class="hint">
-                💡 힌트: 평형 상태에서 회전축을 중심으로 시계 방향 돌림힘과 반시계 방향 돌림힘이 같습니다. (돌림힘 = 힘 × 거리)
-            </div>
+        <div class="question-text" id="questionText"></div>
+        
+        <div class="diagram">
+            <div class="device-image" id="deviceImage"></div>
+            <div class="energy-flow" id="energyFlow"></div>
         </div>
         
-        <div class="input-area">
-            <div class="input-group">
-                <label for="answerInput">물체 A의 무게 (N):</label>
-                <input type="number" id="answerInput" step="0.1" placeholder="답을 입력하세요">
-            </div>
-            
-            <div class="button-group">
-                <button class="btn-new" onclick="generateNewProblem()">🔄 새 문제</button>
-                <button class="btn-check" onclick="checkAnswer()">✓ 정답 확인</button>
-                <button class="btn-solution" onclick="showSolution()">📖 해설 보기</button>
-            </div>
-            
-            <div class="feedback" id="feedback"></div>
+        <div class="options-label">< 보기 ></div>
+        
+        <div class="statements" id="statements"></div>
+        
+        <div class="result" id="result"></div>
+        
+        <div class="buttons">
+            <button class="new-problem-btn" onclick="newProblem()">🔄 새 문제</button>
+            <button class="submit-btn" id="submitBtn" onclick="checkAnswer()" disabled>✓ 정답 확인</button>
         </div>
     </div>
 
     <script>
-        let currentProblem = {};
-        
-        function generateNewProblem() {
-            // 랜덤 값 생성
-            const rodLength = 100; // 1m = 100cm
-            const pivotPos = 50; // 중앙 = 50cm
+        const deviceTemplates = [
+            {
+                device: 'TV',
+                svg: `<svg width="200" height="150" viewBox="0 0 200 150">
+                    <rect x="20" y="20" width="160" height="100" rx="5" fill="#2c3e50" stroke="#34495e" stroke-width="3"/>
+                    <rect x="30" y="30" width="140" height="80" fill="#3498db"/>
+                    <rect x="85" y="125" width="30" height="15" fill="#34495e"/>
+                    <rect x="60" y="140" width="80" height="5" rx="2" fill="#7f8c8d"/>
+                </svg>`,
+                energyInput: 100,
+                useful: [
+                    { type: '빛에너지', value: 30, class: 'light' },
+                    { type: '소리 에너지', value: 20, class: 'sound' }
+                ],
+                wasteValue: 50
+            },
+            {
+                device: '전등',
+                svg: `<svg width="200" height="150" viewBox="0 0 200 150">
+                    <ellipse cx="100" cy="60" rx="40" ry="50" fill="#fff9c4" opacity="0.5"/>
+                    <ellipse cx="100" cy="60" rx="35" ry="45" fill="#fff59d" opacity="0.7"/>
+                    <path d="M 100 20 Q 70 35 70 65 L 70 85 Q 70 95 80 95 L 120 95 Q 130 95 130 85 L 130 65 Q 130 35 100 20 Z" fill="#ffd54f" stroke="#fbc02d" stroke-width="2"/>
+                    <circle cx="100" cy="55" r="8" fill="#fff176" opacity="0.8"/>
+                    <rect x="88" y="95" width="24" height="18" fill="#9e9e9e" stroke="#757575" stroke-width="1"/>
+                    <path d="M 83 113 L 90 133 L 110 133 L 117 113 Z" fill="#757575" stroke="#616161" stroke-width="1"/>
+                    <rect x="95" y="133" width="10" height="5" fill="#616161"/>
+                </svg>`,
+                energyInput: 80,
+                useful: [
+                    { type: '빛에너지', value: 20, class: 'light' }
+                ],
+                wasteValue: 60
+            },
+            {
+                device: '스피커',
+                svg: `<svg width="200" height="150" viewBox="0 0 200 150">
+                    <rect x="50" y="20" width="100" height="110" rx="8" fill="#37474f" stroke="#263238" stroke-width="3"/>
+                    <circle cx="100" cy="60" r="25" fill="#546e7a" stroke="#263238" stroke-width="2"/>
+                    <circle cx="100" cy="60" r="18" fill="#455a64"/>
+                    <circle cx="100" cy="60" r="8" fill="#263238"/>
+                    <circle cx="100" cy="110" r="15" fill="#546e7a" stroke="#263238" stroke-width="2"/>
+                    <circle cx="100" cy="110" r="8" fill="#263238"/>
+                </svg>`,
+                energyInput: 60,
+                useful: [
+                    { type: '소리 에너지', value: 20, class: 'sound' }
+                ],
+                wasteValue: 40
+            },
+            {
+                device: '세탁기',
+                svg: `<svg width="200" height="150" viewBox="0 0 200 150">
+                    <rect x="50" y="20" width="100" height="110" rx="8" fill="#eceff1" stroke="#90a4ae" stroke-width="3"/>
+                    <rect x="60" y="30" width="80" height="25" rx="3" fill="#b0bec5"/>
+                    <circle cx="75" cy="42" r="4" fill="#4caf50"/>
+                    <circle cx="90" cy="42" r="4" fill="#2196f3"/>
+                    <circle cx="130" cy="42" r="8" fill="#546e7a"/>
+                    <circle cx="100" cy="90" r="32" fill="#90a4ae" stroke="#607d8b" stroke-width="3"/>
+                    <circle cx="100" cy="90" r="25" fill="#b0bec5"/>
+                    <path d="M 85 80 Q 100 95 115 80" stroke="#607d8b" stroke-width="2" fill="none"/>
+                </svg>`,
+                energyInput: 200,
+                useful: [
+                    { type: '운동 에너지', value: 140, class: 'motion' }
+                ],
+                wasteValue: 60
+            },
+            {
+                device: '전기밥솥',
+                svg: `<svg width="200" height="150" viewBox="0 0 200 150">
+                    <ellipse cx="100" cy="110" rx="50" ry="15" fill="#d32f2f"/>
+                    <rect x="50" y="60" width="100" height="50" fill="#f44336" stroke="#c62828" stroke-width="2"/>
+                    <ellipse cx="100" cy="60" rx="50" ry="15" fill="#e57373"/>
+                    <path d="M 80 50 Q 100 35 120 50" fill="none" stroke="#9e9e9e" stroke-width="4" stroke-linecap="round"/>
+                    <rect x="85" y="65" width="30" height="15" rx="3" fill="#424242"/>
+                    <circle cx="130" cy="72" r="5" fill="#4caf50"/>
+                </svg>`,
+                energyInput: 100,
+                useful: [
+                    { type: '열에너지', value: 70, class: 'heat' }
+                ],
+                wasteValue: 30
+            }
+        ];
+
+        const problemPool = [];
+        let currentProblem = null;
+        let selectedStatements = new Set();
+
+        function generateRandomProblems() {
+            problemPool.length = 0;
             
-            // A의 위치 (10cm ~ 40cm)
-            const posA = Math.floor(Math.random() * 31) + 10;
-            
-            // B의 위치 (60cm ~ 90cm)
-            const posB = Math.floor(Math.random() * 31) + 60;
-            
-            // B의 무게 (10N ~ 50N, 5N 단위)
-            const weightB = (Math.floor(Math.random() * 9) + 2) * 5;
-            
-            // A의 무게 계산 (평형 조건)
-            const distanceA = Math.abs(pivotPos - posA);
-            const distanceB = Math.abs(posB - pivotPos);
-            const weightA = (weightB * distanceB) / distanceA;
-            
-            currentProblem = {
-                posA: posA,
-                posB: posB,
-                weightB: weightB,
-                weightA: weightA,
-                distanceA: distanceA,
-                distanceB: distanceB
-            };
-            
-            // 문제 텍스트 업데이트
-            document.getElementById('problemText').innerHTML = `
-                <strong>문제:</strong> 길이 100 cm인 자의 중앙(50 cm)을 실로 매단 후, 
-                물체 A를 자의 눈금 <span style="color: #e74c3c; font-weight: bold;">${posA} cm</span> 되는 곳에 매달고, 
-                무게 <span style="color: #3498db; font-weight: bold;">${weightB} N</span>인 물체 B를 눈금 
-                <span style="color: #3498db; font-weight: bold;">${posB} cm</span> 되는 곳에 매달았더니 
-                돌림힘이 평형을 이루게 되었다.<br><br>
-                <strong>물체 A의 무게는 몇 N인가?</strong>
-            `;
-            
-            // 캔버스 그리기
-            drawBalance();
-            
-            // 입력 및 피드백 초기화
-            document.getElementById('answerInput').value = '';
-            document.getElementById('feedback').style.display = 'none';
-            document.getElementById('feedback').className = 'feedback';
+            deviceTemplates.forEach(template => {
+                const statements = generateDiverseStatements(template);
+                statements.forEach(statementSet => {
+                    problemPool.push({
+                        device: template.device,
+                        svg: template.svg,
+                        energyInput: template.energyInput,
+                        useful: template.useful,
+                        wasteValue: template.wasteValue,
+                        statements: statementSet
+                    });
+                });
+            });
         }
-        
-        function drawBalance() {
-            const canvas = document.getElementById('balanceCanvas');
-            const ctx = canvas.getContext('2d');
-            const scale = 6; // 1cm = 6px
+
+        function generateDiverseStatements(template) {
+            const allStatementSets = [];
+            const totalUseful = template.useful.reduce((sum, e) => sum + e.value, 0);
+            const efficiency = (totalUseful / template.energyInput * 100);
+            const roundedEfficiency = Math.round(efficiency / 10) * 10;
             
-            // 캔버스 초기화
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            // 받침대 그리기
-            const pivotX = 350;
-            const pivotY = 100;
-            
-            ctx.fillStyle = '#34495e';
-            ctx.beginPath();
-            ctx.moveTo(pivotX - 20, pivotY);
-            ctx.lineTo(pivotX + 20, pivotY);
-            ctx.lineTo(pivotX, pivotY + 30);
-            ctx.closePath();
-            ctx.fill();
-            
-            // 막대 그리기
-            const rodStartX = pivotX - 300;
-            const rodEndX = pivotX + 300;
-            const rodY = pivotY - 5;
-            
-            ctx.strokeStyle = '#7f8c8d';
-            ctx.lineWidth = 8;
-            ctx.beginPath();
-            ctx.moveTo(rodStartX, rodY);
-            ctx.lineTo(rodEndX, rodY);
-            ctx.stroke();
-            
-            // 눈금 표시
-            for (let i = 0; i <= 100; i += 10) {
-                const x = rodStartX + i * scale;
-                ctx.strokeStyle = '#95a5a6';
-                ctx.lineWidth = 2;
-                ctx.beginPath();
-                ctx.moveTo(x, rodY - 10);
-                ctx.lineTo(x, rodY + 10);
-                ctx.stroke();
-                
-                if (i % 20 === 0) {
-                    ctx.fillStyle = '#7f8c8d';
-                    ctx.font = '12px Arial';
-                    ctx.textAlign = 'center';
-                    ctx.fillText(i, x, rodY + 25);
+            const allPossibleStatements = [
+                // 효율 계산 (이상)
+                {
+                    text: `${template.device}의 에너지 효율은 ${roundedEfficiency}% 이상이다.`,
+                    isCorrect: efficiency >= roundedEfficiency,
+                    explanation: `에너지 효율 = (유용한 에너지/투입 에너지) × 100 = (${totalUseful}/${template.energyInput}) × 100 = ${efficiency.toFixed(1)}%입니다.`
+                },
+                // 효율 계산 (이하)
+                {
+                    text: `${template.device}의 에너지 효율은 ${roundedEfficiency}% 이하이다.`,
+                    isCorrect: efficiency <= roundedEfficiency,
+                    explanation: `에너지 효율 = (유용한 에너지/투입 에너지) × 100 = (${totalUseful}/${template.energyInput}) × 100 = ${efficiency.toFixed(1)}%입니다.`
+                },
+                // 열에너지 양 계산 (정답)
+                {
+                    text: `?로 전환된 에너지의 양은 ${template.wasteValue}이다.`,
+                    isCorrect: true,
+                    explanation: `투입 에너지 ${template.energyInput} - 유용한 에너지 ${totalUseful} = ${template.wasteValue}이므로 열에너지로 전환된 양은 ${template.wasteValue}입니다.`
+                },
+                // 열에너지 양 계산 (오답)
+                {
+                    text: `?로 전환된 에너지의 양은 ${template.wasteValue + 10}이다.`,
+                    isCorrect: false,
+                    explanation: `투입 에너지 ${template.energyInput} - 유용한 에너지 ${totalUseful} = ${template.wasteValue}이므로 ${template.wasteValue + 10}이 아닙니다.`
+                },
+                // ?는 열에너지
+                {
+                    text: `?는 열에너지이다.`,
+                    isCorrect: true,
+                    explanation: `모든 기기에서 버려지는 에너지는 열에너지입니다.`
+                },
+                // 유용한 에너지 여부
+                {
+                    text: `?는 ${template.device}에서 유용하게 사용되는 에너지이다.`,
+                    isCorrect: template.device === '전기밥솥',
+                    explanation: template.device === '전기밥솥' 
+                        ? `전기밥솥은 열에너지를 이용해 밥을 짓기 때문에 ?인 열에너지가 유용한 에너지입니다.`
+                        : `${template.device}에서 ?인 열에너지는 버려지는 에너지로, 유용하게 사용할 수 없습니다.`
+                },
+                // 유용한 에너지와 열에너지 비교
+                {
+                    text: `유용하게 사용되는 에너지가 ?보다 크다.`,
+                    isCorrect: totalUseful > template.wasteValue,
+                    explanation: totalUseful > template.wasteValue
+                        ? `유용한 에너지(${totalUseful})가 열에너지(${template.wasteValue})보다 큽니다.`
+                        : `유용한 에너지(${totalUseful})가 열에너지(${template.wasteValue})보다 작거나 같습니다.`
+                },
+                {
+                    text: `?가 유용하게 사용되는 에너지보다 크다.`,
+                    isCorrect: template.wasteValue > totalUseful,
+                    explanation: template.wasteValue > totalUseful
+                        ? `열에너지(${template.wasteValue})가 유용한 에너지(${totalUseful})보다 큽니다.`
+                        : `열에너지(${template.wasteValue})가 유용한 에너지(${totalUseful})보다 작거나 같습니다.`
+                },
+                // 효율이 50% 이상/이하
+                {
+                    text: `${template.device}의 에너지 효율은 50% 이상이다.`,
+                    isCorrect: efficiency >= 50,
+                    explanation: `에너지 효율 = (${totalUseful}/${template.energyInput}) × 100 = ${efficiency.toFixed(1)}%입니다.`
+                },
+                {
+                    text: `${template.device}의 에너지 효율은 50% 이하이다.`,
+                    isCorrect: efficiency <= 50,
+                    explanation: `에너지 효율 = (${totalUseful}/${template.energyInput}) × 100 = ${efficiency.toFixed(1)}%입니다.`
+                },
+                // 투입 에너지의 절반 이상/이하가 유용하게 사용
+                {
+                    text: `투입한 전기 에너지의 절반 이상이 유용하게 사용된다.`,
+                    isCorrect: totalUseful >= template.energyInput / 2,
+                    explanation: totalUseful >= template.energyInput / 2
+                        ? `유용한 에너지(${totalUseful})가 투입 에너지(${template.energyInput})의 절반(${template.energyInput/2}) 이상입니다.`
+                        : `유용한 에너지(${totalUseful})가 투입 에너지(${template.energyInput})의 절반(${template.energyInput/2})보다 작습니다.`
+                },
+                {
+                    text: `투입한 전기 에너지의 절반 이상이 ?로 전환된다.`,
+                    isCorrect: template.wasteValue >= template.energyInput / 2,
+                    explanation: template.wasteValue >= template.energyInput / 2
+                        ? `열에너지(${template.wasteValue})가 투입 에너지(${template.energyInput})의 절반(${template.energyInput/2}) 이상입니다.`
+                        : `열에너지(${template.wasteValue})가 투입 에너지(${template.energyInput})의 절반(${template.energyInput/2})보다 작습니다.`
                 }
+            ];
+            
+            // 에너지 효율에 집중한 다양한 조합 (중복 없이)
+            const combinations = [
+                [0, 2, 6],   // 효율(이상) + 열 계산 + 비교
+                [1, 4, 7],   // 효율(이하) + ?는 열 + 비교
+                [0, 5, 10],  // 효율(이상) + 유용성 + 절반 이상 유용
+                [2, 8, 11],  // 열 계산 + 50% 이상 + 절반 이상 ?
+                [3, 6, 9],   // 잘못된 열 + 비교 + 50% 이하
+                [4, 7, 10],  // ?는 열 + 비교 + 절반 이상 유용
+                [1, 2, 11],  // 효율(이하) + 열 계산 + 절반 이상 ?
+                [0, 4, 6]    // 효율(이상) + ?는 열 + 비교
+            ];
+            
+            combinations.forEach(combo => {
+                const statements = combo.map((idx, i) => ({
+                    label: ['ㄱ', 'ㄴ', 'ㄷ'][i],
+                    ...allPossibleStatements[idx]
+                }));
+                allStatementSets.push(statements);
+            });
+            
+            return allStatementSets;
+        }
+
+        function loadProblem() {
+            if (problemPool.length === 0) {
+                generateRandomProblems();
             }
             
-            // 물체 A 그리기
-            const xA = rodStartX + currentProblem.posA * scale;
+            const randomIndex = Math.floor(Math.random() * problemPool.length);
+            currentProblem = problemPool[randomIndex];
+            selectedStatements.clear();
             
-            // 줄
-            ctx.strokeStyle = '#e74c3c';
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(xA, rodY);
-            ctx.lineTo(xA, rodY + 60);
-            ctx.stroke();
+            document.getElementById('questionText').innerHTML = 
+                `그림은 ${currentProblem.device}를 켤 때, ${currentProblem.device}에서 일어나는 에너지 전환을 나타낸 것이다.<br>
+                이에 대한 설명으로 옳은 것만을 [보기]에서 있는 대로 고르시오.`;
             
-            // 물체
-            ctx.fillStyle = '#e74c3c';
-            ctx.fillRect(xA - 20, rodY + 60, 40, 40);
-            ctx.fillStyle = 'white';
-            ctx.font = 'bold 16px Arial';
-            ctx.textAlign = 'center';
-            ctx.fillText('A', xA, rodY + 85);
+            document.getElementById('deviceImage').innerHTML = currentProblem.svg;
             
-            // 물체 B 그리기
-            const xB = rodStartX + currentProblem.posB * scale;
+            let flowHTML = `<div class="energy-box electric">전기 에너지 [${currentProblem.energyInput}]</div>`;
+            flowHTML += '<br><span class="arrow">↓</span><br>';
             
-            // 줄
-            ctx.strokeStyle = '#3498db';
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(xB, rodY);
-            ctx.lineTo(xB, rodY + 60);
-            ctx.stroke();
+            currentProblem.useful.forEach((energy, index) => {
+                if (index > 0) flowHTML += '<br><span class="arrow">↓</span><br>';
+                flowHTML += `<div class="energy-box ${energy.class}">${energy.type} [${energy.value}]</div>`;
+            });
             
-            // 물체
-            ctx.fillStyle = '#3498db';
-            ctx.fillRect(xB - 20, rodY + 60, 40, 40);
-            ctx.fillStyle = 'white';
-            ctx.font = 'bold 16px Arial';
-            ctx.textAlign = 'center';
-            ctx.fillText('B', xB, rodY + 85);
+            flowHTML += '<br><span class="arrow">↓</span><br>';
+            flowHTML += `<div class="energy-box unknown">? [?]</div>`;
             
-            // 무게 표시
-            ctx.fillStyle = '#3498db';
-            ctx.font = '14px Arial';
-            ctx.fillText(currentProblem.weightB + ' N', xB, rodY + 120);
+            document.getElementById('energyFlow').innerHTML = flowHTML;
             
-            // 거리 표시
-            ctx.strokeStyle = '#27ae60';
-            ctx.lineWidth = 2;
-            ctx.setLineDash([5, 5]);
+            let statementsHTML = '';
+            currentProblem.statements.forEach((stmt, index) => {
+                statementsHTML += `<div class="statement" onclick="toggleStatement(${index})"><strong>${stmt.label}.</strong> ${stmt.text}</div>`;
+            });
+            document.getElementById('statements').innerHTML = statementsHTML;
             
-            // A의 거리
-            ctx.beginPath();
-            ctx.moveTo(xA, rodY - 30);
-            ctx.lineTo(pivotX, rodY - 30);
-            ctx.stroke();
-            ctx.fillStyle = '#27ae60';
-            ctx.font = '12px Arial';
-            ctx.fillText(currentProblem.distanceA + ' cm', (xA + pivotX) / 2, rodY - 35);
+            document.getElementById('result').classList.remove('show');
+            document.getElementById('submitBtn').disabled = true;
+        }
+
+        function toggleStatement(index) {
+            if (document.getElementById('result').classList.contains('show')) return;
             
-            // B의 거리
-            ctx.beginPath();
-            ctx.moveTo(pivotX, rodY - 30);
-            ctx.lineTo(xB, rodY - 30);
-            ctx.stroke();
-            ctx.fillText(currentProblem.distanceB + ' cm', (pivotX + xB) / 2, rodY - 35);
+            const statements = document.querySelectorAll('.statement');
+            const label = currentProblem.statements[index].label;
             
-            ctx.setLineDash([]);
+            if (selectedStatements.has(label)) {
+                selectedStatements.delete(label);
+                statements[index].classList.remove('selected');
+            } else {
+                selectedStatements.add(label);
+                statements[index].classList.add('selected');
+            }
+            
+            document.getElementById('submitBtn').disabled = selectedStatements.size === 0;
         }
         
         function checkAnswer() {
-            const userAnswer = parseFloat(document.getElementById('answerInput').value);
-            const feedback = document.getElementById('feedback');
+            if (selectedStatements.size === 0) return;
             
-            if (isNaN(userAnswer)) {
-                feedback.className = 'feedback incorrect';
-                feedback.textContent = '⚠️ 답을 입력해주세요!';
-                feedback.style.display = 'block';
-                return;
-            }
+            const resultDiv = document.getElementById('result');
+            const statements = document.querySelectorAll('.statement');
             
-            const correctAnswer = currentProblem.weightA;
-            const tolerance = 0.1; // 오차 범위 (소수점 첫째자리까지 정확해야 함)
+            const correctLabels = new Set(
+                currentProblem.statements.filter(s => s.isCorrect).map(s => s.label)
+            );
             
-            if (Math.abs(userAnswer - correctAnswer) < tolerance) {
-                feedback.className = 'feedback correct';
-                feedback.innerHTML = `
-                    🎉 정답입니다!<br>
-                    물체 A의 무게: ${correctAnswer.toFixed(1)} N<br>
-                    <small>돌림힘 평형: ${currentProblem.weightA.toFixed(1)} N × ${currentProblem.distanceA} cm = 
-                    ${currentProblem.weightB} N × ${currentProblem.distanceB} cm</small>
-                `;
+            const isCorrect = selectedStatements.size === correctLabels.size &&
+                            [...selectedStatements].every(label => correctLabels.has(label));
+            
+            currentProblem.statements.forEach((stmt, index) => {
+                if (stmt.isCorrect) {
+                    statements[index].classList.add('correct');
+                } else if (selectedStatements.has(stmt.label)) {
+                    statements[index].classList.add('incorrect');
+                }
+            });
+            
+            if (isCorrect) {
+                resultDiv.innerHTML = '<div>✓ 정답입니다!</div>';
+                resultDiv.className = 'result show correct';
             } else {
-                feedback.className = 'feedback incorrect';
-                feedback.innerHTML = `
-                    ❌ 틀렸습니다. 다시 시도해보세요!<br>
-                    <small>힌트: 돌림힘의 평형 조건을 이용하세요.<br>
-                    왼쪽 돌림힘 = 오른쪽 돌림힘<br><br>
-                    정답과 해설을 보려면 "📖 해설 보기" 버튼을 클릭하세요.</small>
-                `;
+                const correctAnswer = [...correctLabels].sort().join(', ');
+                
+                let explanationHTML = `<div>✗ 틀렸습니다. 정답은 ${correctAnswer}입니다.</div>`;
+                explanationHTML += '<div class="explanation">';
+                explanationHTML += '<strong>📖 풀이:</strong>';
+                
+                currentProblem.statements.forEach(stmt => {
+                    const mark = stmt.isCorrect ? '✓' : '✗';
+                    explanationHTML += `<div style="margin-top:8px">• <strong>${stmt.label} (${mark})</strong>: ${stmt.explanation}</div>`;
+                });
+                
+                explanationHTML += '</div>';
+                
+                resultDiv.innerHTML = explanationHTML;
+                resultDiv.className = 'result show incorrect';
             }
-            feedback.style.display = 'block';
-        }
-        
-        function showSolution() {
-            const feedback = document.getElementById('feedback');
-            const torqueA = currentProblem.weightA * currentProblem.distanceA;
-            const torqueB = currentProblem.weightB * currentProblem.distanceB;
             
-            feedback.className = 'feedback solution';
-            feedback.innerHTML = `
-                <div style="text-align: center; font-size: 18px; margin-bottom: 15px;">
-                    <strong>📖 문제 해설</strong>
-                </div>
-                
-                <div class="solution-step">
-                    <strong>1️⃣ 주어진 조건</strong><br>
-                    • 막대의 길이: 100 cm<br>
-                    • 받침점(회전축): 50 cm (중앙)<br>
-                    • 물체 A의 위치: ${currentProblem.posA} cm<br>
-                    • 물체 B의 위치: ${currentProblem.posB} cm<br>
-                    • 물체 B의 무게: ${currentProblem.weightB} N
-                </div>
-                
-                <div class="solution-step">
-                    <strong>2️⃣ 받침점으로부터의 거리 계산</strong><br>
-                    • 물체 A까지의 거리: |50 - ${currentProblem.posA}| = ${currentProblem.distanceA} cm<br>
-                    • 물체 B까지의 거리: |${currentProblem.posB} - 50| = ${currentProblem.distanceB} cm
-                </div>
-                
-                <div class="solution-step">
-                    <strong>3️⃣ 돌림힘 평형 조건 적용</strong><br>
-                    평형 상태에서는 시계 방향 돌림힘과 반시계 방향 돌림힘이 같습니다.<br><br>
-                    <span style="color: #e74c3c;">W<sub>A</sub> × d<sub>A</sub></span> = 
-                    <span style="color: #3498db;">W<sub>B</sub> × d<sub>B</sub></span><br><br>
-                    <span style="color: #e74c3c;">W<sub>A</sub> × ${currentProblem.distanceA}</span> = 
-                    <span style="color: #3498db;">${currentProblem.weightB} × ${currentProblem.distanceB}</span>
-                </div>
-                
-                <div class="solution-step">
-                    <strong>4️⃣ 물체 A의 무게 계산</strong><br>
-                    W<sub>A</sub> = (${currentProblem.weightB} × ${currentProblem.distanceB}) ÷ ${currentProblem.distanceA}<br>
-                    W<sub>A</sub> = ${torqueB} ÷ ${currentProblem.distanceA}<br>
-                    W<sub>A</sub> = <strong style="color: #e74c3c; font-size: 20px;">${currentProblem.weightA.toFixed(1)} N</strong>
-                </div>
-                
-                <div class="solution-step">
-                    <strong>5️⃣ 검산</strong><br>
-                    좌측 돌림힘: ${currentProblem.weightA.toFixed(1)} N × ${currentProblem.distanceA} cm = ${torqueA.toFixed(1)} N·cm<br>
-                    우측 돌림힘: ${currentProblem.weightB} N × ${currentProblem.distanceB} cm = ${torqueB.toFixed(1)} N·cm<br>
-                    ✓ 두 돌림힘이 같으므로 평형 상태입니다!
-                </div>
-            `;
-            feedback.style.display = 'block';
+            document.getElementById('submitBtn').disabled = true;
         }
         
-        // Enter 키로 정답 확인
-        document.getElementById('answerInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                checkAnswer();
-            }
-        });
+        function newProblem() {
+            loadProblem();
+        }
         
-        // 페이지 로드 시 첫 문제 생성
-        generateNewProblem();
+        generateRandomProblems();
+        loadProblem();
     </script>
 </body>
 </html>

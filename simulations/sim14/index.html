@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>토크 계산 연습</title>
+    <title>열기관 효율 연습</title>
     <style>
         * {
             margin: 0;
@@ -12,107 +12,85 @@
         }
         
         body {
-            font-family: 'Noto Sans KR', sans-serif;
+            font-family: 'Malgun Gothic', sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
+            padding: 20px;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px;
         }
         
         .container {
             background: white;
             border-radius: 20px;
-            padding: 40px;
-            max-width: 900px;
+            padding: 30px;
+            max-width: 500px;
             width: 100%;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
         
         h1 {
-            color: #333;
-            text-align: center;
-            margin-bottom: 30px;
-            font-size: 28px;
-        }
-        
-        .scenario-badge {
-            display: inline-block;
-            padding: 8px 16px;
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: white;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: bold;
-            margin-bottom: 15px;
-        }
-        
-        .problem-section {
-            background: #f8f9fa;
-            padding: 25px;
-            border-radius: 15px;
-            margin-bottom: 25px;
-            border: 2px solid #e9ecef;
-        }
-        
-        .problem-text {
-            font-size: 18px;
-            line-height: 1.8;
-            color: #333;
-            margin-bottom: 20px;
-        }
-        
-        .highlight {
             color: #667eea;
-            font-weight: bold;
-            font-size: 20px;
-        }
-        
-        .diagram {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            margin: 20px 0;
             text-align: center;
+            margin-bottom: 10px;
+            font-size: 24px;
         }
         
-        canvas {
-            border: 2px solid #dee2e6;
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        
+        .problem-box {
+            background: #f8f9ff;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin-bottom: 25px;
             border-radius: 8px;
-            max-width: 100%;
+            line-height: 1.8;
         }
         
-        .input-section {
+        .problem-box strong {
+            color: #667eea;
+            font-size: 18px;
+        }
+        
+        .values {
+            margin: 15px 0;
+            padding: 15px;
             background: white;
-            padding: 25px;
-            border-radius: 15px;
-            margin-bottom: 20px;
+            border-radius: 8px;
         }
         
-        .input-group {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 15px;
+        .value-item {
+            margin: 8px 0;
+            font-size: 16px;
+        }
+        
+        .answer-section {
+            margin: 25px 0;
         }
         
         label {
-            font-size: 18px;
-            color: #495057;
-            min-width: 120px;
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #333;
         }
         
-        input {
-            flex: 1;
-            padding: 12px 15px;
-            font-size: 16px;
-            border: 2px solid #dee2e6;
-            border-radius: 8px;
+        input[type="number"] {
+            width: 100%;
+            padding: 15px;
+            font-size: 18px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
             transition: all 0.3s;
         }
         
-        input:focus {
+        input[type="number"]:focus {
             outline: none;
             border-color: #667eea;
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
@@ -120,484 +98,229 @@
         
         .button-group {
             display: flex;
-            gap: 15px;
+            gap: 10px;
             margin-top: 20px;
         }
         
         button {
             flex: 1;
-            padding: 15px 30px;
+            padding: 15px;
             font-size: 16px;
             font-weight: bold;
             border: none;
             border-radius: 10px;
             cursor: pointer;
             transition: all 0.3s;
+        }
+        
+        .new-problem-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
         }
         
-        .btn-new {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-        
-        .btn-new:hover {
+        .new-problem-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
         }
         
-        .btn-check {
+        .check-btn {
             background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
         }
         
-        .btn-check:hover {
+        .check-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(245, 87, 108, 0.4);
+            box-shadow: 0 5px 20px rgba(245, 87, 108, 0.4);
         }
         
-        .feedback {
+        .result {
             margin-top: 20px;
             padding: 20px;
             border-radius: 10px;
+            text-align: center;
             font-size: 16px;
             font-weight: bold;
-            text-align: center;
             display: none;
         }
         
-        .feedback.correct {
+        .result.correct {
             background: #d4edda;
             color: #155724;
             border: 2px solid #c3e6cb;
-            display: block;
         }
         
-        .feedback.incorrect {
+        .result.incorrect {
             background: #f8d7da;
             color: #721c24;
             border: 2px solid #f5c6cb;
-            display: block;
         }
         
-        .formula {
-            background: #e7f3ff;
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
             padding: 15px;
-            border-radius: 8px;
-            margin: 15px 0;
+            background: #f8f9ff;
+            border-radius: 10px;
+        }
+        
+        .stat-item {
             text-align: center;
-            font-family: 'Courier New', monospace;
-            font-size: 16px;
-            color: #004085;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🔧 토크(돌림힘) 계산 연습</h1>
+        <h1>⚡ 열기관 효율 계산</h1>
+        <div class="subtitle">유화평 학생의 통합과학2 연습</div>
         
-        <div class="problem-section">
-            <div class="scenario-badge" id="scenarioBadge">🔧 렌치와 너트</div>
-            <div class="problem-text" id="problemText">
-                다음 그림과 같이 길이가 <span class="highlight" id="length">20</span> cm인 렌치를 이용해 
-                <span class="highlight" id="force">10</span> N의 힘을 <span class="highlight" id="angle">30</span>°
-                각도로 작용하였을 때 너트에 작용하는 돌림힘의 크기는 몇 N·m인가?
+        <div class="problem-box">
+            <strong>문제 15번</strong>
+            <p style="margin-top: 10px;">
+                그림은 화석 연료가 연소할 때 발생하는 열에너지를 이용하여 동력을 얻는 장치인 열기관을 나타낸 것이다.
+            </p>
+            <div class="values">
+                <div class="value-item">• 고열원으로부터 공급받은 열에너지: <strong><span id="inputEnergy">600</span> kJ</strong></div>
+                <div class="value-item">• 저열원으로 방출한 열에너지: <strong><span id="outputEnergy">480</span> kJ</strong></div>
             </div>
-            
-            <div class="diagram">
-                <canvas id="canvas" width="600" height="300"></canvas>
-            </div>
-            
-            <div class="formula">
-                토크(τ) = r × F × sin(θ)<br>
-                여기서 r: 회전축으로부터의 거리(m), F: 힘(N), θ: 각도(°)
-            </div>
+            <p>이 열기관의 열효율이 몇 %인지 계산 과정과 함께 구하시오.</p>
         </div>
         
-        <div class="input-section">
-            <div class="input-group">
-                <label>답:</label>
-                <input type="number" id="answer" step="0.01" placeholder="답을 입력하세요 (예: 1.73)">
-                <span style="font-size: 18px; color: #495057; font-weight: bold;">N·m</span>
+        <div class="answer-section">
+            <label>📝 정답 입력 (단위: %)</label>
+            <input type="number" id="userAnswer" placeholder="열효율을 입력하세요" min="0" max="100" step="1">
+        </div>
+        
+        <div class="button-group">
+            <button class="new-problem-btn" onclick="generateNewProblem()">🔄 새문제</button>
+            <button class="check-btn" onclick="checkAnswer()">✓ 정답확인</button>
+        </div>
+        
+        <div id="result" class="result"></div>
+        
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-label">맞춘 문제</div>
+                <div class="stat-value" id="correct">0</div>
             </div>
-            
-            <div class="button-group">
-                <button class="btn-new" onclick="newProblem()">🔄 새 문제</button>
-                <button class="btn-check" onclick="checkAnswer()">✓ 정답 확인</button>
+            <div class="stat-item">
+                <div class="stat-label">전체 문제</div>
+                <div class="stat-value" id="total">0</div>
             </div>
-            
-            <div class="feedback" id="feedback"></div>
+            <div class="stat-item">
+                <div class="stat-label">정답률</div>
+                <div class="stat-value" id="accuracy">0%</div>
+            </div>
         </div>
     </div>
-
+    
     <script>
-        const scenarios = [
-            {
-                name: '🚪 문 열기',
-                text: '다음 그림과 같이 경첩으로부터 <span class="highlight" id="length">LENGTH</span> cm 떨어진 손잡이에 <span class="highlight" id="force">FORCE</span> N의 힘을 <span class="highlight" id="angle">ANGLE</span>° 각도로 작용하였을 때 문에 작용하는 돌림힘의 크기는 몇 N·m인가?',
-                draw: drawDoor
-            },
-            {
-                name: '🎣 낚싯대',
-                text: '다음 그림과 같이 길이가 <span class="highlight" id="length">LENGTH</span> cm인 낚싯대에 물고기가 <span class="highlight" id="force">FORCE</span> N의 힘으로 <span class="highlight" id="angle">ANGLE</span>° 각도로 당길 때 손에 작용하는 돌림힘의 크기는 몇 N·m인가?',
-                draw: drawFishingRod
-            },
-            {
-                name: '🎸 기타 줄 감기',
-                text: '다음 그림과 같이 반지름이 <span class="highlight" id="length">LENGTH</span> cm인 기타 튜닝 페그에 <span class="highlight" id="force">FORCE</span> N의 힘을 <span class="highlight" id="angle">ANGLE</span>° 각도로 작용할 때 페그에 작용하는 돌림힘의 크기는 몇 N·m인가?',
-                draw: drawGuitarPeg
-            },
-            {
-                name: '⚙️ 기어와 체인',
-                text: '다음 그림과 같이 반지름이 <span class="highlight" id="length">LENGTH</span> cm인 기어에 체인이 <span class="highlight" id="force">FORCE</span> N의 힘으로 <span class="highlight" id="angle">ANGLE</span>° 각도로 당길 때 기어축에 작용하는 돌림힘의 크기는 몇 N·m인가?',
-                draw: drawGear
-            },
-            {
-                name: '🎡 시소',
-                text: '다음 그림과 같이 중심으로부터 <span class="highlight" id="length">LENGTH</span> cm 떨어진 지점에 <span class="highlight" id="force">FORCE</span> N의 힘을 <span class="highlight" id="angle">ANGLE</span>° 각도로 작용할 때 시소의 중심축에 작용하는 돌림힘의 크기는 몇 N·m인가?',
-                draw: drawSeesaw
-            }
-        ];
-
-        let currentProblem = {
-            length: 20,
-            force: 10,
-            angle: 30,
-            scenario: 0
-        };
-
-        function newProblem() {
-            const lengths = [10, 15, 20, 25, 30, 40, 50];
-            const forces = [5, 10, 15, 20, 25, 30];
-            const angles = [30, 45, 60, 90];
+        let currentInput = 600;
+        let currentOutput = 480;
+        let correctCount = 0;
+        let totalCount = 0;
+        
+        function generateNewProblem() {
+            // 효율이 자연수가 되도록 설정 (10%, 20%, 25%, 30%, 40%, 50%)
+            const efficiencies = [10, 20, 25, 30, 40, 50];
+            const efficiency = efficiencies[Math.floor(Math.random() * efficiencies.length)];
             
-            currentProblem.length = lengths[Math.floor(Math.random() * lengths.length)];
-            currentProblem.force = forces[Math.floor(Math.random() * forces.length)];
-            currentProblem.angle = angles[Math.floor(Math.random() * angles.length)];
-            currentProblem.scenario = Math.floor(Math.random() * scenarios.length);
+            // 고열원 에너지를 효율에 맞게 설정 (일이 자연수가 되도록)
+            // 100의 배수로 설정하여 모든 효율에서 자연수 결과 보장
+            currentInput = Math.floor(Math.random() * 9 + 2) * 100; // 200~1000 (100 단위)
             
-            const scenario = scenarios[currentProblem.scenario];
-            document.getElementById('scenarioBadge').textContent = scenario.name;
+            // 실제로 한 일 계산 (항상 자연수)
+            const work = currentInput * efficiency / 100;
             
-            let problemText = scenario.text
-                .replace('LENGTH', currentProblem.length)
-                .replace('FORCE', currentProblem.force)
-                .replace('ANGLE', currentProblem.angle);
-            document.getElementById('problemText').innerHTML = problemText;
+            // 저열원 방출 에너지 계산 (항상 자연수)
+            currentOutput = currentInput - work;
             
-            document.getElementById('answer').value = '';
-            document.getElementById('feedback').style.display = 'none';
-            
-            scenario.draw();
+            document.getElementById('inputEnergy').textContent = currentInput;
+            document.getElementById('outputEnergy').textContent = currentOutput;
+            document.getElementById('userAnswer').value = '';
+            document.getElementById('result').style.display = 'none';
         }
-
-        function drawDoor() {
-            const canvas = document.getElementById('canvas');
-            const ctx = canvas.getContext('2d');
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            const hingeX = 80;
-            const hingeY = 100;
-            const doorWidth = 300;
-            const doorHeight = 180;
-            
-            // 문
-            ctx.fillStyle = '#8b7355';
-            ctx.fillRect(hingeX, hingeY, doorWidth, doorHeight);
-            
-            // 경첩
-            ctx.fillStyle = '#495057';
-            for(let i = 0; i < 3; i++) {
-                ctx.beginPath();
-                ctx.arc(hingeX, hingeY + 40 + i * 50, 12, 0, Math.PI * 2);
-                ctx.fill();
-            }
-            
-            // 손잡이
-            ctx.fillStyle = '#ffd700';
-            ctx.beginPath();
-            ctx.arc(hingeX + doorWidth - 30, hingeY + doorHeight / 2, 15, 0, Math.PI * 2);
-            ctx.fill();
-            
-            drawForceVector(ctx, hingeX + doorWidth - 30, hingeY + doorHeight / 2);
-            drawLabels(ctx, hingeX, hingeY + doorHeight / 2, doorWidth - 30, '경첩');
-        }
-
-        function drawFishingRod() {
-            const canvas = document.getElementById('canvas');
-            const ctx = canvas.getContext('2d');
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            const handX = 100;
-            const handY = 200;
-            const rodLength = 350;
-            
-            // 낚싯대
-            ctx.strokeStyle = '#8b4513';
-            ctx.lineWidth = 6;
-            ctx.beginPath();
-            ctx.moveTo(handX, handY);
-            ctx.lineTo(handX + rodLength * 0.9, handY - rodLength * 0.3);
-            ctx.stroke();
-            
-            // 손
-            ctx.fillStyle = '#ffdbac';
-            ctx.beginPath();
-            ctx.arc(handX, handY, 25, 0, Math.PI * 2);
-            ctx.fill();
-            
-            // 낚싯줄
-            ctx.strokeStyle = '#4a90e2';
-            ctx.lineWidth = 2;
-            ctx.setLineDash([5, 5]);
-            ctx.beginPath();
-            ctx.moveTo(handX + rodLength * 0.9, handY - rodLength * 0.3);
-            ctx.lineTo(handX + rodLength * 0.9, handY + 50);
-            ctx.stroke();
-            ctx.setLineDash([]);
-            
-            // 물고기
-            ctx.fillStyle = '#ff6b6b';
-            ctx.beginPath();
-            ctx.ellipse(handX + rodLength * 0.9, handY + 70, 20, 12, 0, 0, Math.PI * 2);
-            ctx.fill();
-            
-            drawForceVector(ctx, handX + rodLength * 0.9, handY - rodLength * 0.3);
-            
-            ctx.fillStyle = '#333';
-            ctx.font = 'bold 16px Arial';
-            ctx.fillText(currentProblem.length + ' cm', handX + rodLength / 2, handY - rodLength * 0.15 - 10);
-        }
-
-        function drawGuitarPeg() {
-            const canvas = document.getElementById('canvas');
-            const ctx = canvas.getContext('2d');
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            const centerX = 300;
-            const centerY = 150;
-            const pegRadius = 60;
-            
-            // 기타 헤드스톡
-            ctx.fillStyle = '#8b4513';
-            ctx.fillRect(centerX - 150, centerY - 50, 150, 100);
-            
-            // 페그 원판
-            ctx.fillStyle = '#4a4a4a';
-            ctx.beginPath();
-            ctx.arc(centerX, centerY, pegRadius, 0, Math.PI * 2);
-            ctx.fill();
-            
-            // 페그 중심축
-            ctx.fillStyle = '#2a2a2a';
-            ctx.beginPath();
-            ctx.arc(centerX, centerY, 15, 0, Math.PI * 2);
-            ctx.fill();
-            
-            // 손잡이
-            ctx.strokeStyle = '#6c757d';
-            ctx.lineWidth = 8;
-            ctx.beginPath();
-            ctx.moveTo(centerX, centerY);
-            ctx.lineTo(centerX + pegRadius, centerY);
-            ctx.stroke();
-            
-            ctx.fillStyle = '#adb5bd';
-            ctx.beginPath();
-            ctx.arc(centerX + pegRadius, centerY, 20, 0, Math.PI * 2);
-            ctx.fill();
-            
-            drawForceVector(ctx, centerX + pegRadius, centerY);
-            
-            ctx.fillStyle = '#333';
-            ctx.font = 'bold 16px Arial';
-            ctx.fillText('r = ' + currentProblem.length + ' cm', centerX + 10, centerY - pegRadius - 10);
-        }
-
-        function drawGear() {
-            const canvas = document.getElementById('canvas');
-            const ctx = canvas.getContext('2d');
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            const centerX = 250;
-            const centerY = 150;
-            const gearRadius = 80;
-            
-            // 기어 톱니
-            ctx.fillStyle = '#6c757d';
-            ctx.beginPath();
-            for(let i = 0; i < 12; i++) {
-                const angle = (i * 30) * Math.PI / 180;
-                const x = centerX + (gearRadius + 15) * Math.cos(angle);
-                const y = centerY + (gearRadius + 15) * Math.sin(angle);
-                if(i === 0) ctx.moveTo(x, y);
-                else ctx.lineTo(x, y);
-            }
-            ctx.closePath();
-            ctx.fill();
-            
-            // 기어 본체
-            ctx.fillStyle = '#495057';
-            ctx.beginPath();
-            ctx.arc(centerX, centerY, gearRadius, 0, Math.PI * 2);
-            ctx.fill();
-            
-            // 체인이 당기는 지점
-            const chainX = centerX + gearRadius;
-            const chainY = centerY;
-            
-            // 체인
-            ctx.strokeStyle = '#2a2a2a';
-            ctx.lineWidth = 6;
-            ctx.beginPath();
-            ctx.moveTo(chainX, chainY);
-            ctx.lineTo(chainX + 100, chainY - 30);
-            ctx.stroke();
-            
-            drawForceVector(ctx, chainX, chainY);
-            
-            ctx.fillStyle = '#333';
-            ctx.font = 'bold 16px Arial';
-            ctx.fillText('r = ' + currentProblem.length + ' cm', centerX - 40, centerY - gearRadius - 15);
-        }
-
-        function drawSeesaw() {
-            const canvas = document.getElementById('canvas');
-            const ctx = canvas.getContext('2d');
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            const centerX = 300;
-            const centerY = 180;
-            const seesawLength = 300;
-            
-            // 받침대
-            ctx.fillStyle = '#8b4513';
-            ctx.beginPath();
-            ctx.moveTo(centerX - 40, centerY);
-            ctx.lineTo(centerX, centerY - 40);
-            ctx.lineTo(centerX + 40, centerY);
-            ctx.closePath();
-            ctx.fill();
-            
-            // 시소 판자
-            ctx.fillStyle = '#d4a574';
-            ctx.fillRect(centerX - seesawLength/2, centerY - 50, seesawLength, 20);
-            
-            // 중심축
-            ctx.fillStyle = '#495057';
-            ctx.beginPath();
-            ctx.arc(centerX, centerY - 40, 15, 0, Math.PI * 2);
-            ctx.fill();
-            
-            // 힘을 가하는 지점
-            const forceX = centerX + seesawLength/2 - 30;
-            const forceY = centerY - 50;
-            
-            // 사람
-            ctx.fillStyle = '#4a90e2';
-            ctx.beginPath();
-            ctx.arc(forceX, forceY - 30, 20, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.fillRect(forceX - 10, forceY - 10, 20, 40);
-            
-            drawForceVector(ctx, forceX, forceY);
-            
-            ctx.fillStyle = '#333';
-            ctx.font = 'bold 16px Arial';
-            ctx.fillText(currentProblem.length + ' cm', centerX + 50, centerY - 60);
-        }
-
-        function drawForceVector(ctx, x, y) {
-            const angleRad = (currentProblem.angle * Math.PI) / 180;
-            const forceLength = 120;
-            const forceVectorX = x + forceLength * Math.cos(-angleRad);
-            const forceVectorY = y + forceLength * Math.sin(-angleRad);
-            
-            // 화살표
-            ctx.strokeStyle = '#f5576c';
-            ctx.fillStyle = '#f5576c';
-            ctx.lineWidth = 4;
-            ctx.beginPath();
-            ctx.moveTo(x, y);
-            ctx.lineTo(forceVectorX, forceVectorY);
-            ctx.stroke();
-            
-            // 화살표 머리
-            const arrowSize = 15;
-            ctx.beginPath();
-            ctx.moveTo(forceVectorX, forceVectorY);
-            ctx.lineTo(
-                forceVectorX - arrowSize * Math.cos(-angleRad - Math.PI/6),
-                forceVectorY - arrowSize * Math.sin(-angleRad - Math.PI/6)
-            );
-            ctx.lineTo(
-                forceVectorX - arrowSize * Math.cos(-angleRad + Math.PI/6),
-                forceVectorY - arrowSize * Math.sin(-angleRad + Math.PI/6)
-            );
-            ctx.closePath();
-            ctx.fill();
-            
-            // 각도 표시
-            ctx.strokeStyle = '#667eea';
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.arc(x, y, 40, 0, -angleRad, true);
-            ctx.stroke();
-            
-            // 텍스트
-            ctx.fillStyle = '#f5576c';
-            ctx.font = 'bold 18px Arial';
-            ctx.fillText('F = ' + currentProblem.force + ' N', forceVectorX + 10, forceVectorY - 10);
-            
-            ctx.fillStyle = '#667eea';
-            ctx.fillText(currentProblem.angle + '°', x + 50, y + 5);
-        }
-
-        function drawLabels(ctx, centerX, centerY, length, label) {
-            ctx.fillStyle = '#333';
-            ctx.font = 'bold 18px Arial';
-            ctx.fillText(currentProblem.length + ' cm', centerX + length/2 - 30, centerY - 20);
-            
-            ctx.fillStyle = '#495057';
-            ctx.font = 'bold 16px Arial';
-            ctx.fillText(label, centerX - 10, centerY + 50);
-        }
-
+        
         function checkAnswer() {
-            const userAnswer = parseFloat(document.getElementById('answer').value);
-            const feedback = document.getElementById('feedback');
+            const userAnswer = parseFloat(document.getElementById('userAnswer').value);
             
             if (isNaN(userAnswer)) {
-                feedback.className = 'feedback incorrect';
-                feedback.textContent = '답을 입력해주세요!';
-                feedback.style.display = 'block';
+                alert('답을 입력해주세요!');
                 return;
             }
             
-            const r = currentProblem.length / 100;
-            const F = currentProblem.force;
-            const theta = (currentProblem.angle * Math.PI) / 180;
-            const correctAnswer = r * F * Math.sin(theta);
+            // 열기관이 한 일 계산
+            const work = currentInput - currentOutput;
             
-            const tolerance = 0.05;
+            // 정답 계산
+            const correctAnswer = (work / currentInput) * 100;
             
-            if (Math.abs(userAnswer - correctAnswer) <= tolerance) {
-                feedback.className = 'feedback correct';
-                feedback.innerHTML = `🎉 정답입니다!<br>τ = ${r} m × ${F} N × sin(${currentProblem.angle}°) = ${correctAnswer.toFixed(2)} N·m`;
-                feedback.style.display = 'block';
+            const resultDiv = document.getElementById('result');
+            totalCount++;
+            
+            // 오차 범위 ±0.5% 허용
+            if (Math.abs(userAnswer - correctAnswer) < 0.5) {
+                correctCount++;
+                resultDiv.className = 'result correct';
+                resultDiv.innerHTML = `
+                    🎉 정답입니다!<br>
+                    <div style="margin-top: 15px; font-size: 14px; text-align: left; line-height: 1.8;">
+                        <strong>📚 계산 과정:</strong><br>
+                        ① 열기관이 한 일(W) 구하기<br>
+                        &nbsp;&nbsp;&nbsp;W = 고열원 에너지 - 저열원 에너지<br>
+                        &nbsp;&nbsp;&nbsp;W = ${currentInput} kJ - ${currentOutput} kJ = ${work} kJ<br><br>
+                        ② 열효율 구하기<br>
+                        &nbsp;&nbsp;&nbsp;열효율 = (열기관이 한 일 / 공급받은 에너지) × 100<br>
+                        &nbsp;&nbsp;&nbsp;열효율 = (${work} kJ / ${currentInput} kJ) × 100<br>
+                        &nbsp;&nbsp;&nbsp;열효율 = ${correctAnswer}%
+                    </div>
+                `;
             } else {
-                feedback.className = 'feedback incorrect';
-                feedback.innerHTML = `❌틀렸습니다.<br>정답: ${correctAnswer.toFixed(2)} N·m<br>풀이: τ = ${r} m × ${F} N × sin(${currentProblem.angle}°) = ${correctAnswer.toFixed(2)} N·m`;
-                feedback.style.display = 'block';
+                resultDiv.className = 'result incorrect';
+                resultDiv.innerHTML = `
+                    ❌ 틀렸습니다. 정답은 ${correctAnswer}% 입니다.<br>
+                    <div style="margin-top: 15px; font-size: 14px; text-align: left; line-height: 1.8;">
+                        <strong>📚 계산 과정:</strong><br>
+                        ① 열기관이 한 일(W) 구하기<br>
+                        &nbsp;&nbsp;&nbsp;W = 고열원 에너지 - 저열원 에너지<br>
+                        &nbsp;&nbsp;&nbsp;W = ${currentInput} kJ - ${currentOutput} kJ = ${work} kJ<br><br>
+                        ② 열효율 구하기<br>
+                        &nbsp;&nbsp;&nbsp;열효율 = (열기관이 한 일 / 공급받은 에너지) × 100<br>
+                        &nbsp;&nbsp;&nbsp;열효율 = (${work} kJ / ${currentInput} kJ) × 100<br>
+                        &nbsp;&nbsp;&nbsp;열효율 = ${correctAnswer}%
+                    </div>
+                `;
             }
+            
+            resultDiv.style.display = 'block';
+            updateStats();
         }
-
-        document.getElementById('answer').addEventListener('keypress', function(e) {
+        
+        function updateStats() {
+            document.getElementById('correct').textContent = correctCount;
+            document.getElementById('total').textContent = totalCount;
+            const accuracy = totalCount > 0 ? Math.round((correctCount / totalCount) * 100) : 0;
+            document.getElementById('accuracy').textContent = accuracy + '%';
+        }
+        
+        // 엔터키로 정답 확인
+        document.getElementById('userAnswer').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 checkAnswer();
             }
         });
-
-        // 초기 문제
-        scenarios[0].draw();
     </script>
 </body>
 </html>

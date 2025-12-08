@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>전자기 유도 문제 연습</title>
+    <title>에너지 효율 학습 시뮬레이션</title>
     <style>
         * {
             margin: 0;
@@ -13,608 +13,404 @@
         
         body {
             font-family: 'Malgun Gothic', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
             min-height: 100vh;
             padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            line-height: 1.6;
         }
         
         .container {
+            max-width: 600px;
+            margin: 0 auto;
             background: white;
             border-radius: 20px;
-            padding: 40px;
-            max-width: 900px;
-            width: 100%;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 30px;
         }
         
         h1 {
-            color: #667eea;
+            color: #11998e;
             text-align: center;
-            margin-bottom: 30px;
-            font-size: 28px;
+            margin-bottom: 10px;
+            font-size: 24px;
         }
         
-        .difficulty-section {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        
+        .timer-box {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .timer-label {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .timer-display {
+            font-size: 32px;
+            font-weight: bold;
+            color: #11998e;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .question-box {
+            background: #f8f9fa;
             padding: 20px;
             border-radius: 15px;
             margin-bottom: 25px;
-            text-align: center;
+            border-left: 5px solid #11998e;
         }
         
-        .difficulty-section h3 {
-            color: white;
-            margin-bottom: 15px;
-            font-size: 18px;
-        }
-        
-        .difficulty-buttons {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-        
-        .difficulty-btn {
-            padding: 12px 25px;
-            font-size: 16px;
+        .question-title {
             font-weight: bold;
-            border: 3px solid white;
-            background: rgba(255,255,255,0.2);
-            color: white;
+            margin-bottom: 15px;
+            font-size: 16px;
+            color: #333;
+        }
+        
+        .options {
+            margin: 20px 0;
+        }
+        
+        .option {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            border: 2px solid #e0e0e0;
+            font-size: 15px;
+            line-height: 1.8;
+        }
+        
+        .option-label {
+            font-weight: bold;
+            color: #11998e;
+            margin-right: 8px;
+        }
+        
+        .choices {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .choice-btn {
+            padding: 15px;
+            border: 2px solid #11998e;
+            background: white;
             border-radius: 10px;
             cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            color: #11998e;
             transition: all 0.3s;
         }
         
-        .difficulty-btn:hover {
-            background: rgba(255,255,255,0.3);
-            transform: translateY(-2px);
+        .choice-btn:active {
+            transform: scale(0.95);
         }
         
-        .difficulty-btn.active {
-            background: white;
-            color: #f5576c;
-        }
-        
-        .problem-section {
-            background: #f8f9ff;
-            padding: 25px;
-            border-radius: 15px;
-            margin-bottom: 25px;
-            border-left: 5px solid #667eea;
-        }
-        
-        .problem-title {
-            font-size: 20px;
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 20px;
-        }
-        
-        .diagram {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            margin: 20px 0;
-            text-align: center;
-        }
-        
-        canvas {
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            max-width: 100%;
-        }
-        
-        .values {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            margin: 15px 0;
-            line-height: 2;
-            font-size: 16px;
-        }
-        
-        .values strong {
-            color: #667eea;
-        }
-        
-        .question {
-            background: #fff3cd;
-            padding: 15px;
-            border-radius: 10px;
-            margin: 15px 0;
-            border-left: 4px solid #ffc107;
-            font-weight: bold;
-            color: #856404;
-        }
-        
-        .input-section {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            margin: 20px 0;
-        }
-        
-        .input-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin: 15px 0;
-        }
-        
-        .input-group label {
-            font-weight: bold;
-            min-width: 100px;
-            color: #333;
-        }
-        
-        .input-group input {
-            flex: 1;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: border-color 0.3s;
-        }
-        
-        .input-group input:focus {
-            outline: none;
-            border-color: #667eea;
+        .choice-btn.selected {
+            background: #11998e;
+            color: white;
         }
         
         .button-group {
             display: flex;
-            gap: 15px;
+            gap: 10px;
             margin-top: 25px;
-            flex-wrap: wrap;
         }
         
-        button {
+        .btn {
             flex: 1;
-            min-width: 150px;
-            padding: 15px 30px;
-            font-size: 16px;
-            font-weight: bold;
+            padding: 15px;
             border: none;
             border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-        
-        .new-problem-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-        
-        .new-problem-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-        }
-        
-        .check-btn {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: white;
-        }
-        
-        .check-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(245, 87, 108, 0.4);
-        }
-        
-        .hint-btn {
-            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
-            color: #2d3436;
-        }
-        
-        .hint-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(253, 203, 110, 0.4);
-        }
-        
-        .hint {
-            margin-top: 20px;
-            padding: 20px;
-            border-radius: 10px;
-            font-size: 16px;
-            display: none;
-            background: #fff9e6;
-            color: #856404;
-            border: 2px solid #ffeaa7;
-            animation: slideIn 0.5s;
-        }
-        
-        .hint.show {
-            display: block;
-        }
-        
-        .hint-content {
-            line-height: 1.8;
-        }
-        
-        .feedback {
-            margin-top: 20px;
-            padding: 20px;
-            border-radius: 10px;
             font-size: 16px;
             font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-new {
+            background: #0f7c6f;
+            color: white;
+        }
+        
+        .btn-new:hover {
+            background: #0d6b5f;
+        }
+        
+        .btn-check {
+            background: #11998e;
+            color: white;
+        }
+        
+        .btn-check:hover {
+            background: #0f8077;
+        }
+        
+        .btn:active {
+            transform: scale(0.98);
+        }
+        
+        .result {
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 15px;
+            font-size: 15px;
             display: none;
-            animation: slideIn 0.5s;
         }
         
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .result.show {
+            display: block;
         }
         
-        .feedback.correct {
+        .result.correct {
             background: #d4edda;
+            border: 2px solid #28a745;
             color: #155724;
-            border: 2px solid #c3e6cb;
-            display: block;
         }
         
-        .feedback.incorrect {
+        .result.incorrect {
             background: #f8d7da;
+            border: 2px solid #dc3545;
             color: #721c24;
-            border: 2px solid #f5c6cb;
-            display: block;
+        }
+        
+        .result-title {
+            font-weight: bold;
+            font-size: 18px;
+            margin-bottom: 10px;
         }
         
         .explanation {
             margin-top: 15px;
-            padding: 15px;
-            background: white;
-            border-radius: 8px;
-            font-weight: normal;
-            line-height: 1.8;
+            padding-top: 15px;
+            border-top: 2px solid rgba(0,0,0,0.1);
+        }
+        
+        .explanation-title {
+            font-weight: bold;
+            margin-bottom: 8px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>⚡ 전자기 유도 문제 연습</h1>
+        <h1>⚡ 에너지 효율 학습</h1>
+        <div class="subtitle">통합과학2 - 에너지 효율 개념 이해</div>
         
-        <div class="difficulty-section">
-            <h3>📊 난이도 선택</h3>
-            <div class="difficulty-buttons">
-                <button class="difficulty-btn" onclick="setDifficulty('easy')">쉬움 (정수)</button>
-                <button class="difficulty-btn active" onclick="setDifficulty('medium')">보통 (소수 1자리)</button>
-                <button class="difficulty-btn" onclick="setDifficulty('hard')">어려움 (소수 2자리)</button>
+        <div class="timer-box">
+            <div class="timer-label">⏱️ 소요 시간</div>
+            <div class="timer-display" id="timer">00:00</div>
+        </div>
+        
+        <div class="question-box">
+            <div class="question-title">10. 에너지 효율에 대한 설명으로 옳은 것만을 [보기]에서 있는 대로 고른 것은?</div>
+            
+            <div class="options">
+                <div class="option">
+                    <span class="option-label">ㄱ.</span><span id="option-a"></span>
+                </div>
+                <div class="option">
+                    <span class="option-label">ㄴ.</span><span id="option-b"></span>
+                </div>
+                <div class="option">
+                    <span class="option-label">ㄷ.</span><span id="option-c"></span>
+                </div>
+            </div>
+            
+            <div style="font-weight: bold; margin: 20px 0 10px 0; color: #333;">정답 선택:</div>
+            <div class="choices">
+                <button class="choice-btn" onclick="selectChoice('ㄱ')">① ㄱ</button>
+                <button class="choice-btn" onclick="selectChoice('ㄴ')">② ㄴ</button>
+                <button class="choice-btn" onclick="selectChoice('ㄷ')">③ ㄷ</button>
+                <button class="choice-btn" onclick="selectChoice('ㄱ,ㄴ')">④ ㄱ, ㄴ</button>
+                <button class="choice-btn" onclick="selectChoice('ㄱ,ㄷ')">⑤ ㄱ, ㄷ</button>
+                <button class="choice-btn" onclick="selectChoice('ㄴ,ㄷ')">⑥ ㄴ, ㄷ</button>
+                <button class="choice-btn" onclick="selectChoice('ㄱ,ㄴ,ㄷ')">⑦ ㄱ, ㄴ, ㄷ</button>
             </div>
         </div>
         
-        <div class="problem-section">
-            <div class="problem-title">자기장 속 도선의 운동과 유도 기전력</div>
-            
-            <div class="diagram">
-                <canvas id="emCanvas" width="500" height="350"></canvas>
-            </div>
-            
-            <div class="values" id="problemValues"></div>
-            
-            <div class="question">
-                도선에 흐르는 전류의 세기 I는 몇 A인가?
-            </div>
-            
-            <div class="input-section">
-                <div class="input-group">
-                    <label for="answer">전류 I:</label>
-                    <input type="number" id="answer" step="0.01" placeholder="답을 입력하세요 (단위: A)">
-                    <span>A</span>
-                </div>
-                
-                <div class="button-group">
-                    <button class="new-problem-btn" onclick="generateNewProblem()">🔄 새 문제</button>
-                    <button class="hint-btn" onclick="showHint()">💡 힌트 보기</button>
-                    <button class="check-btn" onclick="checkAnswer()">✓ 정답 확인</button>
-                </div>
-                
-                <div id="hint" class="hint"></div>
-                <div id="feedback" class="feedback"></div>
-            </div>
+        <div class="button-group">
+            <button class="btn btn-new" onclick="newQuestion()">🔄 새 문제</button>
+            <button class="btn btn-check" onclick="checkAnswer()">✓ 정답 확인</button>
         </div>
+        
+        <div id="result" class="result"></div>
     </div>
-
+    
     <script>
-        let currentProblem = {};
-        let difficulty = 'medium';
+        const questions = [
+            {
+                options: [
+                    "에너지 효율은 공급한 전체 에너지에 대한 열에너지 등으로 버려진 에너지의 비율이다.",
+                    "에너지 효율이 높은 제품은 같은 효과를 내는 데 더 적은 에너지를 사용한다.",
+                    "에너지 효율은 경우에 따라 100% 이상도 가능하다."
+                ],
+                correct: ["ㄴ"],
+                explanation: "에너지 효율은 공급한 에너지 중 유용하게 사용된 에너지의 비율입니다. ㄱ은 틀렸습니다(버려진 에너지의 비율이 아닌 유용하게 사용된 비율). ㄴ은 옳습니다. ㄷ은 틀렸습니다(에너지 효율은 100%를 초과할 수 없음)."
+            },
+            {
+                options: [
+                    "에너지 효율이 높을수록 같은 일을 하는 데 필요한 에너지가 적다.",
+                    "에너지 효율이 100%라는 것은 공급한 에너지를 모두 유용하게 사용했다는 것을 의미한다.",
+                    "에너지 효율이 낮은 기기는 에너지 손실이 적다."
+                ],
+                correct: ["ㄱ,ㄴ"],
+                explanation: "ㄱ은 옳습니다(효율이 높으면 낭비가 적어 필요 에너지가 감소). ㄴ도 옳습니다(100% 효율은 모든 에너지를 유용하게 사용). ㄷ은 틀렸습니다(효율이 낮으면 손실이 많음)."
+            },
+            {
+                options: [
+                    "에너지 효율 등급이 1등급인 제품이 5등급인 제품보다 에너지를 더 많이 소비한다.",
+                    "에너지 효율을 높이면 같은 양의 에너지로 더 많은 일을 할 수 있다.",
+                    "에너지 효율은 (유용하게 사용된 에너지 / 공급한 전체 에너지) × 100으로 계산한다."
+                ],
+                correct: ["ㄴ,ㄷ"],
+                explanation: "ㄱ은 틀렸습니다(1등급이 효율이 높아 에너지를 덜 소비). ㄴ은 옳습니다. ㄷ도 옳습니다(에너지 효율의 정의)."
+            },
+            {
+                options: [
+                    "모든 에너지 전환 과정에서 에너지 효율은 100%이다.",
+                    "에너지 효율을 높이면 환경 오염을 줄일 수 있다.",
+                    "에너지 소비 효율 등급 제도는 소비자가 에너지 효율이 높은 제품을 선택하는 데 도움을 준다."
+                ],
+                correct: ["ㄴ,ㄷ"],
+                explanation: "ㄱ은 틀렸습니다(에너지 전환 시 항상 일부가 열로 손실되어 100%는 불가능). ㄴ은 옳습니다(효율이 높으면 에너지 사용량이 줄어 오염 감소). ㄷ도 옳습니다."
+            },
+            {
+                options: [
+                    "에너지 효율이 높은 기기는 버려지는 열에너지의 양이 많다.",
+                    "에너지 효율이 20%라는 것은 공급한 에너지의 20%만 유용하게 사용되었다는 의미이다.",
+                    "에너지가 보존되므로 에너지 효율을 높일 필요가 없다."
+                ],
+                correct: ["ㄴ"],
+                explanation: "ㄱ은 틀렸습니다(효율이 높으면 버려지는 에너지가 적음). ㄴ은 옳습니다(효율의 정의). ㄷ은 틀렸습니다(에너지가 보존되어도 유용한 에너지는 감소하므로 효율을 높여야 함)."
+            },
+            {
+                options: [
+                    "공급한 에너지의 양이 같을 때, 에너지 효율이 높을수록 유용하게 사용되는 에너지의 양이 많다.",
+                    "에너지 효율이 낮은 기기를 사용하면 전기 요금이 절약된다.",
+                    "열기관의 에너지 효율은 항상 100%에 가깝다."
+                ],
+                correct: ["ㄱ"],
+                explanation: "ㄱ은 옳습니다(효율이 높으면 같은 에너지로 더 많이 유용하게 사용). ㄴ은 틀렸습니다(효율이 낮으면 더 많은 에너지를 소비해 요금 증가). ㄷ은 틀렸습니다(열기관은 효율이 낮음)."
+            }
+        ];
         
-        function setDifficulty(level) {
-            difficulty = level;
-            
-            const buttons = document.querySelectorAll('.difficulty-btn');
-            buttons.forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-            
-            generateNewProblem();
+        let currentQuestion = 0;
+        let selectedAnswer = null;
+        let timerInterval = null;
+        let seconds = 0;
+        
+        function startTimer() {
+            stopTimer();
+            seconds = 0;
+            updateTimerDisplay();
+            timerInterval = setInterval(() => {
+                seconds++;
+                updateTimerDisplay();
+            }, 1000);
         }
         
-        function generateNewProblem() {
-            let B, l, v, R;
-            
-            if (difficulty === 'easy') {
-                const possibleB = [1, 2, 4, 5];
-                const possibleL = [0.5, 1];
-                const possibleV = [2, 4, 5, 10];
-                const possibleR = [1, 2, 4, 5, 10];
-                
-                B = possibleB[Math.floor(Math.random() * possibleB.length)];
-                l = possibleL[Math.floor(Math.random() * possibleL.length)];
-                v = possibleV[Math.floor(Math.random() * possibleV.length)];
-                
-                const emf = B * l * v;
-                
-                const divisors = [1, 2, 4, 5, 10].filter(r => emf % r === 0);
-                R = divisors[Math.floor(Math.random() * divisors.length)] || 1;
-                
-            } else if (difficulty === 'medium') {
-                const possibleB = [0.2, 0.4, 0.5, 1.0, 2.0];
-                const possibleL = [0.5, 1.0, 2.0];
-                const possibleV = [2, 4, 5, 10];
-                const possibleR = [0.5, 1, 2, 4, 5];
-                
-                B = possibleB[Math.floor(Math.random() * possibleB.length)];
-                l = possibleL[Math.floor(Math.random() * possibleL.length)];
-                v = possibleV[Math.floor(Math.random() * possibleV.length)];
-                
-                const emf = B * l * v;
-                
-                const suitableR = [0.5, 1, 2, 4, 5].filter(r => {
-                    const result = emf / r;
-                    return result === Math.round(result * 10) / 10;
-                });
-                
-                R = suitableR.length > 0 
-                    ? suitableR[Math.floor(Math.random() * suitableR.length)]
-                    : possibleR[Math.floor(Math.random() * possibleR.length)];
-                
-            } else {
-                const possibleB = [0.15, 0.25, 0.35, 0.48, 0.52, 0.75];
-                const possibleL = [0.25, 0.4, 0.6, 0.8, 1.2];
-                const possibleV = [3, 5, 6, 8, 12];
-                const possibleR = [1.5, 2.5, 3, 4.5, 6];
-                
-                B = possibleB[Math.floor(Math.random() * possibleB.length)];
-                l = possibleL[Math.floor(Math.random() * possibleL.length)];
-                v = possibleV[Math.floor(Math.random() * possibleV.length)];
-                R = possibleR[Math.floor(Math.random() * possibleR.length)];
+        function stopTimer() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
             }
-            
-            currentProblem = { B, l, v, R };
-            
-            const emf = currentProblem.B * currentProblem.l * currentProblem.v;
-            const I = emf / currentProblem.R;
-            currentProblem.answer = I;
-            
-            displayProblem();
-            drawDiagram();
-            document.getElementById('answer').value = '';
-            document.getElementById('hint').classList.remove('show');
-            document.getElementById('feedback').style.display = 'none';
         }
         
-        function displayProblem() {
-            const html = `
-                <strong>자기장의 세기 B:</strong> ${currentProblem.B} T<br>
-                <strong>도선의 길이 l:</strong> ${currentProblem.l} m<br>
-                <strong>도선의 속력 v:</strong> ${currentProblem.v} m/s<br>
-                <strong>저항 R:</strong> ${currentProblem.R} Ω<br>
-                <br>
-                <em>※ 자기장은 지면에서 수직으로 나오는 방향 (⊙)</em>
-            `;
-            document.getElementById('problemValues').innerHTML = html;
+        function updateTimerDisplay() {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            document.getElementById('timer').textContent = 
+                `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
         }
         
-        function drawDiagram() {
-            const canvas = document.getElementById('emCanvas');
-            const ctx = canvas.getContext('2d');
+        function loadQuestion() {
+            const q = questions[currentQuestion];
+            document.getElementById('option-a').textContent = q.options[0];
+            document.getElementById('option-b').textContent = q.options[1];
+            document.getElementById('option-c').textContent = q.options[2];
             
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            document.querySelectorAll('.choice-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
             
-            ctx.fillStyle = '#e8f4f8';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            for(let x = 30; x < canvas.width; x += 40) {
-                for(let y = 30; y < canvas.height; y += 40) {
-                    ctx.beginPath();
-                    ctx.arc(x, y, 3, 0, 2 * Math.PI);
-                    ctx.fillStyle = '#2196F3';
-                    ctx.fill();
-                    ctx.beginPath();
-                    ctx.arc(x, y, 8, 0, 2 * Math.PI);
-                    ctx.strokeStyle = '#2196F3';
-                    ctx.lineWidth = 2;
-                    ctx.stroke();
-                }
-            }
-            
-            ctx.strokeStyle = '#555';
-            ctx.lineWidth = 6;
-            ctx.beginPath();
-            ctx.moveTo(100, 150);
-            ctx.lineTo(450, 150);
-            ctx.stroke();
-            
-            ctx.beginPath();
-            ctx.moveTo(100, 250);
-            ctx.lineTo(450, 250);
-            ctx.stroke();
-            
-            ctx.strokeStyle = '#f44336';
-            ctx.lineWidth = 4;
-            ctx.beginPath();
-            ctx.moveTo(100, 150);
-            ctx.lineTo(100, 180);
-            for(let i = 0; i < 4; i++) {
-                ctx.lineTo(115, 180 + i * 17.5);
-                ctx.lineTo(85, 180 + (i + 0.5) * 17.5);
-            }
-            ctx.lineTo(100, 250);
-            ctx.stroke();
-            
-            ctx.fillStyle = '#f44336';
-            ctx.font = 'bold 16px Arial';
-            ctx.fillText('R', 65, 205);
-            
-            ctx.strokeStyle = '#4CAF50';
-            ctx.lineWidth = 8;
-            ctx.beginPath();
-            ctx.moveTo(300, 150);
-            ctx.lineTo(300, 250);
-            ctx.stroke();
-            
-            ctx.strokeStyle = '#FF9800';
-            ctx.lineWidth = 3;
-            ctx.beginPath();
-            ctx.moveTo(300, 200);
-            ctx.lineTo(380, 200);
-            ctx.stroke();
-            
-            ctx.beginPath();
-            ctx.moveTo(380, 200);
-            ctx.lineTo(365, 190);
-            ctx.moveTo(380, 200);
-            ctx.lineTo(365, 210);
-            ctx.stroke();
-            
-            ctx.fillStyle = '#333';
-            ctx.font = 'bold 18px Arial';
-            ctx.fillText('v', 395, 205);
-            ctx.fillText('l', 310, 200);
-            
-            ctx.font = 'bold 16px Arial';
-            ctx.fillStyle = '#2196F3';
-            ctx.fillText('B (⊙)', 20, 30);
-            
-            ctx.strokeStyle = '#9C27B0';
-            ctx.lineWidth = 2;
-            ctx.setLineDash([5, 5]);
-            ctx.beginPath();
-            ctx.moveTo(300, 250);
-            ctx.lineTo(200, 250);
-            ctx.moveTo(200, 250);
-            ctx.lineTo(200, 150);
-            ctx.stroke();
-            ctx.setLineDash([]);
-            
-            ctx.fillStyle = '#9C27B0';
-            ctx.font = '14px Arial';
-            ctx.fillText('I', 320, 240);
+            selectedAnswer = null;
+            document.getElementById('result').classList.remove('show');
+            startTimer();
         }
         
-        function showHint() {
-            const hintDiv = document.getElementById('hint');
-            
-            if (hintDiv.classList.contains('show')) {
-                hintDiv.classList.remove('show');
-                return;
-            }
-            
-            const emf = currentProblem.B * currentProblem.l * currentProblem.v;
-            const emfStr = emf.toFixed(2);
-            
-            let hintHTML = `
-                <div class="hint-content">
-                    <strong>💡 힌트</strong><br><br>
-                    <strong>1단계: 유도 기전력 구하기</strong><br>
-                    • 공식: ε = B × l × v<br>
-                    • 주어진 값: B = ${currentProblem.B} T, l = ${currentProblem.l} m, v = ${currentProblem.v} m/s<br>
-            `;
-            
-            if (difficulty === 'easy') {
-                hintHTML += `
-                    • 계산: ε = ${currentProblem.B} × ${currentProblem.l} × ${currentProblem.v} = ${emfStr} V<br><br>
-                    <strong>2단계: 전류 구하기</strong><br>
-                    • 옴의 법칙: I = ε ÷ R<br>
-                    • 이제 계산해보세요!
-                `;
-            } else {
-                hintHTML += `
-                    • 먼저 이 세 값을 곱해보세요<br><br>
-                    <strong>2단계: 전류 구하기</strong><br>
-                    • 옴의 법칙: I = ε ÷ R<br>
-                    • 1단계에서 구한 ε를 저항 R로 나누세요
-                `;
-            }
-            
-            hintHTML += `
-                </div>
-            `;
-            
-            hintDiv.innerHTML = hintHTML;
-            hintDiv.classList.add('show');
+        function selectChoice(choice) {
+            selectedAnswer = choice;
+            document.querySelectorAll('.choice-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            event.target.classList.add('selected');
         }
         
         function checkAnswer() {
-            const userAnswer = parseFloat(document.getElementById('answer').value);
-            const correctAnswer = currentProblem.answer;
-            const feedbackDiv = document.getElementById('feedback');
-            
-            if(isNaN(userAnswer)) {
-                feedbackDiv.className = 'feedback incorrect';
-                feedbackDiv.innerHTML = '❌ 답을 입력해주세요!';
-                feedbackDiv.style.display = 'block';
+            if (!selectedAnswer) {
+                alert('답을 선택해주세요!');
                 return;
             }
             
-            const tolerance = 0.05;
-            const isCorrect = Math.abs(userAnswer - correctAnswer) <= tolerance;
+            stopTimer();
             
-            const emf = currentProblem.B * currentProblem.l * currentProblem.v;
-            const emfRounded = Math.round(emf * 100) / 100;
-            const answerRounded = Math.round(correctAnswer * 100) / 100;
+            const q = questions[currentQuestion];
+            const resultDiv = document.getElementById('result');
+            const isCorrect = q.correct.includes(selectedAnswer);
             
-            const emfStr = emfRounded.toFixed(2);
-            const answerStr = answerRounded.toFixed(2);
+            resultDiv.classList.remove('correct', 'incorrect');
+            resultDiv.classList.add(isCorrect ? 'correct' : 'incorrect');
             
-            if(isCorrect) {
-                feedbackDiv.className = 'feedback correct';
-                feedbackDiv.innerHTML = `
-                    ✅ 정답입니다!
+            const timeText = `⏱️ 소요 시간: ${document.getElementById('timer').textContent}`;
+            
+            if (isCorrect) {
+                resultDiv.innerHTML = `
+                    <div class="result-title">🎉 정답입니다!</div>
+                    <div>훌륭합니다! 에너지 효율 개념을 잘 이해하고 계시네요.</div>
+                    <div style="margin-top: 10px; font-weight: bold; color: #11998e;">${timeText}</div>
                     <div class="explanation">
-                        <strong>풀이:</strong><br>
-                        1. 유도 기전력: ε = Blv = ${currentProblem.B} × ${currentProblem.l} × ${currentProblem.v} = ${emfStr} V<br>
-                        2. 전류: I = ε/R = ${emfStr} / ${currentProblem.R} = ${answerStr} A
+                        <div class="explanation-title">📝 해설:</div>
+                        <div>${q.explanation}</div>
                     </div>
                 `;
-                
-                setTimeout(() => {
-                    generateNewProblem();
-                }, 2000);
-                
             } else {
-                feedbackDiv.className = 'feedback incorrect';
-                feedbackDiv.innerHTML = `
-                    ❌ 틀렸습니다!
+                resultDiv.innerHTML = `
+                    <div class="result-title">❌ 오답입니다</div>
+                    <div>정답: ${q.correct.join(', ')}</div>
+                    <div style="margin-top: 10px; font-weight: bold; color: #dc3545;">${timeText}</div>
                     <div class="explanation">
-                        <strong>📝 정답:</strong> I = ${answerStr} A<br><br>
-                        <strong>풀이 과정:</strong><br>
-                        <strong>1단계:</strong> 유도 기전력 구하기<br>
-                        • 공식: ε = B × l × v<br>
-                        • 계산: ε = ${currentProblem.B} × ${currentProblem.l} × ${currentProblem.v} = ${emfStr} V<br><br>
-                        <strong>2단계:</strong> 전류 구하기<br>
-                        • 옴의 법칙: I = ε ÷ R<br>
-                        • 계산: I = ${emfStr} ÷ ${currentProblem.R} = ${answerStr} A<br><br>
-                        <strong>📌 핵심 개념:</strong><br>
-                        • 자기장 속에서 도선이 움직이면 전자기 유도 현象으로 유도 기전력이 발생합니다.<br>
-                        • 유도 기전력의 크기는 자기장의 세기(B), 도선의 길이(l), 속력(v)에 비례합니다.
+                        <div class="explanation-title">📝 해설:</div>
+                        <div>${q.explanation}</div>
                     </div>
                 `;
             }
+            
+            resultDiv.classList.add('show');
         }
         
-        generateNewProblem();
+        function newQuestion() {
+            currentQuestion = (currentQuestion + 1) % questions.length;
+            loadQuestion();
+        }
+        
+        loadQuestion();
     </script>
 </body>
 </html>

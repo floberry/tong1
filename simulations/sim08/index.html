@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>돌림힘 마스터 게임</title>
+    <title>에너지 효율 시뮬레이션</title>
     <style>
         * {
             margin: 0;
@@ -13,794 +13,835 @@
         
         body {
             font-family: 'Malgun Gothic', sans-serif;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e22ce 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-            overflow-x: hidden;
-        }
-        
-        .stars {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-        }
-        
-        .star {
-            position: absolute;
-            width: 2px;
-            height: 2px;
-            background: white;
-            border-radius: 50%;
-            animation: twinkle 3s infinite;
-        }
-        
-        @keyframes twinkle {
-            0%, 100% { opacity: 0.3; }
-            50% { opacity: 1; }
-        }
-        
-        .container {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 30px;
-            padding: 40px;
-            max-width: 1000px;
-            width: 100%;
-            box-shadow: 0 30px 80px rgba(0,0,0,0.5);
-            position: relative;
-            z-index: 10;
-        }
-        
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        
-        h1 {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 10px;
-            font-size: 36px;
-            font-weight: 900;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-        }
-        
-        .subtitle {
-            color: #666;
-            font-size: 16px;
-            font-weight: bold;
-        }
-        
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-        
-        .stat-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 20px;
-            border-radius: 15px;
-            text-align: center;
-            color: white;
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-            transform: translateY(0);
-            transition: transform 0.3s;
-        }
-        
-        .stat-card:hover {
-            transform: translateY(-5px);
-        }
-        
-        .stat-label {
-            font-size: 14px;
-            opacity: 0.9;
-            margin-bottom: 5px;
-        }
-        
-        .stat-value {
-            font-size: 32px;
-            font-weight: bold;
-        }
-        
-        .problem-section {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            padding: 30px;
-            border-radius: 20px;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            position: relative;
-        }
-        
-        .character {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            margin-bottom: 20px;
-            background: white;
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-        
-        .character-avatar {
-            font-size: 80px;
-            animation: bounce 2s infinite;
-        }
-        
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-        
-        .character-bubble {
-            flex: 1;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 20px;
-            border-radius: 20px;
-            color: white;
-            position: relative;
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-        }
-        
-        .character-bubble::before {
-            content: '';
-            position: absolute;
-            left: -15px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 0;
-            height: 0;
-            border-top: 15px solid transparent;
-            border-bottom: 15px solid transparent;
-            border-right: 15px solid #667eea;
-        }
-        
-        .character-name {
-            font-size: 14px;
-            font-weight: bold;
-            margin-bottom: 8px;
-            opacity: 0.9;
-        }
-        
-        .character-message {
-            font-size: 18px;
             line-height: 1.6;
         }
         
-        .problem-title {
-            font-size: 20px;
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 25px;
-            text-align: center;
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
             background: white;
-            padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-        }
-        
-        .canvas-container {
-            background: white;
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: center;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-        
-        canvas {
-            border: 3px solid #667eea;
-            border-radius: 10px;
-        }
-        
-        .values {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin-top: 20px;
-        }
-        
-        .value-item {
-            background: white;
-            padding: 20px;
-            border-radius: 15px;
-            text-align: center;
-            border: 3px solid #667eea;
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
-            transition: all 0.3s;
-        }
-        
-        .value-item:hover {
-            transform: scale(1.05);
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
-        }
-        
-        .value-label {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 8px;
-            font-weight: bold;
-        }
-        
-        .value-number {
-            font-size: 28px;
-            font-weight: bold;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        
-        .answer-section {
-            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
-            padding: 25px;
             border-radius: 20px;
-            margin-bottom: 20px;
-            border: 3px solid #fdcb6e;
-            box-shadow: 0 10px 30px rgba(253, 203, 110, 0.4);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 30px 20px;
         }
         
-        .input-group {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-            margin-bottom: 15px;
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 24px;
         }
         
-        .input-group label {
-            font-weight: bold;
-            color: #333;
-            min-width: 100px;
-            font-size: 18px;
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
         }
         
-        .input-group input {
-            flex: 1;
-            padding: 15px;
-            border: 3px solid #fab1a0;
-            border-radius: 12px;
-            font-size: 18px;
-            font-weight: bold;
-            transition: all 0.3s;
-        }
-        
-        .input-group input:focus {
-            outline: none;
-            border-color: #e17055;
-            transform: scale(1.02);
-            box-shadow: 0 5px 15px rgba(225, 112, 85, 0.3);
-        }
-        
-        .button-group {
-            display: flex;
-            gap: 20px;
-            margin-top: 20px;
-        }
-        
-        button {
-            flex: 1;
-            padding: 18px 30px;
-            font-size: 18px;
-            font-weight: bold;
-            border: none;
+        .problem-box {
+            background: #f8f9fa;
             border-radius: 15px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
+            padding: 20px;
+            margin-bottom: 25px;
+            border: 2px solid #e9ecef;
+        }
+        
+        .problem-title {
+            font-weight: bold;
+            color: #495057;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+        
+        .problem-content {
+            color: #212529;
+            margin-bottom: 15px;
+            font-size: 15px;
+        }
+        
+        .multiple-answer-notice {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 12px;
+            margin: 15px 0;
+            text-align: center;
+            font-weight: bold;
+            color: #856404;
+            font-size: 14px;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            background: white;
+            border-radius: 10px;
             overflow: hidden;
         }
         
-        button::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.3);
-            transform: translate(-50%, -50%);
-            transition: width 0.6s, height 0.6s;
+        .data-table th, .data-table td {
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #dee2e6;
         }
         
-        button:hover::before {
-            width: 300px;
-            height: 300px;
+        .data-table th {
+            background: #667eea;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .visual-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 10px;
+        }
+        
+        .energy-diagram {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+        }
+        
+        .energy-box {
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            min-width: 60px;
+            text-align: center;
+        }
+        
+        .input-energy {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
+            color: white;
+            border: 2px solid #c92a2a;
+        }
+        
+        .output-energy {
+            background: linear-gradient(135deg, #51cf66, #37b24d);
+            color: white;
+            border: 2px solid #2b8a3e;
+        }
+        
+        .arrow {
+            font-size: 24px;
+            color: #495057;
+            font-weight: bold;
+        }
+        
+        .plant-icon {
+            font-size: 32px;
+            margin: 0 5px;
+        }
+        
+        .options {
+            margin-top: 20px;
+        }
+        
+        .option {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+        }
+        
+        .option:hover {
+            background: #f8f9fa;
+            border-color: #667eea;
+            transform: translateX(5px);
+        }
+        
+        .option.selected {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        
+        .option.correct {
+            background: #28a745;
+            color: white;
+            border-color: #28a745;
+        }
+        
+        .option.wrong {
+            background: #dc3545;
+            color: white;
+            border-color: #dc3545;
+        }
+        
+        .option-number {
+            font-weight: bold;
+            margin-right: 10px;
+            font-size: 18px;
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
         }
         
         .btn-new {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #667eea;
             color: white;
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
         }
         
         .btn-new:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 30px rgba(102, 126, 234, 0.6);
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
         }
         
         .btn-check {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            background: #28a745;
             color: white;
-            box-shadow: 0 8px 20px rgba(245, 87, 108, 0.4);
         }
         
         .btn-check:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 30px rgba(245, 87, 108, 0.6);
+            background: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+        }
+        
+        .btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            opacity: 0.5;
         }
         
         .result {
             margin-top: 20px;
-            padding: 25px;
-            border-radius: 15px;
-            text-align: left;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 18px;
             font-weight: bold;
-            font-size: 16px;
             display: none;
-            line-height: 1.8;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .result.show {
+            display: block;
         }
         
         .result.correct {
-            background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
-            color: #0a3d62;
-            border: 3px solid #0fb9b1;
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #c3e6cb;
         }
         
-        .result.incorrect {
-            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-            color: #c23616;
-            border: 3px solid #e55039;
+        .result.wrong {
+            background: #f8d7da;
+            color: #721c24;
+            border: 2px solid #f5c6cb;
         }
         
-        .confetti {
-            position: fixed;
-            width: 10px;
-            height: 10px;
-            background: #f0f;
-            position: absolute;
-            animation: confetti-fall 3s linear forwards;
+        .result.partial {
+            background: #fff3cd;
+            color: #856404;
+            border: 2px solid #ffc107;
         }
         
-        @keyframes confetti-fall {
-            to {
-                transform: translateY(100vh) rotate(360deg);
-                opacity: 0;
-            }
+        .explanation {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+            text-align: left;
+            font-size: 14px;
+            font-weight: normal;
+            line-height: 1.8;
         }
         
-        .sad-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity 0.5s;
-            z-index: 1000;
-        }
-        
-        .sad-overlay.show {
-            opacity: 1;
-        }
-        
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-10px); }
-            75% { transform: translateX(10px); }
-        }
-        
-        .shake {
-            animation: shake 0.5s;
-        }
-        
-        .combo {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) scale(0);
-            font-size: 80px;
+        .explanation-title {
             font-weight: bold;
-            color: #ffd700;
-            text-shadow: 0 0 20px #ff6b6b, 0 0 40px #ee5a6f;
-            z-index: 2000;
-            animation: combo-pop 1s ease-out;
-            pointer-events: none;
+            color: #856404;
+            margin-bottom: 10px;
+            font-size: 15px;
         }
         
-        @keyframes combo-pop {
-            0% { transform: translate(-50%, -50%) scale(0); }
-            50% { transform: translate(-50%, -50%) scale(1.5); }
-            100% { transform: translate(-50%, -50%) scale(0); }
+        .explanation-step {
+            margin: 8px 0;
+            padding-left: 10px;
+        }
+        
+        .formula {
+            background: #e7f3ff;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            text-align: center;
+            font-family: 'Courier New', monospace;
         }
     </style>
 </head>
 <body>
-    <div class="stars" id="stars"></div>
-    <div class="sad-overlay" id="sad-overlay"></div>
-    
     <div class="container">
-        <div class="header">
-            <h1>🎮 돌림힘 마스터 🎮</h1>
-            <div class="subtitle">물리학2 - 회전운동 챌린지</div>
-        </div>
+        <h1>⚡ 에너지 효율 시뮬레이션</h1>
+        <div class="subtitle">통합과학 - 에너지 전환과 효율</div>
         
-        <div class="stats">
-            <div class="stat-card">
-                <div class="stat-label">🎯 점수</div>
-                <div class="stat-value" id="score">0</div>
+        <div class="problem-box">
+            <div class="problem-title" id="problemNumber">1번 문제</div>
+            <div class="problem-content" id="problemText"></div>
+            <table class="data-table" id="dataTable"></table>
+            <div class="multiple-answer-notice" id="multipleNotice" style="display: none;">
+                ⚠️ 이 문제는 복수 정답입니다. 정답을 모두 선택해야 합니다.
             </div>
-            <div class="stat-card">
-                <div class="stat-label">✅ 정답</div>
-                <div class="stat-value" id="correct">0</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">🔥 연속</div>
-                <div class="stat-value" id="streak">0</div>
+            <div class="problem-content">
+                공급된 에너지의 양이 같을 때, A, B, C에서 생산하는 전기 에너지의 양을 옳게 비교한 것은?
             </div>
         </div>
         
-        <div class="problem-section">
-            <div class="character">
-                <div class="character-avatar">🧙‍♂️</div>
-                <div class="character-bubble">
-                    <div class="character-name">물리 마법사</div>
-                    <div class="character-message">
-                        다음 그림을 보고 돌림힘을 계산해보게! 길이 <span id="length-text">20</span> cm인 렌치에 
-                        <span id="force-text">10</span> N의 힘을 가했을 때 너트에 작용하는 돌림힘은 몇 N·m일까? 🤔
-                    </div>
-                </div>
-            </div>
-            
-            <div class="canvas-container">
-                <canvas id="canvas" width="700" height="300"></canvas>
-            </div>
-            
-            <div class="values">
-                <div class="value-item">
-                    <div class="value-label">📏 렌치 길이</div>
-                    <div class="value-number"><span id="length-display">20</span> cm</div>
-                </div>
-                <div class="value-item">
-                    <div class="value-label">💪 힘의 크기</div>
-                    <div class="value-number"><span id="force-display">10</span> N</div>
-                </div>
-                <div class="value-item">
-                    <div class="value-label">📐 각도</div>
-                    <div class="value-number"><span id="angle-display">30</span>°</div>
-                </div>
-            </div>
-        </div>
+        <div class="options" id="options"></div>
         
-        <div class="answer-section">
-            <div class="input-group">
-                <label>💡 답 입력:</label>
-                <input type="number" id="answer-input" step="0.01" placeholder="여기에 답을 입력하세요!">
-                <span style="font-weight: bold;">N·m</span>
-            </div>
-        </div>
+        <div class="result" id="result"></div>
         
-        <div class="button-group">
-            <button class="btn-new" onclick="generateNewProblem()">🔄 새로운 문제</button>
-            <button class="btn-check" onclick="checkAnswer()">✨ 정답 확인</button>
+        <div class="buttons">
+            <button class="btn btn-new" onclick="generateNewProblem()">🔄 새 문제</button>
+            <button class="btn btn-check" id="checkBtn" onclick="checkAnswer()">✓ 정답 확인</button>
         </div>
-        
-        <div id="result" class="result"></div>
     </div>
 
     <script>
-        let currentLength, currentForce, currentAngle, correctAnswer;
-        let score = 0;
-        let correctCount = 0;
-        let streak = 0;
-        
-        // 별 생성
-        function createStars() {
-            const starsContainer = document.getElementById('stars');
-            for (let i = 0; i < 100; i++) {
-                const star = document.createElement('div');
-                star.className = 'star';
-                star.style.left = Math.random() * 100 + '%';
-                star.style.top = Math.random() * 100 + '%';
-                star.style.animationDelay = Math.random() * 3 + 's';
-                starsContainer.appendChild(star);
-            }
-        }
-        
+        let currentProblem = {};
+        let selectedAnswers = [];
+        let answered = false;
+        let problemNumber = 1;
+
         function generateNewProblem() {
-            const lengths = [15, 20, 25, 30];
-            const forces = [5, 10, 15, 20];
+            // 랜덤 값 생성 (10 단위)
+            const inputA = Math.floor(Math.random() * 11) * 10; // 0-100
+            const outputA = Math.floor(Math.random() * (inputA/10 + 1)) * 10;
             
-            currentLength = lengths[Math.floor(Math.random() * lengths.length)];
-            currentForce = forces[Math.floor(Math.random() * forces.length)];
-            currentAngle = 30;
+            const inputB = Math.floor(Math.random() * 11) * 10;
+            const outputB = Math.floor(Math.random() * (inputB/10 + 1)) * 10;
             
-            const r = currentLength / 100;
-            const angleRad = currentAngle * Math.PI / 180;
-            correctAnswer = r * currentForce * Math.sin(angleRad);
-            
-            document.getElementById('length-text').textContent = currentLength;
-            document.getElementById('force-text').textContent = currentForce;
-            document.getElementById('length-display').textContent = currentLength;
-            document.getElementById('force-display').textContent = currentForce;
-            document.getElementById('angle-display').textContent = currentAngle;
-            
-            document.getElementById('answer-input').value = '';
-            document.getElementById('result').style.display = 'none';
-            
-            drawDiagram();
+            const inputC = Math.floor(Math.random() * 11) * 10;
+            const outputC = Math.floor(Math.random() * (inputC/10 + 1)) * 10;
+
+            // 효율 계산
+            const effA = inputA > 0 ? outputA / inputA : 0;
+            const effB = inputB > 0 ? outputB / inputB : 0;
+            const effC = inputC > 0 ? outputC / inputC : 0;
+
+            // 같은 입력 에너지에 대한 출력 비교를 위해 표준화
+            const normalizedA = effA * 100;
+            const normalizedB = effB * 100;
+            const normalizedC = effC * 100;
+
+            currentProblem = {
+                inputA, outputA, effA: effA * 100,
+                inputB, outputB, effB: effB * 100,
+                inputC, outputC, effC: effC * 100,
+                normalizedA, normalizedB, normalizedC
+            };
+
+            document.getElementById('problemNumber').textContent = `${problemNumber}번 문제`;
+            problemNumber = (problemNumber % 5) + 1; // 1-5 순환
+
+            displayProblem();
+            generateOptions();
+            resetAnswer();
         }
-        
-        function drawDiagram() {
-            const canvas = document.getElementById('canvas');
-            const ctx = canvas.getContext('2d');
+
+        function displayProblem() {
+            const problemText = `표는 전기 에너지를 생산하는 발전소 A, B, C에 대한 자료이다.`;
+            document.getElementById('problemText').innerHTML = problemText;
+
+            const tableHTML = `
+                <tr>
+                    <th>발전소</th>
+                    <th>발전 방식</th>
+                    <th>에너지 변환 과정</th>
+                </tr>
+                <tr>
+                    <td><strong>A</strong></td>
+                    <td>💧 수력 발전</td>
+                    <td>
+                        <div class="visual-row">
+                            <div class="energy-diagram">
+                                <div class="energy-box input-energy">${currentProblem.inputA} MJ</div>
+                                <span class="arrow">→</span>
+                                <span class="plant-icon">🏭</span>
+                                <span class="arrow">→</span>
+                                <div class="energy-box output-energy">${currentProblem.outputA} MJ</div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>B</strong></td>
+                    <td>☀️ 태양광 발전</td>
+                    <td>
+                        <div class="visual-row">
+                            <div class="energy-diagram">
+                                <div class="energy-box input-energy">${currentProblem.inputB} kJ</div>
+                                <span class="arrow">→</span>
+                                <span class="plant-icon">🔆</span>
+                                <span class="arrow">→</span>
+                                <div class="energy-box output-energy">${currentProblem.outputB} kJ</div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>C</strong></td>
+                    <td>🔥 화력 발전</td>
+                    <td>
+                        <div class="visual-row">
+                            <div class="energy-diagram">
+                                <div class="energy-box input-energy">${currentProblem.inputC} MJ</div>
+                                <span class="arrow">→</span>
+                                <span class="plant-icon">⚡</span>
+                                <span class="arrow">→</span>
+                                <div class="energy-box output-energy">${currentProblem.outputC} MJ</div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            `;
+            document.getElementById('dataTable').innerHTML = tableHTML;
+        }
+
+        function generateOptions() {
+            const values = [
+                { name: 'A', value: currentProblem.normalizedA },
+                { name: 'B', value: currentProblem.normalizedB },
+                { name: 'C', value: currentProblem.normalizedC }
+            ];
+
+            // 정렬하여 정답 찾기
+            const sorted = [...values].sort((a, b) => b.value - a.value);
             
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            // 동점자 확인
+            const correctAnswers = [];
+            const firstValue = sorted[0].value;
             
-            const centerX = 150;
-            const centerY = 150;
-            const wrenchLength = currentLength * 8;
-            const endX = centerX + wrenchLength;
-            const endY = centerY;
-            
-            // 렌치 헤드 (육각형)
-            ctx.fillStyle = '#6c757d';
-            ctx.strokeStyle = '#495057';
-            ctx.lineWidth = 2;
-            
-            ctx.save();
-            ctx.translate(centerX, centerY);
-            ctx.beginPath();
-            for (let i = 0; i < 6; i++) {
-                const angle = (Math.PI / 3) * i;
-                const x = 20 * Math.cos(angle);
-                const y = 20 * Math.sin(angle);
-                if (i === 0) ctx.moveTo(x, y);
-                else ctx.lineTo(x, y);
+            // 가장 높은 효율과 같은 값을 가진 모든 발전소 찾기
+            for (let i = 0; i < sorted.length; i++) {
+                if (Math.abs(sorted[i].value - firstValue) < 0.01) { // 부동소수점 오차 고려
+                    correctAnswers.push(sorted[i].name);
+                }
             }
-            ctx.closePath();
-            ctx.fill();
-            ctx.stroke();
-            ctx.restore();
             
-            // 렌치 몸통
-            ctx.fillStyle = '#8b949e';
-            ctx.beginPath();
-            ctx.moveTo(centerX + 20, centerY - 8);
-            ctx.lineTo(endX - 30, endY - 12);
-            ctx.lineTo(endX - 20, endY - 12);
-            ctx.lineTo(endX - 20, endY + 12);
-            ctx.lineTo(endX - 30, endY + 12);
-            ctx.lineTo(centerX + 20, centerY + 8);
-            ctx.closePath();
-            ctx.fill();
-            ctx.strokeStyle = '#495057';
-            ctx.lineWidth = 2;
-            ctx.stroke();
+            // 복수 정답 여부 확인
+            const isMultipleAnswer = correctAnswers.length > 1;
+            currentProblem.isMultipleAnswer = isMultipleAnswer;
+            currentProblem.correctAnswers = correctAnswers;
+            currentProblem.sorted = sorted;
+
+            // 복수 정답 안내 표시
+            const noticeElement = document.getElementById('multipleNotice');
+            if (isMultipleAnswer) {
+                noticeElement.style.display = 'block';
+                noticeElement.textContent = `⚠️ 이 문제는 복수 정답입니다. 정답 ${correctAnswers.length}개를 모두 선택해야 합니다.`;
+            } else {
+                noticeElement.style.display = 'none';
+            }
+
+            // 정답 문자열 생성 (등호 포함)
+            function createAnswerString(sortedValues) {
+                let result = sortedValues[0].name;
+                for (let i = 1; i < sortedValues.length; i++) {
+                    if (Math.abs(sortedValues[i].value - sortedValues[i-1].value) < 0.01) {
+                        result += ' = ' + sortedValues[i].name;
+                    } else {
+                        result += ' > ' + sortedValues[i].name;
+                    }
+                }
+                return result;
+            }
+
+            // 모든 가능한 조합 생성
+            let allCombinations = [];
             
-            // 렌치 끝부분
-            ctx.fillStyle = '#6c757d';
-            ctx.beginPath();
-            ctx.moveTo(endX - 20, endY - 20);
-            ctx.lineTo(endX, endY - 20);
-            ctx.lineTo(endX, endY - 12);
-            ctx.lineTo(endX - 5, endY - 12);
-            ctx.lineTo(endX - 5, endY + 12);
-            ctx.lineTo(endX, endY + 12);
-            ctx.lineTo(endX, endY + 20);
-            ctx.lineTo(endX - 20, endY + 20);
-            ctx.closePath();
-            ctx.fill();
-            ctx.stroke();
-            
-            ctx.fillStyle = '#495057';
-            ctx.fillRect(endX - 15, endY - 8, 10, 16);
-            
-            ctx.fillStyle = 'black';
-            ctx.font = 'bold 24px Arial';
-            ctx.textAlign = 'center';
-            ctx.fillText('O', centerX, centerY - 40);
-            
-            // 힘 벡터
-            const angleRad = currentAngle * Math.PI / 180;
-            const forceLength = 100;
-            const forceEndX = endX + forceLength * Math.cos(angleRad);
-            const forceEndY = endY - forceLength * Math.sin(angleRad);
-            
-            ctx.strokeStyle = '#dc3545';
-            ctx.lineWidth = 4;
-            ctx.beginPath();
-            ctx.moveTo(endX, endY);
-            ctx.lineTo(forceEndX, forceEndY);
-            ctx.stroke();
-            
-            // 화살촉
-            const headlen = 15;
-            const angle = Math.atan2(endY - forceEndY, endX - forceEndX);
-            ctx.fillStyle = '#dc3545';
-            ctx.beginPath();
-            ctx.moveTo(forceEndX, forceEndY);
-            ctx.lineTo(forceEndX + headlen * Math.cos(angle - Math.PI / 6), 
-                       forceEndY + headlen * Math.sin(angle - Math.PI / 6));
-            ctx.lineTo(forceEndX + headlen * Math.cos(angle + Math.PI / 6), 
-                       forceEndY + headlen * Math.sin(angle + Math.PI / 6));
-            ctx.closePath();
-            ctx.fill();
-            
-            ctx.fillStyle = '#dc3545';
-            ctx.font = 'bold 20px Arial';
-            ctx.fillText('F = ' + currentForce + ' N', forceEndX + 30, forceEndY - 10);
-            
-            // 각도 표시
-            ctx.strokeStyle = '#dc3545';
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.arc(endX, endY, 40, -angleRad, 0);
-            ctx.stroke();
-            
-            ctx.fillStyle = '#dc3545';
-            ctx.font = '18px Arial';
-            ctx.fillText(currentAngle + '°', endX + 50, endY + 20);
-            
-            // 거리 표시
-            ctx.fillStyle = 'black';
-            ctx.font = '18px Arial';
-            ctx.textAlign = 'center';
-            ctx.fillText(currentLength + ' cm', (centerX + endX) / 2, centerY + 35);
-        }
-        
-        function updateStats() {
-            document.getElementById('score').textContent = score;
-            document.getElementById('correct').textContent = correctCount;
-            document.getElementById('streak').textContent = streak;
-        }
-        
-        function showCombo() {
-            if (streak >= 3) {
-                const combo = document.createElement('div');
-                combo.className = 'combo';
-                combo.textContent = streak + ' COMBO! 🔥';
-                document.body.appendChild(combo);
+            if (isMultipleAnswer) {
+                // 복수 정답인 경우: 효율이 같은 발전소들의 순열 생성
+                const equalPlants = correctAnswers;
+                const remainingPlants = sorted.filter(s => !equalPlants.includes(s.name)).map(s => s.name);
                 
-                setTimeout(() => {
-                    combo.remove();
-                }, 1000);
+                // 같은 효율의 발전소들을 순서를 바꿔가며 조합 생성
+                function permute(arr) {
+                    if (arr.length <= 1) return [arr];
+                    const result = [];
+                    for (let i = 0; i < arr.length; i++) {
+                        const current = arr[i];
+                        const remaining = arr.slice(0, i).concat(arr.slice(i + 1));
+                        const perms = permute(remaining);
+                        for (const perm of perms) {
+                            result.push([current, ...perm]);
+                        }
+                    }
+                    return result;
+                }
+                
+                const equalPerms = permute(equalPlants);
+                
+                for (const perm of equalPerms) {
+                    const equalPart = perm.join(' = ');
+                    if (remainingPlants.length > 0) {
+                        allCombinations.push(equalPart + ' > ' + remainingPlants.join(' > '));
+                    } else {
+                        allCombinations.push(equalPart);
+                    }
+                }
+            } else {
+                // 단일 정답인 경우: 기존 6개 조합
+                allCombinations = [
+                    'A > B > C',
+                    'A > C > B',
+                    'B > A > C',
+                    'B > C > A',
+                    'C > A > B',
+                    'C > B > A'
+                ];
+            }
+
+            // 5개만 선택 (정답은 반드시 포함)
+            let selectedCombinations = [];
+            
+            if (isMultipleAnswer) {
+                // 복수 정답인 경우 모든 정답 조합 추가
+                selectedCombinations = allCombinations.slice(0, Math.min(correctAnswers.length, 5));
+            } else {
+                // 단일 정답인 경우
+                const correctAnswer = createAnswerString(sorted);
+                const correctIndex = allCombinations.indexOf(correctAnswer);
+                if (correctIndex !== -1) {
+                    selectedCombinations.push(correctAnswer);
+                    const remaining = allCombinations.filter((_, index) => index !== correctIndex);
+                    const shuffled = remaining.sort(() => Math.random() - 0.5);
+                    selectedCombinations = selectedCombinations.concat(shuffled.slice(0, 4));
+                }
+            }
+            
+            // 나머지 선지 추가 (5개가 안되면)
+            if (selectedCombinations.length < 5) {
+                const basicCombos = [
+                    'A > B > C',
+                    'A > C > B',
+                    'B > A > C',
+                    'B > C > A',
+                    'C > A > B',
+                    'C > B > A'
+                ];
+                const remaining = basicCombos.filter(combo => !selectedCombinations.includes(combo));
+                const shuffled = remaining.sort(() => Math.random() - 0.5);
+                selectedCombinations = selectedCombinations.concat(shuffled.slice(0, 5 - selectedCombinations.length));
+            }
+            
+            // 5개를 랜덤하게 섞기
+            selectedCombinations.sort(() => Math.random() - 0.5);
+
+            const optionNumbers = ['①', '②', '③', '④', '⑤'];
+            const optionsHTML = selectedCombinations.slice(0, 5).map((combo, index) => `
+                <div class="option" onclick="selectOption('${combo}')">
+                    <span class="option-number">${optionNumbers[index]}</span>
+                    <span>${combo}</span>
+                </div>
+            `).join('');
+
+            document.getElementById('options').innerHTML = optionsHTML;
+        }
+
+        function selectOption(answer) {
+            if (answered) return;
+
+            const clickedOption = event.currentTarget;
+            
+            // 복수 정답인 경우
+            if (currentProblem.isMultipleAnswer) {
+                // 이미 선택된 선지를 다시 클릭하면 선택 취소
+                if (clickedOption.classList.contains('selected')) {
+                    clickedOption.classList.remove('selected');
+                    selectedAnswers = selectedAnswers.filter(a => a !== answer);
+                } else {
+                    // 새로운 선지 선택
+                    clickedOption.classList.add('selected');
+                    selectedAnswers.push(answer);
+                }
+            } else {
+                // 단일 정답인 경우
+                // 이미 선택된 선지를 다시 클릭하면 선택 취소
+                if (clickedOption.classList.contains('selected')) {
+                    clickedOption.classList.remove('selected');
+                    selectedAnswers = [];
+                    return;
+                }
+
+                // 다른 선지 선택
+                document.querySelectorAll('.option').forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+
+                clickedOption.classList.add('selected');
+                selectedAnswers = [answer];
             }
         }
-        
+
         function checkAnswer() {
-            const userAnswer = parseFloat(document.getElementById('answer-input').value);
-            const result = document.getElementById('result');
-            
-            if (isNaN(userAnswer)) {
-                result.className = 'result incorrect';
-                result.textContent = '답을 입력해주세요!';
-                result.style.display = 'block';
+            if (answered) return;
+            if (selectedAnswers.length === 0) {
+                alert('답을 선택해주세요!');
                 return;
             }
+
+            answered = true;
             
-            const tolerance = 0.01;
-            if (Math.abs(userAnswer - correctAnswer) < tolerance) {
-                // 정답!
-                streak++;
-                correctCount++;
-                score += 100 * streak;
-                
-                result.className = 'result correct';
-                result.textContent = '🎉 정답입니다! τ = ' + correctAnswer.toFixed(2) + ' N·m\n\n';
-                result.textContent += '💎 획득 점수: ' + (100 * streak) + '점';
-                if (streak > 1) {
-                    result.textContent += '\n🔥 연속 ' + streak + '문제 정답!';
+            // 정답 문자열 생성 함수
+            function createAnswerString(sortedValues) {
+                let result = sortedValues[0].name;
+                for (let i = 1; i < sortedValues.length; i++) {
+                    if (Math.abs(sortedValues[i].value - sortedValues[i-1].value) < 0.01) {
+                        result += ' = ' + sortedValues[i].name;
+                    } else {
+                        result += ' > ' + sortedValues[i].name;
+                    }
                 }
-                result.innerHTML = result.textContent.replace(/\n/g, '<br>');
-                result.style.display = 'block';
-                
-                updateStats();
-                launchConfetti();
-                showCombo();
+                return result;
+            }
+            
+            const correctAnswerString = createAnswerString(currentProblem.sorted);
+            
+            // 정답 확인
+            let isCorrect = false;
+            if (currentProblem.isMultipleAnswer) {
+                // 복수 정답: 선택한 답 중 하나라도 정답 형태인지 확인
+                isCorrect = selectedAnswers.some(answer => {
+                    // 등호가 포함되어 있고, 모든 정답 발전소가 포함되어 있는지 확인
+                    if (!answer.includes('=')) return false;
+                    
+                    // 선택한 답에 모든 정답 발전소가 포함되어 있는지 확인
+                    const hasAllCorrect = currentProblem.correctAnswers.every(ca => answer.includes(ca));
+                    
+                    // 등호로 연결된 발전소들만 추출
+                    const parts = answer.split(/\s*>\s*/); // '>' 기준으로 분리
+                    for (const part of parts) {
+                        const equalParts = part.split(/\s*=\s*/); // '=' 기준으로 분리
+                        // 등호로 연결된 부분에 모든 정답 발전소가 포함되어 있는지 확인
+                        if (equalParts.length === currentProblem.correctAnswers.length) {
+                            const allMatch = currentProblem.correctAnswers.every(ca => equalParts.includes(ca));
+                            if (allMatch) return true;
+                        }
+                    }
+                    
+                    return false;
+                });
             } else {
-                // 오답
-                streak = 0;
+                // 단일 정답
+                if (selectedAnswers.length === 1) {
+                    isCorrect = selectedAnswers[0] === correctAnswerString;
+                }
+            }
+
+            // 선지 색상 표시
+            document.querySelectorAll('.option').forEach(opt => {
+                const optionText = opt.querySelector('span:last-child').textContent;
                 
-                result.className = 'result incorrect';
-                
-                const r = currentLength / 100;
-                const angleRad = currentAngle * Math.PI / 180;
-                const sinValue = Math.sin(angleRad).toFixed(2);
-                
-                let feedback = '❌ 오답입니다.\n\n';
-                feedback += '💡 풀이 과정:\n';
-                feedback += '돌림힘 τ = r × F × sin(θ)\n\n';
-                feedback += `• r = ${currentLength} cm = ${r} m\n`;
-                feedback += `• F = ${currentForce} N\n`;
-                feedback += `• θ = ${currentAngle}°\n`;
-                feedback += `• sin(${currentAngle}°) = ${sinValue}\n\n`;
-                feedback += `τ = ${r} × ${currentForce} × ${sinValue}\n`;
-                feedback += `τ = ${correctAnswer.toFixed(2)} N·m\n\n`;
-                
-                const withoutSin = r * currentForce;
-                const wrongUnit = currentLength * currentForce * Math.sin(angleRad);
-                
-                if (Math.abs(userAnswer - withoutSin) < 0.01) {
-                    feedback += '⚠️ sin(θ)를 곱하는 것을 잊으셨나요?';
-                } else if (Math.abs(userAnswer - wrongUnit) < 0.01) {
-                    feedback += '⚠️ 길이를 cm에서 m로 변환해야 합니다!';
-                } else if (userAnswer > correctAnswer * 10) {
-                    feedback += '⚠️ 단위 변환을 확인하세요. cm를 m로!';
+                if (currentProblem.isMultipleAnswer) {
+                    // 복수 정답인 경우: 등호가 포함되고 정답 발전소들이 올바르게 연결된 선지
+                    const hasEqual = optionText.includes('=');
+                    
+                    if (hasEqual) {
+                        // 등호로 연결된 부분 확인
+                        const parts = optionText.split(/\s*>\s*/);
+                        let isCorrectOption = false;
+                        
+                        for (const part of parts) {
+                            const equalParts = part.split(/\s*=\s*/);
+                            if (equalParts.length === currentProblem.correctAnswers.length) {
+                                const allMatch = currentProblem.correctAnswers.every(ca => equalParts.includes(ca));
+                                if (allMatch) {
+                                    isCorrectOption = true;
+                                    break;
+                                }
+                            }
+                        }
+                        
+                        if (isCorrectOption) {
+                            opt.classList.add('correct');
+                        } else if (selectedAnswers.includes(optionText)) {
+                            opt.classList.add('wrong');
+                        }
+                    } else if (selectedAnswers.includes(optionText)) {
+                        opt.classList.add('wrong');
+                    }
                 } else {
-                    feedback += '💪 다시 한 번 계산해보세요!';
+                    // 단일 정답인 경우
+                    if (optionText === correctAnswerString) {
+                        opt.classList.add('correct');
+                    } else if (selectedAnswers.includes(optionText) && !isCorrect) {
+                        opt.classList.add('wrong');
+                    }
+                }
+                opt.style.cursor = 'default';
+            });
+
+            const resultDiv = document.getElementById('result');
+            resultDiv.classList.add('show');
+            
+            if (isCorrect) {
+                resultDiv.className = 'result show correct';
+                let correctAnswersText = '';
+                if (currentProblem.isMultipleAnswer) {
+                    correctAnswersText = correctAnswerString + ' (동일한 효율)';
+                }
+                resultDiv.innerHTML = `
+                    ✓ 정답입니다!<br>
+                    ${currentProblem.isMultipleAnswer ? '<small style="font-size: 14px;">' + correctAnswersText + '</small><br>' : ''}
+                    <small style="font-size: 14px; margin-top: 10px; display: block;">
+                    효율: A = ${currentProblem.effA.toFixed(1)}%, 
+                    B = ${currentProblem.effB.toFixed(1)}%, 
+                    C = ${currentProblem.effC.toFixed(1)}%
+                    </small>
+                `;
+            } else {
+                // 부분 정답 확인 (복수 정답인 경우)
+                let partialCorrect = false;
+                if (currentProblem.isMultipleAnswer && selectedAnswers.length > 0) {
+                    partialCorrect = selectedAnswers.some(answer => {
+                        if (!answer.includes('=')) return false;
+                        const parts = answer.split(/\s*>\s*/);
+                        for (const part of parts) {
+                            const equalParts = part.split(/\s*=\s*/);
+                            if (equalParts.length === currentProblem.correctAnswers.length) {
+                                const allMatch = currentProblem.correctAnswers.every(ca => equalParts.includes(ca));
+                                if (allMatch) return true;
+                            }
+                        }
+                        return false;
+                    });
                 }
                 
-                result.innerHTML = feedback.replace(/\n/g, '<br>');
-                result.style.display = 'block';
-                updateStats();
-                showSadEffect();
+                // 해설 생성
+                const explanation = generateExplanation();
+                
+                resultDiv.className = 'result show wrong';
+                
+                if (partialCorrect && currentProblem.isMultipleAnswer) {
+                    // 부분 정답인 경우
+                    resultDiv.className = 'result show partial';
+                    resultDiv.innerHTML = `
+                        ⚠️ 부분 정답입니다!<br>
+                        <small style="font-size: 14px; margin-top: 5px; display: block;">
+                        올바른 답을 선택했지만, 모든 정답을 선택해야 만점입니다.
+                        </small><br>
+                        정답: ${correctAnswerString}<br>
+                        <small style="font-size: 14px; margin-top: 10px; display: block;">
+                        효율: A = ${currentProblem.effA.toFixed(1)}%, 
+                        B = ${currentProblem.effB.toFixed(1)}%, 
+                        C = ${currentProblem.effC.toFixed(1)}%
+                        </small>
+                        ${explanation}
+                    `;
+                } else {
+                    // 완전 오답인 경우
+                    resultDiv.innerHTML = `
+                        ✗ 틀렸습니다.<br>
+                        정답: ${correctAnswerString}<br>
+                        <small style="font-size: 14px; margin-top: 10px; display: block;">
+                        효율: A = ${currentProblem.effA.toFixed(1)}%, 
+                        B = ${currentProblem.effB.toFixed(1)}%, 
+                        C = ${currentProblem.effC.toFixed(1)}%
+                        </small>
+                        ${explanation}
+                    `;
+                }
             }
         }
-        
-        function launchConfetti() {
-            const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff', '#ffa500', '#ff1493'];
-            const confettiCount = 100;
+
+        function generateExplanation() {
+            const sorted = currentProblem.sorted;
             
-            for (let i = 0; i < confettiCount; i++) {
-                setTimeout(() => {
-                    const confetti = document.createElement('div');
-                    confetti.className = 'confetti';
-                    confetti.style.left = Math.random() * window.innerWidth + 'px';
-                    confetti.style.top = '-10px';
-                    confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
-                    confetti.style.width = (Math.random() * 10 + 5) + 'px';
-                    confetti.style.height = (Math.random() * 10 + 5) + 'px';
-                    confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
-                    confetti.style.position = 'fixed';
-                    confetti.style.zIndex = '9999';
-                    confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
-                    
-                    document.body.appendChild(confetti);
-                    
-                    setTimeout(() => {
-                        confetti.remove();
-                    }, 3000);
-                }, i * 30);
+            let explanation = `<div class="explanation">
+                <div class="explanation-title">📝 문제 풀이</div>`;
+            
+            explanation += `<div class="explanation-step">
+                <strong>1단계: 각 발전소의 효율 계산</strong><br>
+                효율 = (생산된 전기 에너지 / 공급된 에너지) × 100%
+            </div>`;
+            
+            explanation += `<div class="explanation-step">
+                • A 발전소: ${currentProblem.outputA} MJ ÷ ${currentProblem.inputA} MJ × 100% = <strong>${currentProblem.effA.toFixed(1)}%</strong><br>
+                • B 발전소: ${currentProblem.outputB} kJ ÷ ${currentProblem.inputB} kJ × 100% = <strong>${currentProblem.effB.toFixed(1)}%</strong><br>
+                • C 발전소: ${currentProblem.outputC} MJ ÷ ${currentProblem.inputC} MJ × 100% = <strong>${currentProblem.effC.toFixed(1)}%</strong>
+            </div>`;
+            
+            explanation += `<div class="explanation-step">
+                <strong>2단계: 효율 비교</strong><br>
+                효율이 높을수록 같은 에너지로 더 많은 전기를 생산합니다.
+            </div>`;
+            
+            // 정답 문자열 생성
+            let answerString = sorted[0].name;
+            for (let i = 1; i < sorted.length; i++) {
+                if (Math.abs(sorted[i].value - sorted[i-1].value) < 0.01) {
+                    answerString += ' = ' + sorted[i].name;
+                } else {
+                    answerString += ' > ' + sorted[i].name;
+                }
             }
-        }
-        
-        function showSadEffect() {
-            const container = document.querySelector('.container');
-            const overlay = document.getElementById('sad-overlay');
             
-            container.classList.add('shake');
-            setTimeout(() => {
-                container.classList.remove('shake');
-            }, 500);
-            
-            overlay.classList.add('show');
-            setTimeout(() => {
-                overlay.classList.remove('show');
-            }, 1500);
-        }
-        
-        document.getElementById('answer-input').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                checkAnswer();
+            if (currentProblem.isMultipleAnswer) {
+                explanation += `<div class="explanation-step">
+                    <strong style="color: #d63384;">⚠️ 복수 정답</strong><br>
+                    ${currentProblem.correctAnswers.join(', ')}의 효율이 <strong>${sorted[0].value.toFixed(1)}%로 동일</strong>하므로,<br>
+                    등호(=)를 사용하여 표현합니다.
+                </div>`;
+                
+                explanation += `<div class="explanation-step">
+                    ${answerString}
+                </div>`;
+            } else {
+                explanation += `<div class="explanation-step">
+                    ${answerString}
+                </div>`;
             }
-        });
-        
-        createStars();
+            
+            explanation += `<div class="explanation-step" style="margin-top: 10px;">
+                <strong>∴ 정답: ${answerString}</strong>
+            </div>`;
+            
+            explanation += `</div>`;
+            
+            return explanation;
+        }
+
+        function resetAnswer() {
+            selectedAnswers = [];
+            answered = false;
+            document.getElementById('result').classList.remove('show');
+            document.querySelectorAll('.option').forEach(opt => {
+                opt.classList.remove('selected', 'correct', 'wrong');
+                opt.style.cursor = 'pointer';
+            });
+        }
+
+        // 초기 문제 생성
         generateNewProblem();
     </script>
 </body>

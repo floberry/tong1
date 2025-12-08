@@ -3,555 +3,571 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>토크 계산 시뮬레이션</title>
+    <title>에너지 효율 시뮬레이션</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font-family: 'Malgun Gothic', sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            padding: 10px;
         }
-        
+
         .container {
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            max-width: 900px;
-            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px 0;
         }
-        
-        h1 {
-            color: #333;
-            margin-bottom: 10px;
-            font-size: 28px;
-            text-align: center;
-        }
-        
-        .subtitle {
-            color: #666;
-            text-align: center;
-            margin-bottom: 30px;
-            font-size: 14px;
-        }
-        
-        .problem-section {
-            background: #f8f9ff;
-            border-radius: 15px;
-            padding: 25px;
-            margin-bottom: 25px;
-            border: 2px solid #e0e7ff;
-        }
-        
-        .problem-text {
-            font-size: 18px;
-            line-height: 1.8;
-            color: #333;
-            margin-bottom: 20px;
-        }
-        
-        .diagram {
-            background: white;
-            border-radius: 10px;
-            padding: 30px;
-            margin: 20px 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 250px;
-            position: relative;
-        }
-        
-        canvas {
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-        
-        .values-display {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin: 20px 0;
-        }
-        
-        .value-box {
+
+        .header {
             background: white;
             padding: 15px;
-            border-radius: 10px;
-            text-align: center;
+            border-radius: 10px 10px 0 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 20px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .mode-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .mode-btn {
+            flex: 1;
+            padding: 10px;
             border: 2px solid #667eea;
-        }
-        
-        .value-label {
+            background: white;
+            border-radius: 5px;
+            cursor: pointer;
             font-size: 14px;
-            color: #666;
-            margin-bottom: 5px;
+            transition: all 0.3s;
         }
-        
-        .value-number {
-            font-size: 24px;
+
+        .mode-btn.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .match-section {
+            display: none;
+            margin-top: 10px;
+            padding: 10px;
+            background: #f0f0f0;
+            border-radius: 5px;
+        }
+
+        .match-section.active {
+            display: block;
+        }
+
+        .match-btn {
+            width: 100%;
+            padding: 12px;
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .match-status {
+            text-align: center;
+            padding: 10px;
+            color: #666;
+        }
+
+        .paper {
+            background: #e8e8e8;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            position: relative;
+        }
+
+        .paper::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: repeating-linear-gradient(90deg, #333 0px, #333 20px, transparent 20px, transparent 40px);
+        }
+
+        .score-board {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+        }
+
+        .score-item {
+            text-align: center;
+        }
+
+        .score-label {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .score-value {
+            font-size: 20px;
             font-weight: bold;
             color: #667eea;
         }
-        
-        .input-section {
-            background: #fff8e1;
-            border-radius: 15px;
-            padding: 25px;
-            margin: 25px 0;
-            border: 2px solid #ffd54f;
-        }
-        
-        .input-group {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        
-        .input-group label {
-            font-size: 18px;
-            font-weight: bold;
-            color: #333;
-        }
-        
-        .input-group input {
-            width: 150px;
-            padding: 12px;
-            font-size: 18px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            text-align: center;
-        }
-        
-        .input-group input:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-        
-        .button-group {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-        
-        button {
-            padding: 15px 35px;
-            font-size: 16px;
-            font-weight: bold;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        }
-        
-        .btn-new {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-        
-        .btn-new:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102,126,234,0.4);
-        }
-        
-        .btn-check {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: white;
-        }
-        
-        .btn-check:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(245,87,108,0.4);
-        }
-        
-        .btn-show {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            color: white;
-        }
-        
-        .btn-show:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(79,172,254,0.4);
-        }
-        
-        .feedback {
-            margin-top: 20px;
-            padding: 20px;
-            border-radius: 10px;
-            font-size: 18px;
-            font-weight: bold;
-            text-align: center;
+
+        .opponent-score {
             display: none;
         }
-        
-        .feedback.correct {
-            background: #d4edda;
-            color: #155724;
-            border: 2px solid #c3e6cb;
+
+        .opponent-score.active {
             display: block;
         }
-        
-        .feedback.incorrect {
-            background: #f8d7da;
-            color: #721c24;
-            border: 2px solid #f5c6cb;
-            display: block;
-        }
-        
-        .solution {
-            background: #e3f2fd;
-            border-radius: 10px;
+
+        .question-box {
+            background: white;
             padding: 20px;
-            margin-top: 20px;
-            border: 2px solid #90caf9;
-            display: none;
-        }
-        
-        .solution.show {
-            display: block;
-        }
-        
-        .solution h3 {
-            color: #1565c0;
+            border-radius: 5px;
             margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-        
-        .solution p {
+
+        .question-number {
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .question-text {
             line-height: 1.8;
             color: #333;
-            margin: 10px 0;
+            margin-bottom: 15px;
         }
-        
-        .formula {
-            background: white;
+
+        .data-box {
+            background: #f5f5f5;
+            border: 2px solid #ddd;
             padding: 15px;
+            margin: 15px 0;
             border-radius: 5px;
-            margin: 10px 0;
-            font-family: 'Courier New', monospace;
-            border-left: 4px solid #1565c0;
+        }
+
+        .data-item {
+            margin: 8px 0;
+            font-size: 15px;
+        }
+
+        .choices {
+            list-style: none;
+        }
+
+        .choice {
+            background: white;
+            border: 2px solid #ddd;
+            padding: 12px 15px;
+            margin: 8px 0;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .choice:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+
+        .choice.selected {
+            border-color: #667eea;
+            background: #e8eaff;
+        }
+
+        .choice.correct {
+            border-color: #51cf66;
+            background: #d3f9d8;
+        }
+
+        .choice.wrong {
+            border-color: #ff6b6b;
+            background: #ffe0e0;
+        }
+
+        .choice.disabled {
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .explanation {
+            display: none;
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 5px;
+            line-height: 1.6;
+        }
+
+        .explanation.show {
+            display: block;
+        }
+
+        .explanation-title {
+            font-weight: bold;
+            color: #856404;
+            margin-bottom: 8px;
+        }
+
+        .new-problem-btn {
+            width: 100%;
+            padding: 15px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 0 0 10px 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .new-problem-btn:hover {
+            background: #5568d3;
+        }
+
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            pointer-events: none;
+            animation: fall 2s linear forwards;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .penalty-flash {
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 10px 0;
+            }
+            .paper {
+                padding: 15px;
+            }
+            .question-text {
+                font-size: 14px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🔧 토크 계산 시뮬레이션</h1>
-        <p class="subtitle">고등학교 물리학 II - 돌림힘(토크) 문제</p>
-        
-        <div class="problem-section">
-            <div class="problem-text">
-                다음 그림과 같이 길이 <span id="length-text">20</span> cm인 렌치를 이용해 <span id="force-text">10</span> N의 힘을 작용하였을 때 너트에 작용하는 돌림힘의 크기는 몇 N·m인가?
+        <div class="header">
+            <h1>🔋 에너지 효율 시뮬레이션</h1>
+            <div class="mode-selector">
+                <button class="mode-btn active" onclick="setMode('single')">혼자 풀기</button>
+                <button class="mode-btn" onclick="setMode('match')">친구와 대결</button>
             </div>
-            
-            <div class="diagram">
-                <canvas id="canvas" width="700" height="200"></canvas>
-            </div>
-            
-            <div class="values-display">
-                <div class="value-box">
-                    <div class="value-label">렌치 길이 (r)</div>
-                    <div class="value-number"><span id="length-display">20</span> cm</div>
-                </div>
-                <div class="value-box">
-                    <div class="value-label">힘의 크기 (F)</div>
-                    <div class="value-number"><span id="force-display">10</span> N</div>
-                </div>
-                <div class="value-box">
-                    <div class="value-label">각도 (θ)</div>
-                    <div class="value-number"><span id="angle-display">30</span>°</div>
-                </div>
+            <div class="match-section" id="matchSection">
+                <div class="match-status" id="matchStatus">친구와 실시간 대결을 시작하세요!</div>
+                <button class="match-btn" onclick="startMatch()">매칭 시작</button>
             </div>
         </div>
         
-        <div class="input-section">
-            <div class="input-group">
-                <label for="answer">답:</label>
-                <input type="number" id="answer" step="0.01" placeholder="답 입력">
-                <span style="font-size: 18px; font-weight: bold;">N·m</span>
-            </div>
-            
-            <div class="button-group">
-                <button class="btn-new" onclick="generateNewProblem()">🔄 새 문제</button>
-                <button class="btn-check" onclick="checkAnswer()">✓ 정답 확인</button>
-                <button class="btn-show" onclick="showSolution()">💡 풀이 보기</button>
-            </div>
-            
-            <div id="feedback" class="feedback"></div>
-            
-            <div id="solution" class="solution">
-                <h3>📝 풀이 과정</h3>
-                <p><strong>토크(돌림힘)의 정의:</strong></p>
-                <div class="formula">
-                    τ = r × F × sin(θ)
+        <div class="paper">
+            <div class="score-board">
+                <div class="score-item">
+                    <div class="score-label">정답</div>
+                    <div class="score-value" id="correctScore">0</div>
                 </div>
-                <p>여기서,<br>
-                • r = 회전축으로부터의 거리 (m 단위로 변환)<br>
-                • F = 힘의 크기 (N)<br>
-                • θ = 힘과 렌치 사이의 각도</p>
-                
-                <p id="calculation-steps"></p>
-                
-                <p><strong>따라서, 답은 <span id="correct-answer" style="color: #1565c0; font-size: 20px;"></span> N·m 입니다.</strong></p>
+                <div class="score-item">
+                    <div class="score-label">오답</div>
+                    <div class="score-value" style="color: #ff6b6b;" id="wrongScore">0</div>
+                </div>
+                <div class="score-item opponent-score" id="opponentScore">
+                    <div class="score-label">상대 점수</div>
+                    <div class="score-value" style="color: #51cf66;" id="opponentValue">0</div>
+                </div>
+            </div>
+
+            <div class="question-box" id="questionBox">
+                <!-- 문제가 여기에 표시됩니다 -->
             </div>
         </div>
+
+        <button class="new-problem-btn" onclick="generateNewProblem()">🔄 새 문제</button>
     </div>
-    
+
     <script>
-        let currentProblem = {
-            length: 20,
-            force: 10,
-            angle: 30
-        };
-        
+        let currentMode = 'single';
+        let correctCount = 0;
+        let wrongCount = 0;
+        let opponentScore = 0;
+        let isMatched = false;
+        let selectedChoice = null;
+        let isAnswered = false;
+        let currentAnswer = null;
+
+        const problemTemplates = [
+            {
+                type: 'comparison',
+                generate: () => {
+                    const energyA = Math.floor(Math.random() * 6 + 5) * 10;
+                    const efficiencyA = Math.floor(Math.random() * 3 + 6) * 10;
+                    const usefulA = energyA * efficiencyA / 100;
+                    
+                    const energyB = Math.floor(Math.random() * 6 + 5) * 10;
+                    const efficiencyB = Math.floor(Math.random() * 3 + 3) * 10;
+                    const usefulB = energyB * efficiencyB / 100;
+
+                    const variations = [
+                        {
+                            question: `전기 자동차 A, B에 공급한 전기 에너지와 바퀴를 움직이는 데 사용한 에너지는 다음과 같다.`,
+                            data: `• A: 공급 에너지 ${energyA} J, 유용한 에너지 ${usefulA} J<br>• B: 공급 에너지 ${energyB} J, 유용한 에너지 ${usefulB} J`,
+                            options: [
+                                { text: '에너지 효율은 B가 A보다 크다.', correct: efficiencyB > efficiencyA },
+                                { text: '공급한 전기 에너지가 같을 때 버려지는 열에너지는 A가 B보다 많다.', correct: efficiencyA < efficiencyB },
+                                { text: '바퀴를 움직이는 에너지가 같을 때 공급된 전기 에너지의 양은 A가 B보다 적다.', correct: efficiencyA > efficiencyB },
+                            ],
+                            explanation: `A의 효율: ${usefulA}/${energyA}×100=${efficiencyA}%, B의 효율: ${usefulB}/${energyB}×100=${efficiencyB}%<br>효율이 높을수록 같은 에너지로 더 많은 일을 할 수 있고, 버려지는 에너지가 적습니다.`
+                        },
+                        {
+                            question: `두 가전제품 A와 B의 에너지 사용 현황이다.`,
+                            data: `• A: 소비 전력 ${energyA} W, 출력 ${usefulA} W<br>• B: 소비 전력 ${energyB} W, 출력 ${usefulB} W`,
+                            options: [
+                                { text: 'A의 에너지 효율이 B보다 높다.', correct: efficiencyA > efficiencyB },
+                                { text: 'B가 A보다 더 많은 에너지를 낭비한다.', correct: (energyB - usefulB) > (energyA - usefulA) },
+                                { text: '같은 시간 작동 시 A가 B보다 전기를 더 많이 소비한다.', correct: energyA > energyB },
+                            ],
+                            explanation: `A의 효율: ${efficiencyA}%, B의 효율: ${efficiencyB}%<br>효율이 높은 제품일수록 같은 효과를 내는데 더 적은 에너지를 사용합니다.`
+                        }
+                    ];
+
+                    return variations[Math.floor(Math.random() * variations.length)];
+                }
+            },
+            {
+                type: 'calculation',
+                generate: () => {
+                    const supplied = Math.floor(Math.random() * 6 + 4) * 10;
+                    const useful = Math.floor(Math.random() * 4 + 2) * 10;
+                    const correctEfficiency = Math.round(useful / supplied * 100);
+
+                    const variations = [
+                        {
+                            question: `어떤 조명에 매초 ${supplied} J의 전기 에너지를 공급하였더니, ${useful} J의 빛에너지가 발생하였다. 이 조명의 에너지 효율은?`,
+                            options: [
+                                { text: `${correctEfficiency - 10}%`, correct: false },
+                                { text: `${correctEfficiency - 5}%`, correct: false },
+                                { text: `${correctEfficiency}%`, correct: true },
+                                { text: `${correctEfficiency + 5}%`, correct: false },
+                                { text: `${correctEfficiency + 10}%`, correct: false }
+                            ],
+                            explanation: `에너지 효율 = (유용한 에너지 / 공급한 에너지) × 100<br>= (${useful} / ${supplied}) × 100 = ${correctEfficiency}%`
+                        },
+                        {
+                            question: `열기관이 ${supplied} J의 에너지를 공급받아 ${useful} J의 일을 하였다. 이 열기관의 열효율은?`,
+                            options: [
+                                { text: `${correctEfficiency}%`, correct: true },
+                                { text: `${100 - correctEfficiency}%`, correct: false },
+                                { text: `${correctEfficiency + 10}%`, correct: false },
+                                { text: `${Math.round(supplied/useful)}%`, correct: false },
+                                { text: `${Math.round(useful/10)}%`, correct: false }
+                            ],
+                            explanation: `열효율 = (한 일 / 공급받은 에너지) × 100<br>= (${useful} / ${supplied}) × 100 = ${correctEfficiency}%`
+                        }
+                    ];
+
+                    return variations[Math.floor(Math.random() * variations.length)];
+                }
+            },
+            {
+                type: 'concept',
+                generate: () => {
+                    const concepts = [
+                        {
+                            question: '에너지 효율에 대한 설명으로 옳은 것을 모두 고르면?',
+                            options: [
+                                { text: '효율이 높을수록 같은 효과를 내는 데 더 적은 에너지를 사용한다.', correct: true },
+                                { text: '에너지 효율은 버려진 에너지의 비율이다.', correct: false },
+                                { text: '에너지 효율은 100%를 넘을 수 있다.', correct: false },
+                                { text: '효율이 낮을수록 버려지는 열에너지가 많다.', correct: true },
+                                { text: '에너지 효율 등급 5등급이 가장 효율이 좋다.', correct: false }
+                            ],
+                            explanation: '에너지 효율은 공급한 에너지 중 유용하게 사용된 비율이며, 100%를 초과할 수 없습니다. 효율이 높을수록 에너지를 효과적으로 사용하는 것입니다.'
+                        },
+                        {
+                            question: '에너지 전환과 보존에 대한 설명으로 옳은 것은?',
+                            options: [
+                                { text: '에너지는 전환되어도 총량이 보존된다.', correct: true },
+                                { text: '전환 시 일부 에너지가 사라진다.', correct: false },
+                                { text: '열에너지는 다시 100% 사용할 수 있다.', correct: false },
+                                { text: '에너지 보존 법칙 때문에 절약이 필요없다.', correct: false },
+                                { text: '에너지는 새롭게 만들어질 수 있다.', correct: false }
+                            ],
+                            explanation: '에너지 보존 법칙에 따라 에너지의 총량은 일정하지만, 전환 과정에서 유용하게 사용할 수 없는 형태(열)로 변환되므로 절약이 필요합니다.'
+                        }
+                    ];
+
+                    return concepts[Math.floor(Math.random() * concepts.length)];
+                }
+            }
+        ];
+
+        function setMode(mode) {
+            currentMode = mode;
+            document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            if (mode === 'match') {
+                document.getElementById('matchSection').classList.add('active');
+            } else {
+                document.getElementById('matchSection').classList.remove('active');
+                document.getElementById('opponentScore').classList.remove('active');
+                isMatched = false;
+            }
+        }
+
+        function startMatch() {
+            const statusEl = document.getElementById('matchStatus');
+            statusEl.textContent = '매칭 중...';
+            
+            setTimeout(() => {
+                isMatched = true;
+                opponentScore = 0;
+                statusEl.textContent = '매칭 완료! 대결이 시작되었습니다!';
+                document.getElementById('opponentScore').classList.add('active');
+                
+                // 상대방 점수 시뮬레이션
+                setInterval(() => {
+                    if (isMatched && Math.random() > 0.7) {
+                        opponentScore++;
+                        document.getElementById('opponentValue').textContent = opponentScore;
+                    }
+                }, 3000);
+            }, 1500);
+        }
+
         function generateNewProblem() {
-            // 랜덤 값 생성
-            const lengths = [15, 20, 25, 30, 40, 50];
-            const forces = [8, 10, 12, 15, 20, 25];
-            const angles = [30, 45, 60, 90];
+            isAnswered = false;
+            selectedChoice = null;
             
-            currentProblem.length = lengths[Math.floor(Math.random() * lengths.length)];
-            currentProblem.force = forces[Math.floor(Math.random() * forces.length)];
-            currentProblem.angle = angles[Math.floor(Math.random() * angles.length)];
+            const template = problemTemplates[Math.floor(Math.random() * problemTemplates.length)];
+            const problem = template.generate();
             
-            updateDisplay();
-            document.getElementById('answer').value = '';
-            document.getElementById('feedback').style.display = 'none';
-            document.getElementById('solution').classList.remove('show');
+            let html = `
+                <div class="question-number">문제</div>
+                <div class="question-text">${problem.question}</div>
+            `;
+
+            if (problem.data) {
+                html += `<div class="data-box">${problem.data}</div>`;
+            }
+
+            const shuffledOptions = [...problem.options].sort(() => Math.random() - 0.5);
+            const correctIndex = shuffledOptions.findIndex(opt => opt.correct);
+            currentAnswer = correctIndex;
+
+            html += '<ul class="choices">';
+            shuffledOptions.forEach((option, index) => {
+                html += `<li class="choice" onclick="selectChoice(${index}, ${option.correct})">${index + 1}. ${option.text}</li>`;
+            });
+            html += '</ul>';
+
+            html += `<div class="explanation" id="explanation">
+                <div class="explanation-title">💡 해설</div>
+                <div>${problem.explanation}</div>
+            </div>`;
+
+            document.getElementById('questionBox').innerHTML = html;
         }
-        
-        function updateDisplay() {
-            document.getElementById('length-text').textContent = currentProblem.length;
-            document.getElementById('force-text').textContent = currentProblem.force;
-            document.getElementById('length-display').textContent = currentProblem.length;
-            document.getElementById('force-display').textContent = currentProblem.force;
-            document.getElementById('angle-display').textContent = currentProblem.angle;
-            
-            drawDiagram();
-        }
-        
-        function drawDiagram() {
-            const canvas = document.getElementById('canvas');
-            const ctx = canvas.getContext('2d');
-            
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            const centerX = 150;
-            const centerY = 100;
-            const wrenchLength = 400;
-            
-            // 렌치 그리기
-            ctx.strokeStyle = '#666';
-            ctx.lineWidth = 20;
-            ctx.lineCap = 'round';
-            ctx.beginPath();
-            ctx.moveTo(centerX, centerY);
-            ctx.lineTo(centerX + wrenchLength, centerY);
-            ctx.stroke();
-            
-            // 너트 (O점)
-            ctx.fillStyle = '#333';
-            ctx.beginPath();
-            ctx.arc(centerX, centerY, 25, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.strokeStyle = '#fff';
-            ctx.lineWidth = 3;
-            ctx.stroke();
-            
-            ctx.fillStyle = '#fff';
-            ctx.font = 'bold 18px Arial';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText('O', centerX, centerY);
-            
-            // 거리 표시
-            ctx.strokeStyle = '#333';
-            ctx.lineWidth = 1;
-            ctx.setLineDash([5, 5]);
-            ctx.beginPath();
-            ctx.moveTo(centerX, centerY - 40);
-            ctx.lineTo(centerX + wrenchLength, centerY - 40);
-            ctx.stroke();
-            ctx.setLineDash([]);
-            
-            ctx.fillStyle = '#333';
-            ctx.font = 'bold 16px Arial';
-            ctx.fillText(currentProblem.length + ' cm', centerX + wrenchLength/2, centerY - 55);
-            
-            // 힘 벡터
-            const endX = centerX + wrenchLength;
-            const angleRad = currentProblem.angle * Math.PI / 180;
-            const forceLength = 100;
-            const forceEndX = endX + forceLength * Math.cos(angleRad);
-            const forceEndY = centerY - forceLength * Math.sin(angleRad);
-            
-            // 힘 화살표
-            ctx.strokeStyle = '#e74c3c';
-            ctx.fillStyle = '#e74c3c';
-            ctx.lineWidth = 3;
-            ctx.beginPath();
-            ctx.moveTo(endX, centerY);
-            ctx.lineTo(forceEndX, forceEndY);
-            ctx.stroke();
-            
-            // 화살표 머리
-            const headlen = 15;
-            const angle = Math.atan2(forceEndY - centerY, forceEndX - endX);
-            ctx.beginPath();
-            ctx.moveTo(forceEndX, forceEndY);
-            ctx.lineTo(forceEndX - headlen * Math.cos(angle - Math.PI/6), 
-                      forceEndY - headlen * Math.sin(angle - Math.PI/6));
-            ctx.lineTo(forceEndX - headlen * Math.cos(angle + Math.PI/6), 
-                      forceEndY - headlen * Math.sin(angle + Math.PI/6));
-            ctx.closePath();
-            ctx.fill();
-            
-            // 힘 레이블
-            ctx.font = 'bold 16px Arial';
-            ctx.fillText('F = ' + currentProblem.force + ' N', forceEndX + 30, forceEndY - 10);
-            
-            // 각도 호
-            ctx.strokeStyle = '#333';
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.arc(endX, centerY, 40, -angleRad, 0);
-            ctx.stroke();
-            
-            ctx.fillStyle = '#333';
-            ctx.font = 'bold 14px Arial';
-            ctx.fillText(currentProblem.angle + '°', endX + 50, centerY - 15);
-        }
-        
-        function calculateCorrectAnswer() {
-            const r = currentProblem.length / 100; // cm를 m로 변환
-            const F = currentProblem.force;
-            const angleRad = currentProblem.angle * Math.PI / 180;
-            const torque = r * F * Math.sin(angleRad);
-            return Math.round(torque * 100) / 100; // 소수점 2자리
-        }
-        
-        function checkAnswer() {
-            const userAnswer = parseFloat(document.getElementById('answer').value);
-            const correctAnswer = calculateCorrectAnswer();
-            const feedback = document.getElementById('feedback');
-            
-            if (isNaN(userAnswer)) {
-                feedback.className = 'feedback incorrect';
-                feedback.textContent = '답을 입력해주세요!';
+
+        function selectChoice(index, isCorrect) {
+            if (isAnswered) {
+                // 이미 선택한 답을 다시 클릭하면 취소
+                if (selectedChoice === index) {
+                    document.querySelectorAll('.choice').forEach(choice => {
+                        choice.classList.remove('selected', 'correct', 'wrong', 'disabled');
+                    });
+                    document.getElementById('explanation').classList.remove('show');
+                    isAnswered = false;
+                    selectedChoice = null;
+                }
                 return;
             }
-            
-            const tolerance = 0.01;
-            if (Math.abs(userAnswer - correctAnswer) < tolerance) {
-                feedback.className = 'feedback correct';
-                feedback.textContent = '정답입니다! 🎉';
+
+            selectedChoice = index;
+            isAnswered = true;
+
+            const choices = document.querySelectorAll('.choice');
+            choices.forEach((choice, i) => {
+                choice.classList.add('disabled');
+                if (i === index) {
+                    choice.classList.add('selected');
+                }
+            });
+
+            if (isCorrect) {
+                choices[index].classList.add('correct');
+                correctCount++;
+                document.getElementById('correctScore').textContent = correctCount;
+                createConfetti();
             } else {
-                feedback.className = 'feedback incorrect';
-                feedback.textContent = `틀렸습니다. 정답은 ${correctAnswer} N·m 입니다.`;
-            }
-            
-            // 정답 확인을 누르면 자동으로 풀이 보기
-            showSolutionAuto();
-        }
-        
-        function showSolution() {
-            const solution = document.getElementById('solution');
-            solution.classList.toggle('show');
-            
-            if (solution.classList.contains('show')) {
-                updateSolutionContent();
+                choices[index].classList.add('wrong');
+                choices[currentAnswer].classList.add('correct');
+                wrongCount++;
+                document.getElementById('wrongScore').textContent = wrongCount;
+                document.getElementById('questionBox').classList.add('penalty-flash');
+                setTimeout(() => {
+                    document.getElementById('questionBox').classList.remove('penalty-flash');
+                }, 500);
+                document.getElementById('explanation').classList.add('show');
             }
         }
-        
-        function showSolutionAuto() {
-            const solution = document.getElementById('solution');
-            solution.classList.add('show');
-            updateSolutionContent();
-        }
-        
-        function updateSolutionContent() {
-            const r = currentProblem.length / 100;
-            const F = currentProblem.force;
-            const angle = currentProblem.angle;
-            const angleRad = angle * Math.PI / 180;
-            const sinValue = Math.sin(angleRad);
-            const torque = calculateCorrectAnswer();
-            
-            let sinExplanation = '';
-            if (angle === 30) {
-                sinExplanation = `sin(30°) = 1/2 = 0.5`;
-            } else if (angle === 45) {
-                sinExplanation = `sin(45°) = √2/2 ≈ 0.707`;
-            } else if (angle === 60) {
-                sinExplanation = `sin(60°) = √3/2 ≈ 0.866`;
-            } else if (angle === 90) {
-                sinExplanation = `sin(90°) = 1`;
+
+        function createConfetti() {
+            const colors = ['#ff6b6b', '#51cf66', '#ffd93d', '#6bcfff', '#a78bfa'];
+            for (let i = 0; i < 30; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.animationDelay = Math.random() * 0.3 + 's';
+                    document.body.appendChild(confetti);
+                    setTimeout(() => confetti.remove(), 2000);
+                }, i * 30);
             }
-            
-            const steps = `
-                <p><strong>1단계: 문제 이해하기</strong></p>
-                <p>렌치를 돌릴 때 생기는 돌림힘(토크)을 구하는 문제입니다.<br>
-                토크는 물체를 회전시키는 효과를 나타내는 물리량입니다.</p>
-                
-                <p><strong>2단계: 주어진 값 정리</strong></p>
-                <div class="formula">
-                • 렌치 길이(r) = ${currentProblem.length} cm = ${r} m<br>
-                • 힘의 크기(F) = ${F} N<br>
-                • 힘의 방향(각도 θ) = ${angle}°<br>
-                <br>
-                ⚠️ 주의: 길이는 반드시 m(미터) 단위로 변환해야 합니다!
-                </div>
-                
-                <p><strong>3단계: 토크 공식 적용</strong></p>
-                <p>토크의 공식은 다음과 같습니다:</p>
-                <div class="formula">
-                τ (토크) = r × F × sin(θ)<br>
-                <br>
-                여기서,<br>
-                • r: 회전축(O점)으로부터의 거리<br>
-                • F: 힘의 크기<br>
-                • sin(θ): 힘이 렌치에 수직으로 작용하는 정도
-                </div>
-                
-                <p><strong>4단계: 수치 대입 및 계산</strong></p>
-                <div class="formula">
-                τ = ${r} m × ${F} N × sin(${angle}°)<br>
-                <br>
-                sin(${angle}°) 값을 구하면:<br>
-                ${sinExplanation}<br>
-                <br>
-                따라서,<br>
-                τ = ${r} × ${F} × ${sinValue.toFixed(3)}<br>
-                τ = ${(r * F * sinValue).toFixed(3)} N·m<br>
-                τ ≈ ${torque} N·m
-                </div>
-                
-                <p><strong>💡 핵심 포인트</strong></p>
-                <div class="formula">
-                • cm를 m로 변환: 100으로 나누기<br>
-                • 각도가 90°일 때 토크가 최대 (sin(90°) = 1)<br>
-                • 각도가 0°일 때 토크는 0 (sin(0°) = 0)<br>
-                • 힘이 렌치와 수직일수록 회전 효과가 큽니다
-                </div>
-            `;
-            
-            document.getElementById('calculation-steps').innerHTML = steps;
-            document.getElementById('correct-answer').textContent = torque;
         }
-        
-        // 초기 그림 그리기
-        updateDisplay();
+
+        // 초기 문제 생성
+        generateNewProblem();
     </script>
 </body>
 </html>

@@ -3,658 +3,384 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>냥도 물리학 박사가 될 수 있어</title>
+    <title>에너지 효율 비교 시뮬레이션</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Gamja+Flower&display=swap');
-        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
+        
         body {
-            font-family: 'Gamja Flower', 'Nanum Gothic', '맑은 고딕', 'Malgun Gothic', sans-serif;
-            background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+            font-family: 'Malgun Gothic', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            padding: 30px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .container {
-            background: white;
-            border-radius: 25px;
-            padding: 40px;
-            max-width: 950px;
-            width: 100%;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
-            position: relative;
-            border: 2px solid #ddd;
-        }
-
-        .cat-ears-top {
-            position: absolute;
-            top: -35px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 70px;
-        }
-
-        .ear-top {
-            width: 0;
-            height: 0;
-            border-left: 45px solid transparent;
-            border-right: 45px solid transparent;
-            border-bottom: 65px solid white;
-            filter: drop-shadow(0 -5px 10px rgba(0, 0, 0, 0.08));
-            position: relative;
-        }
-
-        .ear-top::before {
-            content: '';
-            position: absolute;
-            top: 15px;
-            left: -25px;
-            width: 0;
-            height: 0;
-            border-left: 25px solid transparent;
-            border-right: 25px solid transparent;
-            border-bottom: 40px solid #999;
-        }
-
-        h1 {
-            text-align: center;
+            padding: 20px;
             color: #333;
-            margin-bottom: 15px;
-            font-size: 2.8em;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
         }
-
+        
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+        
         .subtitle {
             text-align: center;
-            font-size: 2em;
-            margin-bottom: 30px;
             color: #666;
+            font-size: 14px;
+            margin-bottom: 25px;
         }
-
-        .experiment-info {
-            background: #fafafa;
-            border-radius: 20px;
-            padding: 25px;
-            margin: 25px 0;
-            border: 2px solid #ddd;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-        }
-
-        .info-title {
-            font-size: 1.5em;
-            color: #444;
-            font-weight: bold;
+        
+        .device {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 15px;
+            padding: 20px;
             margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #ddd;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 3px solid transparent;
         }
-
-        .info-content {
-            font-size: 1.3em;
-            line-height: 1.8;
+        
+        .device:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .device.selected {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #e0e7ff 0%, #cfd9ff 100%);
+        }
+        
+        .device-name {
+            font-size: 20px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .device-data {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 15px;
+        }
+        
+        .label {
             color: #555;
         }
-
-        .data-table {
-            background: white;
-            border-radius: 20px;
-            padding: 25px;
-            margin: 20px 0;
-            border: 2px solid #ccc;
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 1.2em;
-        }
-
-        th {
-            background: #666;
-            color: white;
-            padding: 12px;
-            text-align: center;
-            border: 2px solid #555;
-            font-size: 1.1em;
-        }
-
-        td {
-            padding: 12px;
-            text-align: center;
-            border: 2px solid #ddd;
-            color: #444;
-        }
-
-        tr:nth-child(even) {
-            background: #f9f9f9;
-        }
-
-        tr:hover {
-            background: #f0f0f0;
-        }
-
-        .problem-box {
-            background: #f8f8f8;
-            border-radius: 25px;
-            padding: 30px;
-            margin: 25px 0;
-            border: 3px solid #888;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-            position: relative;
-        }
-
-        .problem-ears {
-            position: absolute;
-            top: -20px;
-            left: 35px;
-            display: flex;
-            gap: 25px;
-        }
-
-        .problem-ear {
-            width: 0;
-            height: 0;
-            border-left: 18px solid transparent;
-            border-right: 18px solid transparent;
-            border-bottom: 28px solid #888;
-        }
-
-        .question-label {
+        
+        .value {
             font-weight: bold;
             color: #333;
-            margin-bottom: 20px;
-            display: block;
-            font-size: 1.5em;
         }
-
-        .choice-container {
-            margin: 15px 0;
-        }
-
-        .choice-button {
-            background: white;
-            border: 2px solid #bbb;
-            padding: 15px 20px;
-            border-radius: 15px;
-            font-size: 1.3em;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-family: 'Gamja Flower', 'Nanum Gothic', '맑은 고딕', 'Malgun Gothic', sans-serif;
-            width: 100%;
-            text-align: left;
-            margin-bottom: 12px;
-            display: block;
-        }
-
-        .choice-button:hover {
-            border-color: #666;
-            background: #f5f5f5;
-        }
-
-        .choice-button.selected {
-            background: #666;
-            color: white;
-            border-color: #444;
-        }
-
-        .button-container {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            margin-top: 20px;
-        }
-
-        .paw-button {
-            background: linear-gradient(135deg, #555 0%, #777 100%);
-            border: none;
-            padding: 15px 35px;
-            border-radius: 40px;
-            color: white;
-            font-size: 1.4em;
+        
+        .efficiency {
+            background: #fff;
+            padding: 10px;
+            border-radius: 10px;
+            text-align: center;
+            margin-top: 10px;
+            font-size: 18px;
             font-weight: bold;
+            color: #764ba2;
+        }
+        
+        .selection-order {
+            background: #f0f4ff;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+        
+        .selection-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .selection-display {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .selection-item {
+            background: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .selection-item.empty {
+            color: #ccc;
+            border: 2px dashed #ddd;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        button {
+            flex: 1;
+            padding: 15px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 12px;
             cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
-            font-family: 'Gamja Flower', 'Nanum Gothic', '맑은 고딕', 'Malgun Gothic', sans-serif;
+            transition: all 0.3s ease;
         }
-
-        .paw-button:hover {
-            background: linear-gradient(135deg, #666 0%, #888 100%);
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+        
+        .new-problem-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
         }
-
-        .paw-button:active {
-            transform: translateY(-1px);
+        
+        .new-problem-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
         }
-
-        .new-problem-button {
-            background: linear-gradient(135deg, #4a90e2 0%, #5ba3f5 100%);
+        
+        .reset-btn {
+            background: #e0e0e0;
+            color: #666;
         }
-
-        .new-problem-button:hover {
-            background: linear-gradient(135deg, #5ba3f5 0%, #6bb5ff 100%);
+        
+        .reset-btn:hover {
+            background: #d0d0d0;
         }
-
-        .paw-icon {
-            font-size: 1.2em;
-            margin-right: 8px;
+        
+        .check-btn {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            margin-top: 10px;
         }
-
-        .feedback {
+        
+        .check-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(245, 87, 108, 0.4);
+        }
+        
+        .check-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .result {
             margin-top: 20px;
             padding: 20px;
-            border-radius: 18px;
-            font-size: 1.3em;
-            display: none;
-            animation: slideIn 0.5s;
-            border: 3px solid;
-            line-height: 1.6;
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .feedback.correct {
-            background: #e8f5e9;
-            color: #2e7d32;
-            border-color: #66bb6a;
-            display: block;
-        }
-
-        .feedback.incorrect {
-            background: #ffebee;
-            color: #c62828;
-            border-color: #ef5350;
-            display: block;
-        }
-
-        .feedback-icon {
-            font-size: 2em;
-            margin-right: 10px;
-        }
-
-        .hint-box {
-            background: #fff3cd;
-            border: 3px solid #ffc107;
-            padding: 15px 20px;
-            margin: 15px 0;
-            border-radius: 12px;
-            font-size: 1.3em;
-            color: #856404;
+            border-radius: 15px;
             text-align: center;
+            font-size: 16px;
             font-weight: bold;
         }
-
-        .formula {
-            background: white;
-            padding: 12px 18px;
-            border-radius: 10px;
-            display: inline-block;
-            margin: 8px 0;
-            border: 2px solid #ccc;
-            font-family: 'Courier New', monospace;
-            font-size: 1.1em;
-            color: #333;
+        
+        .result.correct {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            color: #2d5f3d;
         }
-
-        .full-screen-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(0, 0, 0, 0.8);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            animation: fadeIn 0.3s;
+        
+        .result.incorrect {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            color: #8b3a3a;
         }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+        
+        .instruction {
+            background: #fff8e1;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #555;
+            line-height: 1.6;
         }
-
-        .cat-result {
-            font-size: 20em;
-            animation: scaleIn 0.5s;
-            filter: drop-shadow(0 0 30px rgba(255, 255, 255, 0.5));
-        }
-
-        @keyframes scaleIn {
-            from {
-                transform: scale(0);
-                opacity: 0;
-            }
-            to {
-                transform: scale(1);
-                opacity: 1;
-            }
+        
+        .instruction strong {
+            color: #f5576c;
         }
     </style>
 </head>
 <body>
-    <div class="full-screen-overlay" id="resultOverlay">
-        <div class="cat-result" id="catResult"></div>
-    </div>
-
     <div class="container">
-        <div class="cat-ears-top">
-            <div class="ear-top"></div>
-            <div class="ear-top"></div>
+        <h1>⚡ 에너지 효율 비교</h1>
+        <div class="subtitle">통합과학 - 에너지 효율 연습</div>
+        
+        <div class="instruction">
+            <strong>문제:</strong> 세 장치의 에너지 효율을 계산하고, <strong>효율이 높은 순서대로</strong> 장치를 클릭하여 정렬하세요.
         </div>
-
-        <h1>냥도 물리학 박사가 될 수 있어</h1>
-        <div class="subtitle">🐾 등속원운동 구심력 계산 🐾</div>
-
-        <div class="experiment-info">
-            <div class="info-title">📐 구심력 공식 유도 과정</div>
-            <div class="info-content" style="line-height: 2.2;">
-                <strong>1단계: 원래 구심력 공식</strong><br>
-                <div class="formula" style="font-size: 1.3em; margin: 10px 0;">F = mv²/r</div>
-                • 구심력은 질량, 속력의 제곱에 비례하고 반지름에 반비례<br><br>
-                
-                <strong>2단계: 등속원운동의 속력</strong><br>
-                • 등속원운동에서 물체는 원의 둘레만큼 이동<br>
-                • 원의 둘레 = 2πr<br>
-                • 한 바퀴 도는데 걸린 시간 = T (주기)<br>
-                • 따라서 속력 v = (거리)/(시간) = <span style="font-family: 'Courier New', monospace;">2πr/T</span><br><br>
-                
-                <strong>3단계: 속력을 구심력 공식에 대입</strong><br>
-                <div class="formula" style="font-size: 1.15em; margin: 10px 0;">
-                    F = m × v² / r<br>
-                    F = m × (2πr/T)² / r<br>
-                    F = m × (4π²r²/T²) / r<br>
-                    F = m × 4π²r² / (T² × r)<br>
-                    F = 4π²mr / T²
-                </div><br>
-                
-                <strong>4단계: 식을 정리하면</strong><br>
-                • T² = 1/(1/T²) 이므로<br>
-                <div class="formula" style="font-size: 1.4em; margin: 10px 0; background: #f5f5f5; border-color: #888;">
-                    F = 4π² × r × (1/T²) × m
-                </div>
-                <br>
-                <strong>✨ 최종 공식: F = 4π²r(1/T²)m</strong>
-                
-                <div class="hint-box">
-                    💡 힌트: π = 3
-                </div>
+        
+        <div id="devices"></div>
+        
+        <div class="selection-order">
+            <div class="selection-title">선택 순서 (높은 효율 → 낮은 효율)</div>
+            <div class="selection-display">
+                <div class="selection-item empty" id="pos1">?</div>
+                <div class="selection-item empty" id="pos2">?</div>
+                <div class="selection-item empty" id="pos3">?</div>
+            </div>
+            <div class="button-group">
+                <button class="reset-btn" onclick="resetSelection()">선택 초기화</button>
+                <button class="check-btn" id="checkBtn" onclick="checkAnswer()" disabled>정답 확인</button>
             </div>
         </div>
-
-        <div class="data-table">
-            <div class="info-content" style="padding: 15px 0;">
-                <strong id="problem-text">문제가 로딩 중입니다...</strong>
-            </div>
-        </div>
-
-        <div class="data-table">
-            <table>
-                <thead>
-                    <tr>
-                        <th>항목</th>
-                        <th>값</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><strong>매달린 추의 개수</strong></td>
-                        <td id="weight-count">-</td>
-                    </tr>
-                    <tr>
-                        <td><strong>고무공 회전 궤도의 반지름 (r)</strong></td>
-                        <td id="radius-value">-</td>
-                    </tr>
-                    <tr>
-                        <td><strong>고무공의 질량 (m)</strong></td>
-                        <td id="mass-value">-</td>
-                    </tr>
-                    <tr style="background: #e8e8e8;">
-                        <td><strong>1바퀴 회전 시간 (T)</strong></td>
-                        <td id="period-value">-</td>
-                    </tr>
-                    <tr style="background: #e8e8e8;">
-                        <td><strong>주기 제곱의 역수 (1/T²)</strong></td>
-                        <td id="inverse-t2-value">-</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <div class="problem-box">
-            <div class="problem-ears">
-                <div class="problem-ear"></div>
-                <div class="problem-ear"></div>
-            </div>
-
-            <label class="question-label">❓ 위 조건에서 고무공에 작용하는 구심력은 얼마인가?</label>
-
-            <div class="choice-container" id="choices">
-                <!-- 선택지가 JavaScript로 생성됩니다 -->
-            </div>
-
-            <div class="button-container">
-                <button class="paw-button" onclick="checkAnswer()">
-                    <span class="paw-icon">🐾</span>
-                    정답 확인
-                </button>
-                <button class="paw-button new-problem-button" onclick="generateNewProblem()">
-                    <span class="paw-icon">✨</span>
-                    새 문제
-                </button>
-            </div>
-
-            <div id="feedback" class="feedback"></div>
-        </div>
+        
+        <div id="result"></div>
+        
+        <button class="new-problem-btn" onclick="generateNewProblem()">🔄 새 문제</button>
     </div>
 
     <script>
-        var currentProblem = {
-            weights: 0,
-            radius: 0,
-            mass: 0,
-            period: 0,
-            inverseTSquared: 0,
-            correctForce: 0,
-            correctAnswer: 0
-        };
-        
-        var selectedChoice = null;
+        let devices = [];
+        let selectedOrder = [];
+        let correctOrder = [];
 
         function generateNewProblem() {
-            currentProblem.weights = Math.floor(Math.random() * 5 + 2) * 2;
+            devices = [];
+            selectedOrder = [];
+            document.getElementById('result').innerHTML = '';
             
-            var radiusOptions = [0.1, 0.2, 0.3, 0.4, 0.5];
-            currentProblem.radius = radiusOptions[Math.floor(Math.random() * radiusOptions.length)].toFixed(1);
+            const deviceNames = ['A', 'B', 'C'];
             
-            var massOptions = [0.01, 0.02, 0.03, 0.04, 0.05];
-            currentProblem.mass = massOptions[Math.floor(Math.random() * massOptions.length)].toFixed(2);
+            for (let i = 0; i < 3; i++) {
+                const suppliedEnergy = Math.floor(Math.random() * 401) + 100; // 100-500 J
+                const efficiency = Math.floor(Math.random() * 51) + 20; // 20-70%
+                const usefulEnergy = Math.round(suppliedEnergy * efficiency / 100);
+                
+                devices.push({
+                    name: deviceNames[i],
+                    supplied: suppliedEnergy,
+                    useful: usefulEnergy,
+                    efficiency: efficiency
+                });
+            }
             
-            var periodOptions = [0.2, 0.4, 0.5, 0.6, 0.8, 1.0];
-            currentProblem.period = periodOptions[Math.floor(Math.random() * periodOptions.length)].toFixed(1);
+            // 정답 순서 계산 (효율 높은 순)
+            correctOrder = devices
+                .map((d, idx) => ({...d, originalIndex: idx}))
+                .sort((a, b) => b.efficiency - a.efficiency)
+                .map(d => d.name);
             
-            var T = parseFloat(currentProblem.period);
-            currentProblem.inverseTSquared = (1 / (T * T)).toFixed(2);
-            
-            var r = parseFloat(currentProblem.radius);
-            var m = parseFloat(currentProblem.mass);
-            var invT2 = parseFloat(currentProblem.inverseTSquared);
-            
-            currentProblem.correctForce = (4 * 9 * r * invT2 * m).toFixed(2);
-            
-            document.getElementById('problem-text').innerHTML = 
-                '매달린 추 <strong>' + currentProblem.weights + '개</strong>를 이용하여 고무공을 회전시키고 있습니다. 아래 조건에서 고무공에 작용하는 구심력을 계산하세요!';
-            
-            document.getElementById('weight-count').textContent = currentProblem.weights + '개';
-            document.getElementById('radius-value').textContent = currentProblem.radius + ' m';
-            document.getElementById('mass-value').textContent = currentProblem.mass + ' kg';
-            document.getElementById('period-value').textContent = currentProblem.period + ' s';
-            document.getElementById('inverse-t2-value').textContent = currentProblem.inverseTSquared;
-            
-            generateChoices();
-            
-            document.getElementById('feedback').style.display = 'none';
-            selectedChoice = null;
+            renderDevices();
+            resetSelection();
         }
 
-        function generateChoices() {
-            var correctValue = parseFloat(currentProblem.correctForce);
-            var choices = [];
+        function renderDevices() {
+            const container = document.getElementById('devices');
+            container.innerHTML = '';
             
-            choices.push({value: correctValue, label: correctValue.toFixed(2) + ' N'});
-            
-            var offsets = [-0.4, -0.2, 0.2, 0.4];
-            for (var i = 0; i < 4; i++) {
-                var wrongValue = parseFloat((correctValue * (1 + offsets[i])).toFixed(2));
-                choices.push({value: wrongValue, label: wrongValue.toFixed(2) + ' N'});
-            }
-            
-            for (var i = choices.length - 1; i > 0; i--) {
-                var j = Math.floor(Math.random() * (i + 1));
-                var temp = choices[i];
-                choices[i] = choices[j];
-                choices[j] = temp;
-            }
-            
-            for (var i = 0; i < choices.length; i++) {
-                if (Math.abs(choices[i].value - correctValue) < 0.001) {
-                    currentProblem.correctAnswer = i + 1;
-                    break;
-                }
-            }
-            
-            var choicesHTML = '';
-            var labels = ['①', '②', '③', '④', '⑤'];
-            for (var i = 0; i < choices.length; i++) {
-                choicesHTML += '<button class="choice-button" data-value="' + (i + 1) + '" data-force="' + choices[i].value + '">' + 
-                              labels[i] + ' ' + choices[i].label + '</button>';
-            }
-            
-            document.getElementById('choices').innerHTML = choicesHTML;
-            
-            document.querySelectorAll('.choice-button').forEach(function(btn) {
-                btn.addEventListener('click', function() {
-                    selectedChoice = parseInt(this.getAttribute('data-value'));
-                    document.querySelectorAll('.choice-button').forEach(function(b) {
-                        b.classList.remove('selected');
-                    });
-                    this.classList.add('selected');
-                });
+            devices.forEach((device, index) => {
+                const div = document.createElement('div');
+                div.className = 'device';
+                div.onclick = () => selectDevice(device.name);
+                
+                div.innerHTML = `
+                    <div class="device-name">장치 ${device.name}</div>
+                    <div class="device-data">
+                        <span class="label">공급된 에너지:</span>
+                        <span class="value">${device.supplied} J</span>
+                    </div>
+                    <div class="device-data">
+                        <span class="label">유용한 에너지:</span>
+                        <span class="value">${device.useful} J</span>
+                    </div>
+                    <div class="efficiency">
+                        에너지 효율: ${device.efficiency}%
+                    </div>
+                `;
+                
+                container.appendChild(div);
             });
         }
 
-        function showCatResult(isCorrect) {
-            var overlay = document.getElementById('resultOverlay');
-            var catResult = document.getElementById('catResult');
-            
-            if (isCorrect) {
-                catResult.innerHTML = '😻<br>⭕';
-            } else {
-                catResult.innerHTML = '🙀<br>❌';
+        function selectDevice(name) {
+            // 이미 선택된 장치를 다시 클릭하면 선택 취소
+            if (selectedOrder.includes(name)) {
+                selectedOrder = selectedOrder.filter(item => item !== name);
+                updateSelection();
+                return;
             }
             
-            overlay.style.display = 'flex';
+            if (selectedOrder.length >= 3) {
+                return; // 3개 모두 선택됨
+            }
             
-            setTimeout(function() {
-                overlay.style.display = 'none';
-            }, 1000);
+            selectedOrder.push(name);
+            updateSelection();
+        }
+
+        function updateSelection() {
+            // 장치 강조 표시 업데이트
+            const deviceDivs = document.querySelectorAll('.device');
+            deviceDivs.forEach((div, index) => {
+                const deviceName = devices[index].name;
+                if (selectedOrder.includes(deviceName)) {
+                    div.classList.add('selected');
+                } else {
+                    div.classList.remove('selected');
+                }
+            });
+            
+            // 선택 순서 표시 업데이트
+            for (let i = 0; i < 3; i++) {
+                const posDiv = document.getElementById(`pos${i + 1}`);
+                if (i < selectedOrder.length) {
+                    posDiv.textContent = selectedOrder[i];
+                    posDiv.classList.remove('empty');
+                } else {
+                    posDiv.textContent = '?';
+                    posDiv.classList.add('empty');
+                }
+            }
+            
+            // 정답 확인 버튼 활성화
+            document.getElementById('checkBtn').disabled = selectedOrder.length < 3;
+        }
+
+        function resetSelection() {
+            selectedOrder = [];
+            updateSelection();
+            document.getElementById('result').innerHTML = '';
         }
 
         function checkAnswer() {
-            var feedback = document.getElementById('feedback');
+            const resultDiv = document.getElementById('result');
+            const isCorrect = JSON.stringify(selectedOrder) === JSON.stringify(correctOrder);
             
-            if (selectedChoice === null) {
-                feedback.innerHTML = '<span class="feedback-icon">😿</span> <strong>답을 선택해주세요!</strong>';
-                feedback.className = 'feedback incorrect';
-                feedback.style.display = 'block';
-                return;
-            }
-
-            var labels = ['①', '②', '③', '④', '⑤'];
-            var correctLabel = labels[currentProblem.correctAnswer - 1];
-            
-            if (selectedChoice === currentProblem.correctAnswer) {
-                feedback.innerHTML = '<span class="feedback-icon">😻</span> <strong>정답: ' + correctLabel + ' ' + currentProblem.correctForce + ' N</strong><br><br>' +
-                    '<strong>✅ 정확합니다! 완벽해요!</strong><br><br>' +
-                    '📝 <strong>계산 과정:</strong><br><br>' +
-                    '공식: F = 4π²r(1/T²)m (단, π = 3)<br><br>' +
-                    '<strong>주어진 값:</strong><br>' +
-                    '• 반지름 r = ' + currentProblem.radius + ' m<br>' +
-                    '• 주기 T = ' + currentProblem.period + ' s<br>' +
-                    '• 고무공의 질량 m = ' + currentProblem.mass + ' kg<br><br>' +
-                    '<strong>1단계: 1/T² 계산</strong><br>' +
-                    '1/T² = 1/(' + currentProblem.period + ')² = ' + currentProblem.inverseTSquared + '<br><br>' +
-                    '<strong>2단계: 4π² 계산 (π = 3)</strong><br>' +
-                    '4π² = 4 × 3² = 4 × 9 = 36<br><br>' +
-                    '<strong>3단계: 구심력 계산</strong><br>' +
-                    'F = 36 × ' + currentProblem.radius + ' × ' + currentProblem.inverseTSquared + ' × ' + currentProblem.mass + '<br>' +
-                    'F = <strong>' + currentProblem.correctForce + ' N</strong><br><br>' +
-                    '🎯 구심력의 크기는 <strong>' + currentProblem.correctForce + ' 뉴턴</strong>입니다!';
-                feedback.className = 'feedback correct';
-                feedback.style.display = 'block';
-                showCatResult(true);
+            if (isCorrect) {
+                resultDiv.className = 'result correct';
+                resultDiv.innerHTML = '🎉 정답입니다!<br>에너지 효율이 높은 순서대로 잘 정렬했습니다.';
             } else {
-                var selectedButtons = document.querySelectorAll('.choice-button');
-                var selectedValue = '';
-                for (var i = 0; i < selectedButtons.length; i++) {
-                    if (parseInt(selectedButtons[i].getAttribute('data-value')) === selectedChoice) {
-                        selectedValue = selectedButtons[i].getAttribute('data-force');
-                        break;
-                    }
-                }
-                
-                var selectedLabel = labels[selectedChoice - 1];
-                
-                feedback.innerHTML = '<span class="feedback-icon">🙀</span> <strong>정답: ' + correctLabel + ' ' + currentProblem.correctForce + ' N</strong><br><br>' +
-                    '<strong>❌ 틀렸습니다!</strong><br>' +
-                    '선택한 답: ' + selectedLabel + ' ' + selectedValue + ' N<br><br>' +
-                    '📝 <strong>올바른 계산 과정:</strong><br><br>' +
-                    '공식: F = 4π²r(1/T²)m (단, π = 3)<br><br>' +
-                    '<strong>주어진 값:</strong><br>' +
-                    '• 반지름 r = ' + currentProblem.radius + ' m<br>' +
-                    '• 주기 T = ' + currentProblem.period + ' s<br>' +
-                    '• 고무공의 질량 m = ' + currentProblem.mass + ' kg<br><br>' +
-                    '<strong>1단계: 1/T² 계산</strong><br>' +
-                    '1/T² = 1/(' + currentProblem.period + ')²<br>' +
-                    '1/T² = 1/' + (parseFloat(currentProblem.period) * parseFloat(currentProblem.period)).toFixed(2) + '<br>' +
-                    '1/T² = ' + currentProblem.inverseTSquared + '<br><br>' +
-                    '<strong>2단계: 4π² 계산 (π = 3)</strong><br>' +
-                    '4π² = 4 × 3² = 4 × 9 = 36<br><br>' +
-                    '<strong>3단계: 구심력 계산</strong><br>' +
-                    'F = 4π² × r × (1/T²) × m<br>' +
-                    'F = 36 × ' + currentProblem.radius + ' × ' + currentProblem.inverseTSquared + ' × ' + currentProblem.mass + '<br>' +
-                    'F = <strong>' + currentProblem.correctForce + ' N</strong><br><br>' +
-                    '💡 <strong>팁:</strong> π = 3으로 계산하면 4π² = 36이 되어 계산이 훨씬 쉬워집니다!';
-                feedback.className = 'feedback incorrect';
-                feedback.style.display = 'block';
-                showCatResult(false);
+                resultDiv.className = 'result incorrect';
+                resultDiv.innerHTML = `❌ 틀렸습니다.<br>정답: ${correctOrder.join(' → ')}<br>다시 도전해보세요!`;
             }
         }
 
-        window.addEventListener('load', function() {
-            generateNewProblem();
-        });
+        // 초기 문제 생성
+        generateNewProblem();
     </script>
 </body>
 </html>

@@ -3,556 +3,654 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>시소 물리 퀴즈</title>
+    <title>에너지 효율 비교 시뮬레이션</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
+        
         body {
-            font-family: 'Arial', sans-serif;
-            background: linear-gradient(to bottom, #87CEEB 0%, #98D8E8 50%, #90EE90 100%);
+            font-family: 'Malgun Gothic', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
             padding: 20px;
-            overflow-x: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
-        .sun {
-            position: absolute;
-            top: 40px;
-            right: 80px;
-            width: 80px;
-            height: 80px;
-            background: #FFD700;
-            border-radius: 50%;
-            box-shadow: 0 0 30px #FFD700;
-            animation: shine 3s ease-in-out infinite;
-        }
-        @keyframes shine {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-        .cloud {
-            position: absolute;
-            background: white;
-            border-radius: 100px;
-            opacity: 0.8;
-        }
-        .cloud1 {
-            width: 100px;
-            height: 40px;
-            top: 80px;
-            left: 10%;
-            animation: float 20s infinite;
-        }
-        .cloud2 {
-            width: 120px;
-            height: 45px;
-            top: 120px;
-            right: 15%;
-            animation: float 25s infinite reverse;
-        }
-        @keyframes float {
-            0%, 100% { transform: translateX(0); }
-            50% { transform: translateX(30px); }
-        }
-        h1 {
-            color: #2c3e50;
-            margin: 20px 0;
-            text-align: center;
-            z-index: 10;
-        }
-        .problem-text {
-            background: white;
-            padding: 15px 25px;
-            border-radius: 15px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            max-width: 600px;
-            text-align: center;
-            z-index: 10;
-        }
-        #canvas {
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 20px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-            margin: 20px 0;
-        }
-        .quiz-container {
-            background: white;
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        
+        .container {
             max-width: 500px;
             width: 100%;
-            z-index: 10;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+        
         .question {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            line-height: 1.8;
+            font-size: 15px;
+        }
+        
+        .vehicles {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .vehicle {
+            background: white;
+            border: 3px solid #ddd;
+            border-radius: 15px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .vehicle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .vehicle.selected {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+        
+        .vehicle-name {
             font-size: 20px;
             font-weight: bold;
-            margin-bottom: 20px;
-            color: #2c3e50;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-        .options {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        .option-btn {
-            padding: 15px;
-            font-size: 16px;
-            border: 3px solid #3498db;
-            background: white;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .option-btn:hover {
-            background: #3498db;
+        
+        .order-badge {
+            background: #667eea;
             color: white;
-            transform: translateY(-2px);
-        }
-        .option-btn:active {
-            transform: translateY(0);
-        }
-        #result {
-            margin-top: 20px;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-size: 18px;
             font-weight: bold;
-            text-align: center;
-            min-height: 30px;
         }
-        #explanation {
+        
+        .energy-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            font-size: 14px;
+        }
+        
+        .energy-item {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 8px;
+        }
+        
+        .energy-label {
+            color: #666;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+        
+        .energy-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .input-section {
+            margin: 30px 0;
+        }
+        
+        .input-label {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .input-display {
+            background: #f8f9fa;
+            border: 2px solid #ddd;
+            border-radius: 12px;
+            padding: 20px;
+            font-size: 24px;
+            text-align: center;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #667eea;
+            font-weight: bold;
+        }
+        
+        .buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        button {
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .new-problem {
+            background: #667eea;
+            color: white;
+        }
+        
+        .new-problem:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+        
+        .check-answer {
+            background: #10b981;
+            color: white;
+        }
+        
+        .check-answer:hover {
+            background: #059669;
+            transform: translateY(-2px);
+        }
+        
+        .hint-button {
+            background: #f59e0b;
+            color: white;
+            grid-column: 1 / -1;
+        }
+        
+        .hint-button:hover {
+            background: #d97706;
+            transform: translateY(-2px);
+        }
+        
+        .hint {
             margin-top: 20px;
             padding: 20px;
-            background: #fff3cd;
-            border-radius: 10px;
-            border-left: 5px solid #ffc107;
+            background: #fffbeb;
+            border: 2px solid #f59e0b;
+            border-radius: 12px;
             display: none;
         }
-        #explanation h3 {
-            color: #856404;
-            margin-bottom: 10px;
+        
+        .hint.show {
+            display: block;
+            animation: slideIn 0.3s ease;
         }
-        #explanation p {
-            color: #856404;
+        
+        .hint-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #d97706;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .hint-content {
+            font-size: 14px;
+            line-height: 1.8;
+            color: #333;
+        }
+        
+        .hint-step {
+            margin: 10px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            border-left: 3px solid #f59e0b;
+        }
+        
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            display: none;
+        }
+        
+        .result.correct {
+            background: #d1fae5;
+            color: #065f46;
+            border: 2px solid #10b981;
+        }
+        
+        .result.incorrect {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 2px solid #ef4444;
+        }
+        
+        .result.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+        
+        .explanation {
+            margin-top: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            text-align: left;
+            font-size: 14px;
             line-height: 1.6;
+            color: #333;
         }
-        .firework {
-            position: fixed;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 1000;
+        
+        .explanation-title {
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 15px;
         }
-        .bomb {
-            position: fixed;
-            font-size: 80px;
-            pointer-events: none;
-            z-index: 1000;
-            animation: bombShake 0.5s ease-in-out;
+        
+        .efficiency-list {
+            margin-top: 10px;
         }
-        @keyframes bombShake {
-            0%, 100% { transform: rotate(0deg); }
-            25% { transform: rotate(-15deg); }
-            75% { transform: rotate(15deg); }
+        
+        .efficiency-item {
+            padding: 8px;
+            margin: 5px 0;
+            background: #f8f9fa;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
         }
-        .explosion {
-            position: fixed;
-            pointer-events: none;
-            z-index: 1000;
-        }
-        .explosion-particle {
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-        }
-        @keyframes explodeParticle {
-            0% {
-                transform: translate(0, 0) scale(1);
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
                 opacity: 1;
-            }
-            100% {
-                transform: translate(var(--tx), var(--ty)) scale(0);
-                opacity: 0;
-            }
-        }
-        .smoke {
-            position: absolute;
-            width: 60px;
-            height: 60px;
-            background: rgba(80, 80, 80, 0.6);
-            border-radius: 50%;
-            animation: smoke 1s ease-out forwards;
-        }
-        @keyframes smoke {
-            0% {
-                transform: scale(0) translateY(0);
-                opacity: 0.8;
-            }
-            100% {
-                transform: scale(3) translateY(-100px);
-                opacity: 0;
+                transform: translateY(0);
             }
         }
     </style>
 </head>
 <body>
-    <div class="sun"></div>
-    <div class="cloud cloud1"></div>
-    <div class="cloud cloud2"></div>
-    
-    <h1>⚖️ 시소 평형 물리 퀴즈 ⚖️</h1>
-    
-    <div class="problem-text">
-        <p>그림과 같이 무게가 20 N인 물체가 무게가 W인 재질이 균일한 원통형 막대에<br>매달려서 막대가 수평 상태로 정지해 있다.</p>
+    <div class="container">
+        <h1>⚡ 에너지 효율 비교</h1>
+        
+        <div style="text-align: center; margin: 15px 0;">
+            <span style="display: inline-block; padding: 8px 16px; background: #667eea; color: white; border-radius: 20px; font-size: 14px; font-weight: bold;" id="difficultyBadge">난이도: 중</span>
+        </div>
+        
+        <div class="question">
+            <strong>문제:</strong> 아래 세 가지 자동차의 에너지 효율을 비교하여, 효율이 높은 순서대로 선택하세요. (A, B, C를 클릭)
+        </div>
+        
+        <div class="vehicles">
+            <div class="vehicle" data-vehicle="A" onclick="selectVehicle('A')">
+                <div class="vehicle-name">
+                    <span>🚗 자동차 A (화석 연료)</span>
+                    <span class="order-badge" id="orderA" style="display: none;"></span>
+                </div>
+                <div class="energy-info">
+                    <div class="energy-item">
+                        <div class="energy-label">화학 에너지</div>
+                        <div class="energy-value" id="chemA">100</div>
+                    </div>
+                    <div class="energy-item">
+                        <div class="energy-label">운동 에너지</div>
+                        <div class="energy-value" id="kineticA">20</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="vehicle" data-vehicle="B" onclick="selectVehicle('B')">
+                <div class="vehicle-name">
+                    <span>🔋 자동차 B (전기)</span>
+                    <span class="order-badge" id="orderB" style="display: none;"></span>
+                </div>
+                <div class="energy-info">
+                    <div class="energy-item">
+                        <div class="energy-label">전기 에너지</div>
+                        <div class="energy-value" id="elecB">100</div>
+                    </div>
+                    <div class="energy-item">
+                        <div class="energy-label">운동 에너지</div>
+                        <div class="energy-value" id="kineticB">80</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="vehicle" data-vehicle="C" onclick="selectVehicle('C')">
+                <div class="vehicle-name">
+                    <span>⚡ 자동차 C (수소연료전지)</span>
+                    <span class="order-badge" id="orderC" style="display: none;"></span>
+                </div>
+                <div class="energy-info">
+                    <div class="energy-item">
+                        <div class="energy-label">화학 에너지</div>
+                        <div class="energy-value" id="chemC">100</div>
+                    </div>
+                    <div class="energy-item">
+                        <div class="energy-label">운동 에너지</div>
+                        <div class="energy-value" id="kineticC">50</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="input-section">
+            <div class="input-label">선택한 순서:</div>
+            <div class="input-display" id="orderDisplay">클릭하여 선택하세요</div>
+        </div>
+        
+        <div class="buttons">
+            <button class="new-problem" onclick="generateNewProblem()">🔄 새 문제</button>
+            <button class="check-answer" onclick="checkAnswer()">✓ 정답 확인</button>
+            <button class="hint-button" onclick="showHint()">💡 모르겠어요</button>
+        </div>
+        
+        <div class="hint" id="hint"></div>
+        
+        <div class="result" id="result"></div>
     </div>
     
-    <canvas id="canvas" width="700" height="400"></canvas>
-    
-    <div class="quiz-container">
-        <div class="question">W는?</div>
-        <div class="options">
-            <button class="option-btn" onclick="checkAnswer(5)">① 5 N</button>
-            <button class="option-btn" onclick="checkAnswer(10)">② 10 N</button>
-            <button class="option-btn" onclick="checkAnswer(20)">③ 20 N</button>
-            <button class="option-btn" onclick="checkAnswer(30)">④ 30 N</button>
-            <button class="option-btn" onclick="checkAnswer(60)">⑤ 60 N</button>
-        </div>
-        <div id="result"></div>
-        <div id="explanation">
-            <h3>📚 물리학 개념 설명</h3>
-            <p><strong>회전 평형 조건:</strong> 물체가 회전하지 않고 정지해 있으려면, 회전축에 대한 시계방향 토크의 합과 반시계방향 토크의 합이 같아야 합니다.</p>
-            <p><strong>토크 = 힘 × 거리</strong></p>
-            <p>이 문제에서:<br>
-            • 왼쪽 토크 = 20N × L<br>
-            • 오른쪽 토크 = W × (3L/2) (막대의 무게중심은 중심에 있으므로 받침점에서 3L/2)<br>
-            • 평형 조건: 20N × L = W × (3L/2)<br>
-            • 따라서 W = <strong>40/3 ≈ 13.3 N</strong></p>
-            <p>💡 하지만 선택지에 없다면, 막대의 무게중심 위치를 다시 확인해야 합니다!</p>
-        </div>
-    </div>
-
     <script>
-        const canvas = document.getElementById('canvas');
-        const ctx = canvas.getContext('2d');
+        let selectedOrder = [];
+        let correctOrder = [];
+        let currentDifficulty = '';
         
-        function drawPlayground() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        function generateNewProblem() {
+            // 10 단위로 0-100 사이의 값 생성
+            const possibleValues = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
             
-            // 지면
-            ctx.fillStyle = '#8BC34A';
-            ctx.fillRect(0, 320, 700, 80);
+            let chemA, kineticA, elecB, kineticB, chemC, kineticC;
+            let efficiencyA, efficiencyB, efficiencyC;
+            let isValid = false;
             
-            // 받침대 (톱니바퀴)
-            const centerX = 350;
-            const centerY = 280;
+            // 난이도 랜덤 선택 (중, 상만)
+            const difficulties = ['medium', 'hard'];
+            currentDifficulty = difficulties[Math.floor(Math.random() * 2)];
             
-            // 톱니바퀴 그리기
-            ctx.fillStyle = '#757575';
-            ctx.beginPath();
-            const teeth = 12;
-            const outerRadius = 30;
-            const innerRadius = 20;
-            for (let i = 0; i < teeth * 2; i++) {
-                const radius = i % 2 === 0 ? outerRadius : innerRadius;
-                const angle = (Math.PI * i) / teeth;
-                const x = centerX + radius * Math.cos(angle);
-                const y = centerY + radius * Math.sin(angle);
-                if (i === 0) ctx.moveTo(x, y);
-                else ctx.lineTo(x, y);
+            // 효율이 모두 다를 때까지 반복
+            while (!isValid) {
+                if (currentDifficulty === 'medium') {
+                    // 중 난이도: 입력 에너지 100 고정, 효율 차이 중간 (20-30%)
+                    chemA = 100;
+                    kineticA = possibleValues[1 + Math.floor(Math.random() * 2)]; // 20, 30
+                    
+                    elecB = 100;
+                    kineticB = possibleValues[6 + Math.floor(Math.random() * 2)]; // 70, 80
+                    
+                    chemC = 100;
+                    kineticC = possibleValues[3 + Math.floor(Math.random() * 2)]; // 40, 50
+                    
+                    document.getElementById('difficultyBadge').textContent = '난이도: 중';
+                    document.getElementById('difficultyBadge').style.background = '#f59e0b';
+                    
+                } else {
+                    // 상 난이도: 입력 에너지 다름, 효율 차이 작음 (10-20%)
+                    chemA = possibleValues[8 + Math.floor(Math.random() * 2)]; // 90, 100
+                    kineticA = possibleValues[2 + Math.floor(Math.random() * 2)]; // 30, 40
+                    
+                    elecB = possibleValues[6 + Math.floor(Math.random() * 2)]; // 70, 80
+                    kineticB = possibleValues[4 + Math.floor(Math.random() * 2)]; // 50, 60
+                    
+                    chemC = possibleValues[7 + Math.floor(Math.random() * 2)]; // 80, 90
+                    kineticC = possibleValues[3 + Math.floor(Math.random() * 2)]; // 40, 50
+                    
+                    document.getElementById('difficultyBadge').textContent = '난이도: 상';
+                    document.getElementById('difficultyBadge').style.background = '#ef4444';
+                }
+                
+                // 효율 계산 (운동에너지/입력에너지)
+                efficiencyA = kineticA / chemA;
+                efficiencyB = kineticB / elecB;
+                efficiencyC = kineticC / chemC;
+                
+                // 세 효율이 모두 다른지 확인
+                if (efficiencyA !== efficiencyB && 
+                    efficiencyB !== efficiencyC && 
+                    efficiencyA !== efficiencyC) {
+                    isValid = true;
+                }
             }
-            ctx.closePath();
-            ctx.fill();
-            ctx.strokeStyle = '#424242';
-            ctx.lineWidth = 2;
-            ctx.stroke();
             
-            // 중심 원
-            ctx.fillStyle = '#616161';
-            ctx.beginPath();
-            ctx.arc(centerX, centerY, 12, 0, Math.PI * 2);
-            ctx.fill();
+            // 화면에 표시
+            document.getElementById('chemA').textContent = chemA;
+            document.getElementById('kineticA').textContent = kineticA;
+            document.getElementById('elecB').textContent = elecB;
+            document.getElementById('kineticB').textContent = kineticB;
+            document.getElementById('chemC').textContent = chemC;
+            document.getElementById('kineticC').textContent = kineticC;
             
-            // 시소 막대
-            ctx.fillStyle = '#A0826D';
-            ctx.fillRect(100, 270, 500, 20);
-            ctx.strokeStyle = '#6D4C41';
-            ctx.lineWidth = 2;
-            ctx.strokeRect(100, 270, 500, 20);
-            
-            // 거리 표시 L
-            ctx.fillStyle = '#000';
-            ctx.font = 'bold 20px Arial';
-            ctx.fillText('L', 200, 260);
-            ctx.strokeStyle = '#000';
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(100, 250);
-            ctx.lineTo(350, 250);
-            ctx.stroke();
-            
-            // 거리 표시 3L
-            ctx.fillText('3L', 450, 260);
-            ctx.beginPath();
-            ctx.moveTo(350, 250);
-            ctx.lineTo(600, 250);
-            ctx.stroke();
-            
-            // 왼쪽 아이 (무거운)
-            drawHeavyKid(120, 180);
-            
-            // 줄
-            ctx.strokeStyle = '#333';
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(140, 230);
-            ctx.lineTo(140, 270);
-            ctx.stroke();
-            
-            // 20N 표시
-            ctx.fillStyle = '#d32f2f';
-            ctx.font = 'bold 18px Arial';
-            ctx.fillText('20 N', 90, 300);
-            
-            // 오른쪽 아이 (가벼운)
-            drawLightKid(560, 190);
-            
-            // W 표시
-            ctx.fillStyle = '#1976d2';
-            ctx.font = 'bold 20px Arial';
-            ctx.fillText('W = ?', 620, 280);
-        }
-        
-        function drawHeavyKid(x, y) {
-            // 머리
-            ctx.fillStyle = '#FFD8B5';
-            ctx.beginPath();
-            ctx.arc(x + 20, y, 20, 0, Math.PI * 2);
-            ctx.fill();
-            
-            // 머리카락
-            ctx.fillStyle = '#3E2723';
-            ctx.beginPath();
-            ctx.arc(x + 20, y - 5, 20, Math.PI, 0, true);
-            ctx.fill();
-            
-            // 몸
-            ctx.fillStyle = '#2196F3';
-            ctx.fillRect(x + 5, y + 20, 30, 35);
-            
-            // 팔
-            ctx.fillStyle = '#FFD8B5';
-            ctx.fillRect(x - 5, y + 25, 10, 25);
-            ctx.fillRect(x + 35, y + 25, 10, 25);
-            
-            // 다리
-            ctx.fillStyle = '#1976D2';
-            ctx.fillRect(x + 8, y + 55, 10, 25);
-            ctx.fillRect(x + 22, y + 55, 10, 25);
-            
-            // 얼굴
-            ctx.fillStyle = '#000';
-            ctx.beginPath();
-            ctx.arc(x + 15, y - 3, 2, 0, Math.PI * 2);
-            ctx.arc(x + 25, y - 3, 2, 0, Math.PI * 2);
-            ctx.fill();
-            
-            ctx.strokeStyle = '#000';
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.arc(x + 20, y + 5, 8, 0, Math.PI);
-            ctx.stroke();
-        }
-        
-        function drawLightKid(x, y) {
-            // 머리
-            ctx.fillStyle = '#FFE4C4';
-            ctx.beginPath();
-            ctx.arc(x + 20, y, 18, 0, Math.PI * 2);
-            ctx.fill();
-            
-            // 머리카락
-            ctx.fillStyle = '#8B4513';
-            ctx.beginPath();
-            ctx.arc(x + 20, y - 5, 18, Math.PI, 0, true);
-            ctx.fill();
-            
-            // 몸
-            ctx.fillStyle = '#FF69B4';
-            ctx.fillRect(x + 8, y + 18, 24, 30);
-            
-            // 팔
-            ctx.fillStyle = '#FFE4C4';
-            ctx.fillRect(x - 2, y + 22, 8, 20);
-            ctx.fillRect(x + 34, y + 22, 8, 20);
-            
-            // 다리
-            ctx.fillStyle = '#C71585';
-            ctx.fillRect(x + 10, y + 48, 8, 22);
-            ctx.fillRect(x + 22, y + 48, 8, 22);
-            
-            // 얼굴
-            ctx.fillStyle = '#000';
-            ctx.beginPath();
-            ctx.arc(x + 15, y - 2, 2, 0, Math.PI * 2);
-            ctx.arc(x + 25, y - 2, 2, 0, Math.PI * 2);
-            ctx.fill();
-            
-            ctx.strokeStyle = '#000';
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.arc(x + 20, y + 5, 6, 0, Math.PI);
-            ctx.stroke();
-        }
-        
-        function checkAnswer(answer) {
-            const result = document.getElementById('result');
-            const explanation = document.getElementById('explanation');
-            const correct = 40; // 정답은 40/3 N이지만, 선택지를 고려하여 가장 가까운 값
-            
-            // 이 문제의 정확한 풀이:
-            // 받침점을 중심으로 토크 평형
-            // 막대 전체 길이 4L, 받침점은 왼쪽에서 L 지점
-            // 막대 무게중심은 전체의 중심이므로 왼쪽에서 2L 지점
-            // 받침점에서 막대 무게중심까지 거리는 L
-            // 20N × L = W × L
-            // 따라서 W = 20N
-            
-            if (answer === 20) {
-                result.style.color = '#27ae60';
-                result.textContent = '🎉 정답입니다! 축하합니다!';
-                explanation.style.display = 'none';
-                createFireworks();
-            } else {
-                result.style.color = '#e74c3c';
-                result.textContent = '❌ 틀렸습니다. 다시 생각해보세요!';
-                explanation.style.display = 'block';
-                createExplosion();
-            }
-        }
-        
-        function createFireworks() {
-            // 여러 위치에서 폭죽 발사
-            const positions = [
-                { x: window.innerWidth * 0.2, y: window.innerHeight * 0.3 },
-                { x: window.innerWidth * 0.5, y: window.innerHeight * 0.2 },
-                { x: window.innerWidth * 0.8, y: window.innerHeight * 0.3 },
-                { x: window.innerWidth * 0.35, y: window.innerHeight * 0.4 },
-                { x: window.innerWidth * 0.65, y: window.innerHeight * 0.4 }
+            // 정답 순서 결정 (효율 높은 순)
+            let vehicles = [
+                {name: 'A', eff: efficiencyA},
+                {name: 'B', eff: efficiencyB},
+                {name: 'C', eff: efficiencyC}
             ];
             
-            positions.forEach((pos, index) => {
-                setTimeout(() => {
-                    // 각 폭죽마다 여러 개의 불꽃 입자
-                    for (let i = 0; i < 30; i++) {
-                        const firework = document.createElement('div');
-                        firework.className = 'firework';
-                        firework.style.left = pos.x + 'px';
-                        firework.style.top = pos.y + 'px';
-                        
-                        // 무지개 색상
-                        const hue = (i * 360 / 30 + index * 60) % 360;
-                        firework.style.background = `hsl(${hue}, 100%, 60%)`;
-                        firework.style.boxShadow = `0 0 10px hsl(${hue}, 100%, 60%)`;
-                        
-                        document.body.appendChild(firework);
-                        
-                        const angle = (Math.PI * 2 * i) / 30;
-                        const velocity = 150 + Math.random() * 100;
-                        const vx = Math.cos(angle) * velocity;
-                        const vy = Math.sin(angle) * velocity;
-                        
-                        let x = pos.x;
-                        let y = pos.y;
-                        let life = 1;
-                        
-                        const animate = () => {
-                            x += vx * 0.02;
-                            y += vy * 0.02 + 2; // 중력 효과
-                            life -= 0.015;
-                            
-                            firework.style.left = x + 'px';
-                            firework.style.top = y + 'px';
-                            firework.style.opacity = life;
-                            
-                            if (life > 0) {
-                                requestAnimationFrame(animate);
-                            } else {
-                                firework.remove();
-                            }
-                        };
-                        animate();
-                    }
-                }, index * 300);
+            vehicles.sort((a, b) => b.eff - a.eff);
+            correctOrder = vehicles.map(v => v.name);
+            
+            // 초기화
+            resetSelection();
+        }
+        
+        function showHint() {
+            const hint = document.getElementById('hint');
+            
+            // 이미 힌트가 표시되어 있으면 숨기기
+            if (hint.classList.contains('show')) {
+                hint.classList.remove('show');
+                return;
+            }
+            
+            hint.innerHTML = `
+                <div class="hint-title">💡 힌트</div>
+                <div class="hint-content">
+                    <div class="hint-step">
+                        <strong>📚 에너지 효율이란?</strong><br>
+                        입력한 에너지 중에서 실제로 사용된 에너지의 비율입니다.<br>
+                        효율이 높을수록 에너지를 낭비 없이 잘 사용하는 것입니다.
+                    </div>
+                    
+                    <div class="hint-step">
+                        <strong>📐 효율 계산 공식</strong><br>
+                        에너지 효율(%) = <span style="color: #667eea; font-weight: bold;">(출력 에너지 ÷ 입력 에너지)</span> × 100<br>
+                        <br>
+                        • 출력 에너지: 실제로 사용된 에너지 (운동 에너지)<br>
+                        • 입력 에너지: 처음에 넣은 에너지 (화학/전기 에너지)
+                    </div>
+                    
+                    <div class="hint-step">
+                        <strong>🔍 문제 풀이 방법</strong><br>
+                        1️⃣ 각 자동차의 효율을 계산하세요<br>
+                        2️⃣ 계산한 효율값을 비교하세요<br>
+                        3️⃣ 효율이 높은 순서대로 선택하세요
+                    </div>
+                    
+                    <div class="hint-step" style="background: #fef3c7; border-left-color: #f59e0b;">
+                        <strong>💭 주의사항</strong><br>
+                        입력 에너지가 다를 수 있으니 단순히 출력 에너지의 크기만 보면 안 됩니다!<br>
+                        반드시 <strong>비율(나눗셈)</strong>을 계산해야 합니다.
+                    </div>
+                </div>
+            `;
+            
+            hint.classList.add('show');
+        }
+        
+        function selectVehicle(vehicle) {
+            const index = selectedOrder.indexOf(vehicle);
+            
+            if (index !== -1) {
+                // 이미 선택된 경우 - 선택 취소
+                selectedOrder.splice(index, 1);
+                
+                // 해당 차량의 선택 표시 제거
+                document.querySelector(`[data-vehicle="${vehicle}"]`).classList.remove('selected');
+                document.getElementById(`order${vehicle}`).style.display = 'none';
+                
+                // 순서 재조정
+                updateOrderDisplay();
+            } else {
+                // 새로 선택하는 경우
+                if (selectedOrder.length < 3) {
+                    selectedOrder.push(vehicle);
+                    
+                    // 선택 표시
+                    document.querySelector(`[data-vehicle="${vehicle}"]`).classList.add('selected');
+                    document.getElementById(`order${vehicle}`).textContent = selectedOrder.length;
+                    document.getElementById(`order${vehicle}`).style.display = 'flex';
+                    
+                    updateOrderDisplay();
+                }
+            }
+        }
+        
+        function updateOrderDisplay() {
+            const display = document.getElementById('orderDisplay');
+            
+            if (selectedOrder.length === 0) {
+                display.textContent = '클릭하여 선택하세요';
+            } else {
+                display.textContent = selectedOrder.join(' > ');
+            }
+            
+            // 순서 번호 다시 매기기
+            selectedOrder.forEach((vehicle, index) => {
+                document.getElementById(`order${vehicle}`).textContent = index + 1;
             });
+            
+            // 결과 숨기기
+            document.getElementById('result').classList.remove('show');
         }
         
-        function createExplosion() {
-            const centerX = window.innerWidth / 2;
-            const centerY = window.innerHeight / 2;
+        function resetSelection() {
+            selectedOrder = [];
             
-            // 폭탄 이모지
-            const bomb = document.createElement('div');
-            bomb.className = 'bomb';
-            bomb.textContent = '💣';
-            bomb.style.left = (centerX - 40) + 'px';
-            bomb.style.top = (centerY - 40) + 'px';
-            document.body.appendChild(bomb);
+            // 모든 선택 표시 제거
+            document.querySelectorAll('.vehicle').forEach(v => v.classList.remove('selected'));
+            document.querySelectorAll('.order-badge').forEach(b => b.style.display = 'none');
             
-            // 0.5초 후 폭발
-            setTimeout(() => {
-                bomb.remove();
-                
-                const explosion = document.createElement('div');
-                explosion.className = 'explosion';
-                explosion.style.left = centerX + 'px';
-                explosion.style.top = centerY + 'px';
-                document.body.appendChild(explosion);
-                
-                // 폭발 입자들
-                for (let i = 0; i < 40; i++) {
-                    const particle = document.createElement('div');
-                    particle.className = 'explosion-particle';
-                    
-                    const angle = (Math.PI * 2 * i) / 40;
-                    const distance = 150 + Math.random() * 100;
-                    const tx = Math.cos(angle) * distance;
-                    const ty = Math.sin(angle) * distance;
-                    
-                    particle.style.setProperty('--tx', tx + 'px');
-                    particle.style.setProperty('--ty', ty + 'px');
-                    
-                    // 폭발 색상 (주황, 빨강, 노랑)
-                    const colors = ['#FF4500', '#FF6347', '#FF8C00', '#FFD700', '#FF0000'];
-                    particle.style.background = colors[Math.floor(Math.random() * colors.length)];
-                    particle.style.animation = 'explodeParticle 0.8s ease-out forwards';
-                    
-                    explosion.appendChild(particle);
-                }
-                
-                // 연기 효과
-                for (let i = 0; i < 5; i++) {
-                    setTimeout(() => {
-                        const smoke = document.createElement('div');
-                        smoke.className = 'smoke';
-                        smoke.style.left = (Math.random() * 100 - 50) + 'px';
-                        smoke.style.top = (Math.random() * 100 - 50) + 'px';
-                        explosion.appendChild(smoke);
-                    }, i * 100);
-                }
-                
-                setTimeout(() => explosion.remove(), 1500);
-            }, 500);
+            document.getElementById('orderDisplay').textContent = '클릭하여 선택하세요';
+            document.getElementById('result').classList.remove('show');
+            document.getElementById('hint').classList.remove('show');
         }
         
-        drawPlayground();
+        function checkAnswer() {
+            const result = document.getElementById('result');
+            
+            if (selectedOrder.length !== 3) {
+                result.innerHTML = '세 가지를 모두 선택해주세요!';
+                result.className = 'result incorrect show';
+                return;
+            }
+            
+            const isCorrect = selectedOrder.every((v, i) => v === correctOrder[i]);
+            
+            if (isCorrect) {
+                // 칭찬 멘트 배열
+                const praises = [
+                    '🎉 완벽합니다! 효율 계산을 정확히 이해하셨네요!',
+                    '👏 훌륭해요! 에너지 효율 전문가가 되셨어요!',
+                    '✨ 대단합니다! 계산 실력이 정말 뛰어나네요!',
+                    '🌟 정답입니다! 과학자의 꿈이 한 발짝 가까워졌어요!',
+                    '🏆 멋져요! 복잡한 비율 계산을 완벽히 해냈어요!',
+                    '💯 최고입니다! 에너지 효율을 완전히 마스터했네요!',
+                    '🎯 정확해요! 수학적 사고력이 정말 좋아요!',
+                    '⭐ 놀라워요! 어려운 문제를 척척 풀어내시네요!',
+                    '🚀 굉장합니다! 이런 실력이면 A+ 확정이에요!',
+                    '💪 잘했어요! 포기하지 않고 정답을 찾아냈네요!'
+                ];
+                
+                // 랜덤으로 칭찬 멘트 선택
+                const randomPraise = praises[Math.floor(Math.random() * praises.length)];
+                
+                result.innerHTML = randomPraise;
+                result.className = 'result correct show';
+            } else {
+                // 각 차량의 효율 계산
+                const effA = parseInt(document.getElementById('kineticA').textContent) / 
+                             parseInt(document.getElementById('chemA').textContent) * 100;
+                const effB = parseInt(document.getElementById('kineticB').textContent) / 
+                             parseInt(document.getElementById('elecB').textContent) * 100;
+                const effC = parseInt(document.getElementById('kineticC').textContent) / 
+                             parseInt(document.getElementById('chemC').textContent) * 100;
+                
+                const vehicleNames = {
+                    'A': '화석 연료 자동차',
+                    'B': '전기 자동차',
+                    'C': '수소연료전지 자동차'
+                };
+                
+                let explanation = `
+                    <div>❌ 틀렸습니다.</div>
+                    <div style="margin-top: 10px; font-size: 16px;"><strong>정답: ${correctOrder.join(' > ')}</strong></div>
+                    
+                    <div class="explanation">
+                        <div class="explanation-title">📊 효율 계산 해설</div>
+                        <div>에너지 효율 = (운동 에너지 ÷ 입력 에너지) × 100%</div>
+                        
+                        <div class="efficiency-list">
+                            <div class="efficiency-item">
+                                <span>자동차 A: ${parseInt(document.getElementById('kineticA').textContent)} ÷ ${parseInt(document.getElementById('chemA').textContent)} × 100</span>
+                                <strong>${effA.toFixed(0)}%</strong>
+                            </div>
+                            <div class="efficiency-item">
+                                <span>자동차 B: ${parseInt(document.getElementById('kineticB').textContent)} ÷ ${parseInt(document.getElementById('elecB').textContent)} × 100</span>
+                                <strong>${effB.toFixed(0)}%</strong>
+                            </div>
+                            <div class="efficiency-item">
+                                <span>자동차 C: ${parseInt(document.getElementById('kineticC').textContent)} ÷ ${parseInt(document.getElementById('chemC').textContent)} × 100</span>
+                                <strong>${effC.toFixed(0)}%</strong>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #ddd;">
+                            <strong>∴ 효율 순서:</strong> ${correctOrder.map(v => `${v}(${vehicleNames[v]})`).join(' > ')}
+                        </div>
+                    </div>
+                `;
+                
+                result.innerHTML = explanation;
+                result.className = 'result incorrect show';
+            }
+        }
+        
+        // 페이지 로드 시 첫 문제 생성
+        generateNewProblem();
     </script>
 </body>
 </html>

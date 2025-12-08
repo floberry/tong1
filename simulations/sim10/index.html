@@ -3,10 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>등속원운동 우주 게임</title>
+    <title>에너지 효율 시뮬레이션</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&display=swap');
-        
         * {
             margin: 0;
             padding: 0;
@@ -14,867 +12,714 @@
         }
         
         body {
-            font-family: 'Noto Sans KR', sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            font-family: 'Malgun Gothic', '맑은 고딕', sans-serif;
+            background: #f5f5f5;
             min-height: 100vh;
             padding: 20px;
-            overflow-x: hidden;
-        }
-        
-        .stars {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-        }
-        
-        .star {
-            position: absolute;
-            background: white;
-            border-radius: 50%;
-            animation: twinkle 3s infinite;
-        }
-        
-        @keyframes twinkle {
-            0%, 100% { opacity: 0.3; }
-            50% { opacity: 1; }
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
         }
         
         .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 25px;
-            padding: 30px;
-            box-shadow: 0 25px 80px rgba(0,0,0,0.5);
-            position: relative;
-            z-index: 1;
+            background: white;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border: 1px solid #ddd;
         }
         
-        h1 {
+        .header {
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
             text-align: center;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 10px;
-            font-size: 32px;
-            font-weight: 900;
+            border-bottom: 3px solid #000;
+        }
+
+        .header h1 {
+            font-size: 22px;
+            margin-bottom: 5px;
+        }
+
+        .header .subtitle {
+            font-size: 13px;
+            color: #bdc3c7;
+        }
+
+        .problem-selector {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 0;
+            border-bottom: 2px solid #000;
+        }
+
+        .problem-btn {
+            padding: 12px;
+            font-size: 14px;
+            font-weight: bold;
+            border: none;
+            border-right: 1px solid #ddd;
+            border-bottom: 1px solid #ddd;
+            background: #f8f9fa;
+            color: #495057;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .problem-btn:hover {
+            background: #e9ecef;
+        }
+
+        .problem-btn.active {
+            background: #2c3e50;
+            color: white;
+            border-bottom: 3px solid #000;
+        }
+
+        .problem-btn:nth-child(5n) {
+            border-right: none;
         }
         
-        .subtitle {
-            text-align: center;
-            color: #666;
+        .content {
+            padding: 25px;
+        }
+
+        .problem-number {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #000;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #000;
+        }
+
+        .problem-text {
+            font-size: 15px;
+            line-height: 1.8;
+            color: #212529;
             margin-bottom: 20px;
+        }
+        
+        .energy-display {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            border: 1px solid #dee2e6;
+        }
+        
+        .energy-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            margin: 8px 0;
+            background: white;
+            border-radius: 3px;
+            font-size: 14px;
+            border: 1px solid #dee2e6;
+        }
+        
+        .energy-label {
+            font-weight: bold;
+            color: #000;
+        }
+        
+        .energy-value {
+            font-weight: bold;
+            color: #495057;
+            font-size: 16px;
+        }
+        
+        .selection-area {
+            margin: 20px 0;
+        }
+        
+        .selection-title {
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #212529;
             font-size: 14px;
         }
         
-        .game-story {
-            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 20px;
-            border: 3px dashed #f39c12;
-            text-align: center;
-        }
-        
-        .game-story h3 {
-            color: #d63031;
-            margin-bottom: 10px;
-            font-size: 20px;
-        }
-        
-        .game-story p {
-            color: #2d3436;
-            line-height: 1.6;
-        }
-        
-        .visual-section {
-            background: linear-gradient(135deg, #0f3460 0%, #16213e 100%);
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 30px;
-            position: relative;
-            box-shadow: inset 0 0 50px rgba(0,0,0,0.5);
-        }
-        
-        canvas {
-            display: block;
-            margin: 0 auto;
-            background: radial-gradient(circle at 30% 30%, #1a1a2e, #0a0a15);
-            border-radius: 15px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
-        }
-        
-        .problem-section {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            border-radius: 20px;
-            padding: 25px;
-            margin-bottom: 20px;
-            border-left: 6px solid #667eea;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-        
-        .problem-text {
-            font-size: 19px;
-            line-height: 1.8;
-            color: #000;
-            margin-bottom: 20px;
-            font-weight: 700;
-        }
-        
-        .given-values {
-            background: white;
-            padding: 20px;
-            border-radius: 15px;
-            margin-bottom: 20px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-        }
-        
-        .given-values p {
-            margin: 10px 0;
-            font-size: 18px;
-            color: #000;
-            font-weight: 700;
-        }
-        
-        .answer-section {
-            background: white;
-            padding: 25px;
-            border-radius: 15px;
-            margin-top: 20px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-        }
-        
-        .input-group {
-            margin: 18px 0;
-        }
-        
-        .input-group label {
-            display: block;
-            margin-bottom: 10px;
-            font-weight: 900;
-            color: #000;
-            font-size: 17px;
-        }
-        
-        .input-group input {
-            width: 100%;
-            padding: 14px;
-            border: 3px solid #dfe6e9;
-            border-radius: 12px;
-            font-size: 16px;
-            transition: all 0.3s;
-            font-weight: 600;
-        }
-        
-        .input-group input:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
-            transform: scale(1.02);
-        }
-        
         .button-group {
-            display: flex;
-            gap: 15px;
-            margin-top: 25px;
-        }
-        
-        button {
-            flex: 1;
-            padding: 18px;
-            border: none;
-            border-radius: 15px;
-            font-size: 17px;
-            font-weight: 900;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        
-        .new-problem-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-        }
-        
-        .new-problem-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
-        }
-        
-        .submit-btn {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: white;
-            box-shadow: 0 5px 15px rgba(245, 87, 108, 0.4);
-        }
-        
-        .submit-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(245, 87, 108, 0.6);
-        }
-        
-        .feedback {
-            margin-top: 25px;
-            padding: 25px;
-            border-radius: 15px;
-            animation: slideIn 0.5s ease-out;
-            display: none;
-        }
-        
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .feedback.correct {
-            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
-            border: 3px solid #28a745;
-        }
-        
-        .feedback.incorrect {
-            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
-            border: 3px solid #dc3545;
-        }
-        
-        .feedback h3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
             margin-bottom: 15px;
-            font-size: 24px;
-            font-weight: 900;
         }
         
-        .feedback.correct h3 {
-            color: #28a745;
-        }
-        
-        .feedback.incorrect h3 {
-            color: #dc3545;
-        }
-        
-        .feedback p {
-            margin: 12px 0;
-            line-height: 1.8;
-            color: #000;
-            font-weight: 600;
-        }
-        
-        .concept-box {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            margin-top: 15px;
-            border-left: 5px solid #667eea;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-        }
-        
-        .concept-box h4 {
-            color: #667eea;
-            margin-bottom: 12px;
+        .option-btn {
+            padding: 15px;
             font-size: 18px;
-            font-weight: 900;
+            font-weight: bold;
+            border: 2px solid #495057;
+            background: white;
+            color: #495057;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
         }
         
-        .formula {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            padding: 12px;
-            border-radius: 8px;
-            font-family: 'Courier New', monospace;
-            margin: 12px 0;
-            text-align: center;
-            font-size: 17px;
-            font-weight: bold;
+        .option-btn:hover {
+            background: #f8f9fa;
+        }
+        
+        .option-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .option-btn.selected {
+            background: #2c3e50;
+            color: white;
+            border-color: #000;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .checkbox-item {
+            padding: 15px;
+            background: white;
             border: 2px solid #dee2e6;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+            display: flex;
+            align-items: flex-start;
+            line-height: 1.6;
+            user-select: none;
+        }
+
+        .checkbox-item:hover {
+            background: #f8f9fa;
+            border-color: #adb5bd;
+        }
+
+        .checkbox-item.selected {
+            background: #2c3e50;
+            color: white;
+            border-color: #000;
+        }
+
+        .checkbox-icon {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #495057;
+            border-radius: 3px;
+            margin-right: 12px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            margin-top: 2px;
+        }
+
+        .checkbox-item.selected .checkbox-icon {
+            background: white;
+            border-color: white;
+        }
+
+        .checkbox-item.selected .checkbox-icon::after {
+            content: '✓';
+            color: #2c3e50;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .input-area {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin: 15px 0;
+        }
+
+        .input-field {
+            flex: 1;
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #495057;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #000;
+        }
+
+        .unit {
+            font-weight: bold;
+            color: #495057;
+        }
+        
+        .answer-display {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 16px;
+            font-weight: bold;
+            color: #495057;
+            border: 2px solid #dee2e6;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .control-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #dee2e6;
+        }
+        
+        .btn {
+            padding: 15px;
+            font-size: 16px;
+            font-weight: bold;
+            border: 2px solid;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-new {
+            background: white;
+            color: #495057;
+            border-color: #495057;
+        }
+        
+        .btn-new:hover {
+            background: #495057;
+            color: white;
+        }
+        
+        .btn-new:active {
+            transform: scale(0.98);
+        }
+        
+        .btn-check {
+            background: #2c3e50;
+            color: white;
+            border-color: #000;
+        }
+        
+        .btn-check:hover {
+            background: #1a252f;
+        }
+        
+        .btn-check:active {
+            transform: scale(0.98);
+        }
+        
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 15px;
+            font-weight: bold;
+            border: 2px solid;
+        }
+        
+        .correct {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border-color: #4caf50;
+        }
+        
+        .incorrect {
+            background: #ffebee;
+            color: #c62828;
+            border-color: #f44336;
+        }
+
+        .diagram {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 15px 0;
+            text-align: center;
+        }
+
+        .heat-engine {
+            width: 100%;
+            max-width: 250px;
+            margin: 0 auto;
+        }
+
+        .flow-box {
+            background: white;
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 3px;
+            font-size: 14px;
+            border: 1px solid #dee2e6;
+        }
+
+        .arrow {
+            font-size: 24px;
+            color: #495057;
+            margin: 5px 0;
+        }
+
+        .engine-box {
+            background: #2c3e50;
+            color: white;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
-    <div class="stars" id="stars"></div>
-    
     <div class="container">
-        <h1>🚀 등속원운동 우주 탈출 게임</h1>
-        <p class="subtitle">물리학으로 위험을 피하고 살아남아라!</p>
-        
-        <div class="game-story">
-            <h3>🎯 미션 스토리</h3>
-            <p>우주비행사가 우주 스테이션 주위를 원운동하고 있습니다! 하지만 위험한 운석들이 날아오고 있어요! 올바른 물리 계산으로 안전하게 탈출하세요! 🌟</p>
+        <div class="header">
+            <h1>⚡ 에너지 효율 평가</h1>
+            <div class="subtitle">통합과학2 - 에너지 전환과 열효율</div>
         </div>
         
-        <div class="visual-section">
-            <canvas id="motionCanvas" width="700" height="500"></canvas>
-        </div>
-        
-        <div class="problem-section">
-            <div class="problem-text" id="problemText"></div>
+        <div class="problem-selector" id="problemSelector"></div>
+
+        <div class="content">
+            <div class="problem-number" id="problemNumber"></div>
+            <div id="problemContent"></div>
             
-            <div class="given-values" id="givenValues"></div>
-            
-            <div class="answer-section">
-                <div class="input-group">
-                    <label for="answer1" id="label1"></label>
-                    <input type="number" id="answer1" step="0.01" placeholder="답을 입력하세요">
-                </div>
-                
-                <div class="input-group">
-                    <label for="answer2" id="label2"></label>
-                    <input type="number" id="answer2" step="0.01" placeholder="답을 입력하세요">
-                </div>
-                
-                <div class="input-group">
-                    <label for="answer3" id="label3"></label>
-                    <input type="number" id="answer3" step="0.01" placeholder="답을 입력하세요">
-                </div>
+            <div class="control-buttons">
+                <button class="btn btn-new" onclick="generateNewProblem()">🔄 새 문제</button>
+                <button class="btn btn-check" onclick="checkAnswer()">✓ 정답 확인</button>
             </div>
             
-            <div class="button-group">
-                <button class="new-problem-btn" onclick="generateNewProblem()">🔄 새로운 미션</button>
-                <button class="submit-btn" onclick="checkAnswers()">✓ 탈출 시도!</button>
-            </div>
-            
-            <div class="feedback" id="feedback"></div>
+            <div id="result"></div>
         </div>
     </div>
 
     <script>
-        let currentProblem = {};
-        let animationId;
-        let angle = 0;
-        let meteors = [];
-        let isHit = false;
-        let hitAnimation = 0;
-        
-        function createStars() {
-            const starsContainer = document.getElementById('stars');
-            for (let i = 0; i < 100; i++) {
-                const star = document.createElement('div');
-                star.className = 'star';
-                star.style.width = Math.random() * 3 + 'px';
-                star.style.height = star.style.width;
-                star.style.left = Math.random() * 100 + '%';
-                star.style.top = Math.random() * 100 + '%';
-                star.style.animationDelay = Math.random() * 3 + 's';
-                starsContainer.appendChild(star);
+        let currentProblem = 1;
+        let selectedOrder = [];
+        let selectedItems = [];
+        let userAnswer = '';
+        let correctAnswer = null;
+        let problemData = {};
+
+        const problems = [
+            {
+                id: 1,
+                type: 'checkbox',
+                question: '다음 중 에너지 전환이 일어나는 경우를 모두 고르시오.',
+                options: [
+                    { text: '화학 에너지 → 운동 에너지 (학생이 운동할 때)', key: 'A' },
+                    { text: '화학 에너지 → 열 에너지 (음식을 조리할 때)', key: 'B' },
+                    { text: '전기 에너지 → 소리 에너지 (스피커 작동)', key: 'C' },
+                    { text: '에너지는 전환되지 않는다', key: 'D' }
+                ],
+                correctKeys: ['A', 'B', 'C']
+            },
+            {
+                id: 2,
+                type: 'checkbox',
+                question: '열효율에 대한 설명으로 옳은 것을 모두 고르시오.',
+                options: [
+                    { text: '열효율 = (한 일 / 공급된 열) × 100%', key: 'A' },
+                    { text: '열기관은 열에너지를 일로 바꾸는 장치이다', key: 'B' },
+                    { text: '나무를 태워 재가 되면 에너지가 사라진다', key: 'C' },
+                    { text: '열효율은 항상 100%이다', key: 'D' }
+                ],
+                correctKeys: ['A', 'B']
+            },
+            {
+                id: 3,
+                type: 'calculate',
+                question: '열기관에 공급된 열에너지가 Q₁이고, 외부에 한 일이 W일 때, 발생한 열 Q₂는 얼마인가?',
+                unit: 'kJ',
+                calculate: (data) => data.Q1 - data.W
+            },
+            {
+                id: 4,
+                type: 'calculate',
+                question: '열기관의 열효율을 구하시오. (소수점 첫째자리까지)',
+                unit: '%',
+                calculate: (data) => Math.round((data.W / data.Q1) * 1000) / 10
+            },
+            {
+                id: 5,
+                type: 'checkbox',
+                question: '자동차 엔진에서 공급된 연료 에너지 100J 중 운동 에너지로 전환된 것이 24J일 때, 다음 중 옳은 설명을 모두 고르시오.',
+                options: [
+                    { text: '자동차의 열효율은 24%이다', key: 'A' },
+                    { text: '손실된 에너지가 운동 에너지보다 많다', key: 'B' },
+                    { text: '공급된 에너지와 전환된 에너지의 합은 같다', key: 'C' },
+                    { text: '에너지 보존 법칙이 성립한다', key: 'D' }
+                ],
+                correctKeys: ['A', 'B', 'D']
+            },
+            {
+                id: 6,
+                type: 'order',
+                question: '다음 열기관의 열효율이 높은 순서대로 배열하시오.',
+                items: ['A', 'B', 'C']
+            },
+            {
+                id: 7,
+                type: 'checkbox',
+                question: '에너지 전환과 보존에 대한 설명으로 옳은 것을 모두 고르시오.',
+                options: [
+                    { text: '에너지는 다른 형태로 전환될 수 있다', key: 'A' },
+                    { text: '에너지 전환 시 총량은 보존된다', key: 'B' },
+                    { text: '열에너지는 100% 일로 전환 가능하다', key: 'C' },
+                    { text: '열효율이 높을수록 에너지 손실이 적다', key: 'D' }
+                ],
+                correctKeys: ['A', 'B', 'D']
+            },
+            {
+                id: 8,
+                type: 'calculate',
+                question: '화력발전소에서 연료가 연소하여 발생한 열에너지가 Q₁이고, 발전기에서 손실된 열이 Q₂일 때, 전기 에너지로 전환된 일 W는?',
+                unit: 'kJ',
+                calculate: (data) => data.Q1 - data.Q2
+            },
+            {
+                id: 9,
+                type: 'order',
+                question: '다음 에너지 전환 효율이 높은 순서대로 배열하시오. (효율 = 출력/입력 × 100%)',
+                items: ['A', 'B', 'C']
+            },
+            {
+                id: 10,
+                type: 'checkbox',
+                question: '열기관의 효율을 높이기 위한 방법으로 옳은 것을 모두 고르시오.',
+                options: [
+                    { text: '열 손실을 최소화한다', key: 'A' },
+                    { text: '마찰을 줄여 손실 에너지를 감소시킨다', key: 'B' },
+                    { text: '공급 에너지를 줄인다', key: 'C' },
+                    { text: '단열을 강화하여 열 손실을 방지한다', key: 'D' }
+                ],
+                correctKeys: ['A', 'B', 'D']
             }
+        ];
+
+        function init() {
+            const selector = document.getElementById('problemSelector');
+            for (let i = 1; i <= 10; i++) {
+                const btn = document.createElement('button');
+                btn.className = 'problem-btn';
+                btn.textContent = i;
+                btn.onclick = () => selectProblem(i);
+                if (i === 1) btn.classList.add('active');
+                selector.appendChild(btn);
+            }
+            selectProblem(1);
         }
-        
-        function generateNewProblem() {
-            // 모두 자연수로만
-            const distance = [1, 2, 4, 5][Math.floor(Math.random() * 4)]; // 1, 2, 4, 5m
-            const massAstronaut = [1, 2, 4, 5, 10][Math.floor(Math.random() * 5)]; // 1, 2, 4, 5, 10kg
-            const speed = [2, 5, 10][Math.floor(Math.random() * 3)]; // 2, 5, 10 m/s
-            
-            // 구심력 = 장력 = 우주선의 무게
-            const centripetalForce = (massAstronaut * speed * speed) / distance;
-            const massSpaceship = centripetalForce / 10; // g = 10m/s²
-            
-            currentProblem = {
-                distance: distance,
-                massAstronaut: massAstronaut,
-                speed: speed,
-                massSpaceship: massSpaceship // 자연수로 딱 떨어짐
-            };
-            
-            document.getElementById('problemText').innerHTML = 
-                `🚨 그림과 같이 수평면 위에서 원운동하는 우주비행사가 구멍을 통해 실로 연결된 우주선이 아래에 매달려 있습니다. 매달린 우주선의 질량을 구하시오!`;
-            
-            document.getElementById('givenValues').innerHTML = `
-                <p><strong>👨‍🚀 우주비행사의 질량:</strong> ${massAstronaut} kg</p>
-                <p><strong>📏 중심 구멍에서 우주비행사까지의 거리(반지름 r):</strong> ${distance} m</p>
-                <p><strong>🏃 우주비행사의 속력(v):</strong> ${speed} m/s</p>
-                <p><strong>🌍 중력가속도(g):</strong> 10 m/s²</p>
-                <p style="margin-top: 15px; color: #666; font-size: 15px;">💡 힌트: 우주비행사의 구심력 = 실의 장력 = 매달린 우주선의 무게</p>
-            `;
-            
-            document.getElementById('label1').textContent = '매달린 우주선의 질량은? (kg)';
-            document.getElementById('label2').style.display = 'none';
-            document.getElementById('label3').style.display = 'none';
-            document.getElementById('answer2').parentElement.style.display = 'none';
-            document.getElementById('answer3').parentElement.style.display = 'none';
-            
-            document.getElementById('answer1').value = '';
-            document.getElementById('answer2').value = '';
-            document.getElementById('answer3').value = '';
-            
-            const feedbackEl = document.getElementById('feedback');
-            feedbackEl.innerHTML = '';
-            feedbackEl.className = 'feedback';
-            feedbackEl.style.display = 'none';
-            
-            angle = 0;
-            meteors = [];
-            isHit = false;
-            hitAnimation = 0;
-            if (animationId) cancelAnimationFrame(animationId);
-            animate();
-        }
-        
-        function animate() {
-            const canvas = document.getElementById('motionCanvas');
-            const ctx = canvas.getContext('2d');
-            const centerX = canvas.width / 2;
-            const centerY = canvas.height / 2;
-            const scale = 50;
-            const radius = currentProblem.distance * scale;
-            
-            // 배경
-            ctx.fillStyle = '#0a0a15';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            // 별들
-            for (let i = 0; i < 50; i++) {
-                ctx.fillStyle = `rgba(255, 255, 255, ${Math.random()})`;
-                ctx.fillRect(Math.random() * canvas.width, Math.random() * canvas.height, 2, 2);
-            }
-            
-            // 수평 플랫폼 (테이블)
-            ctx.fillStyle = '#34495e';
-            ctx.fillRect(centerX - 250, centerY - 30, 500, 60);
-            
-            // 플랫폼 테두리
-            ctx.strokeStyle = '#2c3e50';
-            ctx.lineWidth = 4;
-            ctx.strokeRect(centerX - 250, centerY - 30, 500, 60);
-            
-            // 플랫폼 그림자
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
-            ctx.fillRect(centerX - 250, centerY + 30, 500, 10);
-            
-            // 중심 구멍
-            ctx.fillStyle = '#1a1a1a';
-            ctx.beginPath();
-            ctx.arc(centerX, centerY, 15, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.strokeStyle = '#000';
-            ctx.lineWidth = 3;
-            ctx.stroke();
-            
-            // 구멍 안쪽 그림자
-            const holeGradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, 15);
-            holeGradient.addColorStop(0, '#000');
-            holeGradient.addColorStop(1, '#1a1a1a');
-            ctx.fillStyle = holeGradient;
-            ctx.beginPath();
-            ctx.arc(centerX, centerY, 15, 0, Math.PI * 2);
-            ctx.fill();
-            
-            // 궤도선 (플랫폼 위에)
-            ctx.beginPath();
-            ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
-            ctx.strokeStyle = 'rgba(102, 126, 234, 0.4)';
-            ctx.lineWidth = 2;
-            ctx.setLineDash([10, 5]);
-            ctx.stroke();
-            ctx.setLineDash([]);
-            
-            // 아래에 매달린 우주선 (추)
-            const spaceshipY = centerY + 120;
-            
-            // 실 (구멍에서 우주선까지)
-            ctx.strokeStyle = '#95a5a6';
-            ctx.lineWidth = 3;
-            ctx.beginPath();
-            ctx.moveTo(centerX, centerY);
-            ctx.lineTo(centerX, spaceshipY - 30);
-            ctx.stroke();
-            
-            // 실 하이라이트
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(centerX - 1, centerY);
-            ctx.lineTo(centerX - 1, spaceshipY - 30);
-            ctx.stroke();
-            
-            // 우주선 (매달린 추)
-            ctx.save();
-            ctx.translate(centerX, spaceshipY);
-            
-            // 우주선 흔들림 효과 (매달려있는 느낌)
-            ctx.rotate(Math.sin(angle * 2) * 0.05);
-            
-            // 우주선 본체
-            ctx.fillStyle = '#7f8c8d';
-            ctx.fillRect(-25, -15, 50, 30);
-            
-            // 우주선 창문
-            ctx.fillStyle = '#3498db';
-            ctx.beginPath();
-            ctx.arc(-10, 0, 6, 0, Math.PI * 2);
-            ctx.arc(10, 0, 6, 0, Math.PI * 2);
-            ctx.fill();
-            
-            // 우주선 날개
-            ctx.fillStyle = '#95a5a6';
-            ctx.beginPath();
-            ctx.moveTo(-25, -15);
-            ctx.lineTo(-40, -25);
-            ctx.lineTo(-40, -5);
-            ctx.closePath();
-            ctx.fill();
-            
-            ctx.beginPath();
-            ctx.moveTo(25, -15);
-            ctx.lineTo(40, -25);
-            ctx.lineTo(40, -5);
-            ctx.closePath();
-            ctx.fill();
-            
-            // 우주선 엔진 (아래쪽)
-            ctx.fillStyle = '#e74c3c';
-            ctx.fillRect(-20, 15, 15, 8);
-            ctx.fillRect(5, 15, 15, 8);
-            
-            // 엔진 불꽃 (위로 올라가는 힘 표현)
-            if (Math.random() > 0.5) {
-                ctx.fillStyle = '#f39c12';
-                ctx.beginPath();
-                ctx.moveTo(-15, 23);
-                ctx.lineTo(-12, 35);
-                ctx.lineTo(-9, 23);
-                ctx.closePath();
-                ctx.fill();
-                
-                ctx.beginPath();
-                ctx.moveTo(9, 23);
-                ctx.lineTo(12, 35);
-                ctx.lineTo(15, 23);
-                ctx.closePath();
-                ctx.fill();
-            }
-            
-            ctx.restore();
-            
-            // 운석 생성
-            if (Math.random() < 0.02) {
-                const angleRand = Math.random() * Math.PI * 2;
-                meteors.push({
-                    x: centerX + Math.cos(angleRand) * 400,
-                    y: centerY + Math.sin(angleRand) * 400,
-                    vx: -Math.cos(angleRand) * 2,
-                    vy: -Math.sin(angleRand) * 2,
-                    size: Math.random() * 15 + 10,
-                    rotation: Math.random() * Math.PI * 2
-                });
-            }
-            
-            // 운석 그리기
-            meteors = meteors.filter(meteor => {
-                meteor.x += meteor.vx;
-                meteor.y += meteor.vy;
-                meteor.rotation += 0.05;
-                
-                ctx.save();
-                ctx.translate(meteor.x, meteor.y);
-                ctx.rotate(meteor.rotation);
-                ctx.fillStyle = '#8b4513';
-                ctx.beginPath();
-                for (let i = 0; i < 8; i++) {
-                    const r = meteor.size * (0.7 + Math.random() * 0.3);
-                    const a = (i / 8) * Math.PI * 2;
-                    if (i === 0) ctx.moveTo(r * Math.cos(a), r * Math.sin(a));
-                    else ctx.lineTo(r * Math.cos(a), r * Math.sin(a));
-                }
-                ctx.closePath();
-                ctx.fill();
-                ctx.restore();
-                
-                // 꼬리
-                ctx.strokeStyle = 'rgba(255, 100, 0, 0.5)';
-                ctx.lineWidth = meteor.size / 2;
-                ctx.beginPath();
-                ctx.moveTo(meteor.x, meteor.y);
-                ctx.lineTo(meteor.x - meteor.vx * 10, meteor.y - meteor.vy * 10);
-                ctx.stroke();
-                
-                return meteor.x > -50 && meteor.x < canvas.width + 50 && 
-                       meteor.y > -50 && meteor.y < canvas.height + 50;
+
+        function selectProblem(num) {
+            currentProblem = num;
+            document.querySelectorAll('.problem-btn').forEach((btn, idx) => {
+                btn.classList.toggle('active', idx + 1 === num);
             });
-            
-            const objX = centerX + radius * Math.cos(angle);
-            const objY = centerY + radius * Math.sin(angle);
-            
-            // 우주비행사와 구멍 중심을 연결하는 실 (플랫폼 위)
-            ctx.strokeStyle = '#95a5a6';
-            ctx.lineWidth = 3;
-            ctx.setLineDash([]);
-            ctx.beginPath();
-            ctx.moveTo(centerX, centerY);
-            ctx.lineTo(objX, objY);
-            ctx.stroke();
-            
-            // 실 하이라이트
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(centerX, centerY);
-            ctx.lineTo(objX, objY);
-            ctx.stroke();
-            
-            // 폭발 효과
-            if (isHit) {
-                hitAnimation++;
-                
-                ctx.save();
-                ctx.translate(objX, objY);
-                
-                const explosionSize = Math.min(hitAnimation * 4, 200);
-                const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, explosionSize);
-                gradient.addColorStop(0, `rgba(255, 255, 255, ${1 - hitAnimation / 300})`);
-                gradient.addColorStop(0.3, `rgba(255, 200, 0, ${1 - hitAnimation / 300})`);
-                gradient.addColorStop(0.6, `rgba(255, 100, 0, ${1 - hitAnimation / 300})`);
-                gradient.addColorStop(1, `rgba(255, 0, 0, 0)`);
-                
-                ctx.fillStyle = gradient;
-                ctx.beginPath();
-                ctx.arc(0, 0, explosionSize, 0, Math.PI * 2);
-                ctx.fill();
-                
-                for (let i = 0; i < 20; i++) {
-                    const explosionAngle = (i / 20) * Math.PI * 2;
-                    const distance = hitAnimation * 1.5;
-                    const ex = Math.cos(explosionAngle) * distance;
-                    const ey = Math.sin(explosionAngle) * distance;
-                    
-                    ctx.fillStyle = `rgba(255, 100, 0, ${1 - hitAnimation / 300})`;
-                    ctx.beginPath();
-                    ctx.arc(ex, ey, 15, 0, Math.PI * 2);
-                    ctx.fill();
-                }
-                
-                for (let ring = 0; ring < 3; ring++) {
-                    ctx.strokeStyle = `rgba(255, ${255 - ring * 50}, 0, ${0.8 - hitAnimation / 300})`;
-                    ctx.lineWidth = 8 - ring * 2;
-                    ctx.beginPath();
-                    ctx.arc(0, 0, hitAnimation * (1.5 + ring * 0.5), 0, Math.PI * 2);
-                    ctx.stroke();
-                }
-                
-                if (hitAnimation < 30) {
-                    ctx.fillStyle = `rgba(255, 255, 255, ${1 - hitAnimation / 30})`;
-                    ctx.beginPath();
-                    ctx.arc(0, 0, 200 - hitAnimation * 5, 0, Math.PI * 2);
-                    ctx.fill();
-                }
-                
-                for (let i = 0; i < 8; i++) {
-                    const starAngle = (i / 8) * Math.PI * 2 + hitAnimation * 0.1;
-                    const starDist = 70 + Math.sin(hitAnimation * 0.15) * 15;
-                    const sx = Math.cos(starAngle) * starDist;
-                    const sy = Math.sin(starAngle) * starDist;
-                    
-                    ctx.fillStyle = `rgba(255, 255, 0, ${1 - hitAnimation / 300})`;
-                    ctx.font = 'bold 40px Arial';
-                    ctx.fillText('★', sx - 20, sy + 15);
-                }
-                
-                ctx.restore();
-                
-                if (hitAnimation > 300) {
-                    isHit = false;
-                    hitAnimation = 0;
-                }
-            }
-            
-            // 우주비행사 그리기
-            ctx.save();
-            ctx.translate(objX, objY);
-            
-            // 우주비행사는 항상 위를 향하도록 (회전하지 않음)
-            if (isHit) {
-                ctx.rotate(Math.sin(hitAnimation * 0.3) * 0.5);
-            }
-            
-            // 헬멧
-            ctx.fillStyle = isHit ? '#ff3333' : '#ecf0f1';
-            ctx.beginPath();
-            ctx.arc(0, 0, 18, 0, Math.PI * 2);
-            ctx.fill();
-            
-            // 유리창
-            ctx.fillStyle = '#3498db';
-            ctx.beginPath();
-            ctx.arc(0, 0, 12, 0, Math.PI * 2);
-            ctx.fill();
-            
-            // 몸통
-            ctx.fillStyle = '#e74c3c';
-            ctx.fillRect(-12, 10, 24, 30);
-            
-            // 팔
-            ctx.fillStyle = '#e74c3c';
-            ctx.fillRect(-20, 15, 8, 20);
-            ctx.fillRect(12, 15, 8, 20);
-            
-            // 다리
-            ctx.fillRect(-10, 40, 8, 25);
-            ctx.fillRect(2, 40, 8, 25);
-            
-            // 제트팩
-            ctx.fillStyle = '#7f8c8d';
-            ctx.fillRect(-8, 18, 16, 15);
-            
-            // 불꽃
-            if (Math.random() > 0.5) {
-                ctx.fillStyle = '#f39c12';
-                ctx.beginPath();
-                ctx.moveTo(-4, 33);
-                ctx.lineTo(0, 43);
-                ctx.lineTo(4, 33);
-                ctx.fill();
-            }
-            
-            ctx.restore();
-            
-            // 속도 벡터
-            const velLength = 60;
-            const velX = -Math.sin(angle) * velLength;
-            const velY = Math.cos(angle) * velLength;
-            
-            ctx.strokeStyle = '#00ff88';
-            ctx.lineWidth = 4;
-            ctx.beginPath();
-            ctx.moveTo(objX, objY);
-            ctx.lineTo(objX + velX, objY + velY);
-            ctx.stroke();
-            drawArrow(ctx, objX, objY, objX + velX, objY + velY, '#00ff88');
-            
-            // 구심가속도 벡터
-            const accelLength = 50;
-            const accelX = -Math.cos(angle) * accelLength;
-            const accelY = -Math.sin(angle) * accelLength;
-            
-            ctx.strokeStyle = '#ff6b6b';
-            ctx.lineWidth = 4;
-            ctx.beginPath();
-            ctx.moveTo(objX, objY);
-            ctx.lineTo(objX + accelX, objY + accelY);
-            ctx.stroke();
-            drawArrow(ctx, objX, objY, objX + accelX, objY + accelY, '#ff6b6b');
-            
-            // 범례
-            ctx.font = 'bold 16px Noto Sans KR';
-            ctx.shadowColor = 'rgba(0,0,0,0.5)';
-            ctx.shadowBlur = 5;
-            
-            ctx.fillStyle = '#00ff88';
-            ctx.fillText('→ 속도(v)', 20, 35);
-            
-            ctx.fillStyle = '#ff6b6b';
-            ctx.fillText('→ 구심가속도(a)', 20, 60);
-            
-            ctx.shadowBlur = 0;
-            
-            angle += 0.02;
-            
-            animationId = requestAnimationFrame(animate);
-        }
-        
-        function drawArrow(ctx, fromX, fromY, toX, toY, color) {
-            const headLength = 12;
-            const angle = Math.atan2(toY - fromY, toX - fromX);
-            
-            ctx.fillStyle = color;
-            ctx.beginPath();
-            ctx.moveTo(toX, toY);
-            ctx.lineTo(toX - headLength * Math.cos(angle - Math.PI / 6), 
-                       toY - headLength * Math.sin(angle - Math.PI / 6));
-            ctx.lineTo(toX - headLength * Math.cos(angle + Math.PI / 6), 
-                       toY - headLength * Math.sin(angle + Math.PI / 6));
-            ctx.closePath();
-            ctx.fill();
-        }
-        
-        function checkAnswers() {
-            const answer1 = parseFloat(document.getElementById('answer1').value);
-            
-            const feedback = document.getElementById('feedback');
-            
-            if (isNaN(answer1)) {
-                feedback.className = 'feedback incorrect';
-                feedback.style.display = 'block';
-                feedback.innerHTML = `
-                    <h3>⚠️ 답을 입력해주세요!</h3>
-                    <p>물체 A의 질량을 계산해서 입력해주세요! 🚀</p>
-                `;
-                return;
-            }
-            
-            const tolerance = 0.05;
-            
-            const correct = Math.abs(answer1 - currentProblem.massA) < tolerance;
-            
-            if (correct) {
-                isHit = false;
-                feedback.className = 'feedback correct';
-                feedback.style.display = 'block';
-                feedback.innerHTML = `
-                    <h3>🎉 정답입니다!</h3>
-                    <p><strong>✅ 우주선의 질량:</strong> ${currentProblem.massSpaceship} kg</p>
-                    <div class="concept-box">
-                        <h4>📚 핵심 개념</h4>
-                        <p><strong>등속원운동과 힘의 평형:</strong></p>
-                        <p>• 우주비행사는 등속원운동을 하므로 구심력이 필요합니다.</p>
-                        <p>• 실의 장력이 우주비행사에게 구심력을 제공합니다.</p>
-                        <p>• 매달린 우주선은 정지 상태이므로 장력과 무게가 평형을 이룹니다.</p>
-                        <div class="formula">구심력 F = m × v² / r = 실의 장력 T = 우주선의 무게 m_우주선 × g</div>
-                        <p><strong>계산:</strong></p>
-                        <p>구심력 F = ${currentProblem.massAstronaut} × ${currentProblem.speed}² / ${currentProblem.distance} = ${currentProblem.massAstronaut * currentProblem.speed * currentProblem.speed / currentProblem.distance} N</p>
-                        <p>m_우주선 = F / g = ${currentProblem.massAstronaut * currentProblem.speed * currentProblem.speed / currentProblem.distance} / 10 = ${currentProblem.massSpaceship} kg</p>
-                    </div>
-                `;
-            } else {
-                isHit = true;
-                hitAnimation = 0;
-                feedback.className = 'feedback incorrect';
-                feedback.style.display = 'block';
-                feedback.innerHTML = `
-                    <h3>💥 틀렸어요! 다시 계산해보세요!</h3>
-                    <p><strong>❌ 입력값:</strong> ${answer1} kg → <strong>정답:</strong> ${currentProblem.massSpaceship} kg</p>
-                    <div class="concept-box">
-                        <h4>💡 풀이 방법</h4>
-                        <p><strong>1단계: 등속원운동의 구심력</strong></p>
-                        <p>등속원운동을 하는 물체에는 원의 중심을 향하는 구심력이 필요합니다.</p>
-                        <div class="formula">구심력 F = m × v² / r</div>
-                        <p>• m: 원운동하는 물체의 질량 (우주비행사)</p>
-                        <p>• v: 속력</p>
-                        <p>• r: 반지름 (중심에서 우주비행사까지의 거리)</p>
-                        
-                        <p style="margin-top: 15px;"><strong>2단계: 구심력 계산</strong></p>
-                        <div class="formula">F = m_우주비행사 × v² / r</div>
-                        <p>F = ${currentProblem.massAstronaut} × ${currentProblem.speed}² / ${currentProblem.distance}</p>
-                        <p>F = ${currentProblem.massAstronaut} × ${currentProblem.speed * currentProblem.speed} / ${currentProblem.distance}</p>
-                        <p>F = ${currentProblem.massAstronaut * currentProblem.speed * currentProblem.speed / currentProblem.distance} N</p>
-                        
-                        <p style="margin-top: 15px;"><strong>3단계: 힘의 평형 관계</strong></p>
-                        <p>우주비행사가 등속원운동을 유지하려면 실의 장력이 구심력을 제공해야 합니다.</p>
-                        <p>또한 매달린 우주선은 정지 상태이므로, 실의 장력과 우주선의 무게가 평형을 이룹니다.</p>
-                        <div class="formula">구심력 = 실의 장력 = 우주선의 무게</div>
-                        <div class="formula">F = T = m_우주선 × g</div>
-                        
-                        <p style="margin-top: 15px;"><strong>4단계: 우주선의 질량 계산</strong></p>
-                        <div class="formula">m_우주선 = F / g</div>
-                        <p>m_우주선 = ${currentProblem.massAstronaut * currentProblem.speed * currentProblem.speed / currentProblem.distance} / 10</p>
-                        <p>m_우주선 = ${currentProblem.massSpaceship} kg</p>
-                        
-                        <p style="margin-top: 15px; color: #e74c3c; font-weight: bold;">⚠️ 핵심: 우주비행사의 구심력 = 실의 장력 = 매달린 우주선의 무게</p>
-                    </div>
-                `;
-            }
-        }
-        
-        window.onload = function() {
-            createStars();
             generateNewProblem();
-        };
+        }
+
+        function generateRandomEnergy() {
+            return (Math.floor(Math.random() * 10) + 1) * 10;
+        }
+
+        function generateNewProblem() {
+            selectedOrder = [];
+            selectedItems = [];
+            userAnswer = '';
+            document.getElementById('result').innerHTML = '';
+            
+            const problem = problems[currentProblem - 1];
+            document.getElementById('problemNumber').textContent = `문제 ${currentProblem}.`;
+            
+            const content = document.getElementById('problemContent');
+            
+            let html = `<div class="problem-text">${problem.question}</div>`;
+
+            if (problem.type === 'checkbox') {
+                html += '<div class="selection-area">';
+                html += '<div class="checkbox-group" id="checkboxGroup">';
+                problem.options.forEach((opt, idx) => {
+                    html += `<div class="checkbox-item" data-key="${opt.key}" onclick="toggleCheckbox('${opt.key}')">
+                        <div class="checkbox-icon"></div>
+                        <span>${opt.text}</span>
+                    </div>`;
+                });
+                html += '</div></div>';
+            } else if (problem.type === 'order') {
+                const energies = [];
+                for (let i = 0; i < 3; i++) {
+                    let supplied = generateRandomEnergy();
+                    let work = generateRandomEnergy();
+                    while (work >= supplied) {
+                        work = generateRandomEnergy();
+                    }
+                    energies.push({
+                        supplied: supplied,
+                        work: work,
+                        efficiency: (work / supplied)
+                    });
+                }
+
+                problemData = { energies };
+
+                html += '<div class="energy-display">';
+                html += `<div class="energy-row"><span class="energy-label">A 열기관</span><span>공급: <span class="energy-value">${energies[0].supplied}</span> kJ / 일: <span class="energy-value">${energies[0].work}</span> kJ</span></div>`;
+                html += `<div class="energy-row"><span class="energy-label">B 열기관</span><span>공급: <span class="energy-value">${energies[1].supplied}</span> kJ / 일: <span class="energy-value">${energies[1].work}</span> kJ</span></div>`;
+                html += `<div class="energy-row"><span class="energy-label">C 열기관</span><span>공급: <span class="energy-value">${energies[2].supplied}</span> kJ / 일: <span class="energy-value">${energies[2].work}</span> kJ</span></div>`;
+                html += '</div>';
+
+                html += '<div class="selection-area">';
+                html += '<div class="selection-title">▼ 클릭하여 순서대로 선택하세요</div>';
+                html += '<div class="button-group">';
+                html += '<button class="option-btn" onclick="selectOption(\'A\', event)">A</button>';
+                html += '<button class="option-btn" onclick="selectOption(\'B\', event)">B</button>';
+                html += '<button class="option-btn" onclick="selectOption(\'C\', event)">C</button>';
+                html += '</div>';
+                html += '<div class="answer-display" id="answerDisplay">선택한 순서가 여기에 표시됩니다</div>';
+                html += '</div>';
+
+                const machines = [
+                    { name: 'A', efficiency: energies[0].efficiency },
+                    { name: 'B', efficiency: energies[1].efficiency },
+                    { name: 'C', efficiency: energies[2].efficiency }
+                ];
+                machines.sort((a, b) => b.efficiency - a.efficiency);
+                correctAnswer = machines.map(m => m.name);
+            } else if (problem.type === 'calculate') {
+                let Q1 = generateRandomEnergy();
+                let W = generateRandomEnergy();
+                while (W >= Q1) {
+                    W = generateRandomEnergy();
+                }
+                let Q2 = Q1 - W;
+
+                problemData = { Q1, W, Q2 };
+                correctAnswer = problem.calculate(problemData);
+
+                html += '<div class="diagram">';
+                html += '<div class="heat-engine">';
+                html += `<div class="flow-box">고온 열원<br>Q₁ = <strong>${Q1} kJ</strong></div>`;
+                html += '<div class="arrow">↓</div>';
+                html += '<div class="flow-box engine-box">열기관</div>';
+                html += '<div class="arrow">↓</div>';
+                if (currentProblem === 3 || currentProblem === 8) {
+                    html += `<div class="flow-box">한 일<br>W = <strong>${W} kJ</strong></div>`;
+                } else {
+                    html += `<div class="flow-box">저온 열원<br>Q₂ = <strong>${Q2} kJ</strong></div>`;
+                    html += `<div style="font-size: 12px; margin-top: 10px; color: #495057;">한 일: W = <strong>${W} kJ</strong></div>`;
+                }
+                html += '</div></div>';
+
+                html += '<div class="selection-area">';
+                html += '<div class="input-area">';
+                html += `<input type="number" class="input-field" id="userInput" placeholder="답을 입력하세요" step="0.1">`;
+                html += `<span class="unit">${problem.unit}</span>`;
+                html += '</div></div>';
+            }
+
+            content.innerHTML = html;
+        }
+
+        function toggleCheckbox(key) {
+            const item = document.querySelector(`.checkbox-item[data-key="${key}"]`);
+            
+            if (selectedItems.includes(key)) {
+                selectedItems = selectedItems.filter(k => k !== key);
+                item.classList.remove('selected');
+            } else {
+                selectedItems.push(key);
+                item.classList.add('selected');
+            }
+        }
+
+        function selectOption(option, event) {
+            const btn = event.target;
+            
+            if (btn.classList.contains('selected')) {
+                btn.classList.remove('selected');
+                selectedOrder = selectedOrder.filter(o => o !== option);
+            } else {
+                if (selectedOrder.length < 3) {
+                    selectedOrder.push(option);
+                    btn.classList.add('selected');
+                }
+            }
+            
+            updateAnswerDisplay();
+        }
+
+        function updateAnswerDisplay() {
+            const display = document.getElementById('answerDisplay');
+            if (selectedOrder.length === 0) {
+                display.textContent = '선택한 순서가 여기에 표시됩니다';
+            } else {
+                display.textContent = selectedOrder.join(' > ');
+            }
+        }
+
+        function checkAnswer() {
+            const problem = problems[currentProblem - 1];
+            const resultDiv = document.getElementById('result');
+            let isCorrect = false;
+
+            if (problem.type === 'checkbox') {
+                if (selectedItems.length === 0) {
+                    resultDiv.innerHTML = '<div class="result incorrect">선택지를 선택해주세요!</div>';
+                    return;
+                }
+                const correct = problem.correctKeys.sort().join(',');
+                const selected = selectedItems.sort().join(',');
+                isCorrect = correct === selected;
+                
+                if (isCorrect) {
+                    resultDiv.innerHTML = '<div class="result correct">✓ 정답입니다!</div>';
+                } else {
+                    const correctText = problem.options
+                        .filter(opt => problem.correctKeys.includes(opt.key))
+                        .map(opt => opt.text)
+                        .join('<br>• ');
+                    resultDiv.innerHTML = `<div class="result incorrect">✗ 틀렸습니다.<br><br>정답:<br>• ${correctText}</div>`;
+                }
+            } else if (problem.type === 'order') {
+                if (selectedOrder.length !== 3) {
+                    resultDiv.innerHTML = '<div class="result incorrect">3개를 모두 선택해주세요!</div>';
+                    return;
+                }
+                isCorrect = selectedOrder.every((val, idx) => val === correctAnswer[idx]);
+                
+                if (isCorrect) {
+                    resultDiv.innerHTML = '<div class="result correct">✓ 정답입니다!</div>';
+                } else {
+                    resultDiv.innerHTML = `<div class="result incorrect">✗ 틀렸습니다.<br>정답: ${correctAnswer.join(' > ')}</div>`;
+                }
+            } else if (problem.type === 'calculate') {
+                const input = document.getElementById('userInput');
+                if (!input.value) {
+                    resultDiv.innerHTML = '<div class="result incorrect">답을 입력해주세요!</div>';
+                    return;
+                }
+                const userValue = parseFloat(input.value);
+                isCorrect = Math.abs(userValue - correctAnswer) < 0.1;
+                
+                if (isCorrect) {
+                    resultDiv.innerHTML = '<div class="result correct">✓ 정답입니다!</div>';
+                } else {
+                    resultDiv.innerHTML = `<div class="result incorrect">✗ 틀렸습니다.<br>정답: ${correctAnswer} ${problem.unit}</div>`;
+                }
+            }
+        }
+
+        init();
     </script>
 </body>
 </html>
