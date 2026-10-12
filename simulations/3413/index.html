@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>힘의 합성과 분해 연습</title>
+<link href="https://fonts.googleapis.com/css2?family=Gothic+A1:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#FFF6EC;--card:#FFFBF4;--ink:#4A3B52;--mute:#8C7791;--f1:#E8748C;--f2:#3F97C2;--res:#E8A23D;--grid:#E7D6E9;--ok:#2F7FB8;--no:#C93F68;--btn:#4A3B52;--btnt:#FFF8EF;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#241C2C;--card:#332A3D;--ink:#F3E7F2;--mute:#B79FC0;--f1:#FF9AB2;--f2:#7FC3E8;--res:#FFC172;--grid:#4A3B5C;--ok:#7FC3E8;--no:#FF7DA0;--btn:#F3E7F2;--btnt:#241C2C}}
+:root[data-theme="dark"]{--bg:#241C2C;--card:#332A3D;--ink:#F3E7F2;--mute:#B79FC0;--f1:#FF9AB2;--f2:#7FC3E8;--res:#FFC172;--grid:#4A3B5C;--ok:#7FC3E8;--no:#FF7DA0;--btn:#F3E7F2;--btnt:#241C2C}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 70px)}
+*{box-sizing:border-box}
+body{margin:0;background-color:var(--bg);color:var(--ink);font:400 16px/1.6 'Gothic A1','Noto Sans KR',-apple-system,sans-serif;position:relative;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:-15%;z-index:-2;pointer-events:none;filter:blur(70px);opacity:.9;
+ background:radial-gradient(42% 34% at 2% 0%,#FBD6E3,transparent 70%),radial-gradient(42% 34% at 98% 0%,#CDE9F7,transparent 70%),radial-gradient(42% 34% at 0% 100%,#DCD2F5,transparent 70%),radial-gradient(42% 34% at 100% 100%,#DCEFC2,transparent 70%),radial-gradient(55% 38% at 50% 8%,rgba(255,255,255,.6),transparent 70%)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) body::before{background:radial-gradient(42% 34% at 2% 0%,#5A3A52,transparent 70%),radial-gradient(42% 34% at 98% 0%,#2E4A5C,transparent 70%),radial-gradient(42% 34% at 0% 100%,#3A3258,transparent 70%),radial-gradient(42% 34% at 100% 100%,#3A4A30,transparent 70%),radial-gradient(55% 38% at 50% 8%,rgba(255,255,255,.08),transparent 70%)}}
+:root[data-theme="dark"] body::before{background:radial-gradient(42% 34% at 2% 0%,#5A3A52,transparent 70%),radial-gradient(42% 34% at 98% 0%,#2E4A5C,transparent 70%),radial-gradient(42% 34% at 0% 100%,#3A3258,transparent 70%),radial-gradient(42% 34% at 100% 100%,#3A4A30,transparent 70%),radial-gradient(55% 38% at 50% 8%,rgba(255,255,255,.08),transparent 70%)}
+body::after{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.6;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><path d='M28,29 Q30.24,33.76 35,36 Q30.24,38.24 28,43 Q25.76,38.24 21,36 Q25.76,33.76 28,29 Z' fill='%23F3A9C2' fill-opacity='0.7'/><path d='M118,13 Q119.6,16.4 123,18 Q119.6,19.6 118,23 Q116.4,19.6 113,18 Q116.4,16.4 118,13 Z' fill='%238FC4E6' fill-opacity='0.65'/><path d='M205,56 Q207.56,61.44 213,64 Q207.56,66.56 205,72 Q202.44,66.56 197,64 Q202.44,61.44 205,56 Z' fill='%23B9A6E8' fill-opacity='0.6'/><path d='M58,142 Q59.92,146.08 64,148 Q59.92,149.92 58,154 Q56.08,149.92 52,148 Q56.08,146.08 58,142 Z' fill='%23B7DFA0' fill-opacity='0.65'/><path d='M172,171 Q173.6,174.4 177,176 Q173.6,177.6 172,181 Q170.4,177.6 167,176 Q170.4,174.4 172,171 Z' fill='%23F3A9C2' fill-opacity='0.6'/><path d='M16,199 Q18.24,203.76 23,206 Q18.24,208.24 16,213 Q13.76,208.24 9,206 Q13.76,203.76 16,199 Z' fill='%238FC4E6' fill-opacity='0.6'/><path d='M222,134 Q223.28,136.72 226,138 Q223.28,139.28 222,142 Q220.72,139.28 218,138 Q220.72,136.72 222,134 Z' fill='%23F6D98A' fill-opacity='0.65'/><path d='M140,214 Q141.92,218.08 146,220 Q141.92,221.92 140,226 Q138.08,221.92 134,220 Q138.08,218.08 140,214 Z' fill='%23B9A6E8' fill-opacity='0.55'/></svg>");background-size:240px 240px}
+main{max-width:480px;margin:0 auto;padding:10px 14px 40px}
+h1{font-size:22px;font-weight:800;margin:4px 0 0;letter-spacing:-.02em}
+h1::before{content:'✨ ';}
+.sub{margin:0 0 6px;color:var(--mute);font-size:13px}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:color-mix(in srgb,var(--bg) 55%,transparent);backdrop-filter:blur(10px) saturate(160%);-webkit-backdrop-filter:blur(10px) saturate(160%);padding:6px 0;display:flex;gap:8px}
+button{font:inherit;font-weight:800;cursor:pointer}
+.top button{flex:1;padding:11px;border-radius:999px;border:3px dashed var(--card);background:var(--btn);color:var(--btnt);box-shadow:0 3px 0 rgba(0,0,0,.08)}
+.top button+button{background:var(--card);color:var(--ink);border-color:var(--f1)}
+details.card{padding:10px 14px}
+summary{font-weight:700;cursor:pointer}
+#chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.chip{padding:6px 12px;border-radius:999px;border:2px dashed var(--grid);background:var(--card);color:var(--mute);font-size:14px}
+.chip.on{border-color:var(--f1);color:var(--ink);background:color-mix(in srgb,var(--f1) 20%,var(--card))}
+.bar{display:flex;justify-content:space-between;align-items:center;font-size:14px;font-weight:600;margin:4px 0 8px}
+#tname{background:var(--ink);color:var(--bg);padding:3px 12px;border-radius:999px}
+.card{background:var(--card);border:3px dashed var(--f2);border-radius:22px;padding:14px;margin-bottom:12px;box-shadow:0 4px 0 rgba(0,0,0,.05)}
+canvas{width:100%;height:auto;display:block;margin:0 auto 12px;background:var(--card);border:3px dashed var(--f2);border-radius:22px;box-shadow:0 4px 0 rgba(0,0,0,.05)}
+#qp{font-size:16px;line-height:1.75}
+#qp small{display:block;color:var(--mute);font-size:13px;margin-top:6px}
+.qn{font-size:26px;font-weight:800;margin-right:6px;color:var(--no)}
+.fig{float:right;width:38%;margin:0 0 4px 10px;color:var(--ink)}
+.bogi{clear:both;position:relative;border:3px dashed var(--ink);border-radius:16px;padding:16px 12px 8px;margin-top:22px}
+.bogi>span{position:absolute;top:-14px;left:50%;transform:translateX(-50%);background:var(--card);padding:0 8px;font-weight:700}
+.note{color:var(--mute);font-size:12.5px;margin:2px 0 10px}
+#letterRow{display:flex;gap:10px;justify-content:center;margin:14px 0 10px}
+.lb{width:64px;height:56px;font-size:22px;font-weight:800;border:3px dashed var(--ink);border-radius:16px;background:var(--card);color:var(--ink)}
+.lb.on{background:var(--f1);color:#fff;border-color:var(--f1);border-style:solid}
+#preview{text-align:center;font-size:20px;font-weight:800;min-height:30px;letter-spacing:.15em}
+.bl{display:flex;flex-direction:column;gap:6px}
+.bl label{font-weight:600;font-size:14px}
+.bl input{width:100%;font:inherit;font-size:18px;font-weight:800;padding:9px 10px;border:3px solid var(--ink);border-radius:14px;background:var(--card);color:var(--ink)}
+.bl em{font-style:normal;font-size:13px;font-weight:700;min-height:16px}
+.bgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px 10px}
+.bgrid .bl.full{grid-column:1/-1}
+.g{color:var(--ok)}.x{color:var(--no)}
+.main{width:100%;padding:15px;font-size:18px;border-radius:999px;border:3px dashed var(--card);background:var(--btn);color:var(--btnt);margin-top:12px;box-shadow:0 3px 0 rgba(0,0,0,.08)}
+.msg{color:var(--no);font-size:14px;min-height:20px;margin:0 0 6px}
+#sol{margin-top:14px;border:3px dashed var(--ok);border-left-width:10px}
+#sol.bad{border-color:var(--no)}
+#sol h2{margin:0 0 6px;font-size:19px}
+#sol .core{background:color-mix(in srgb,var(--f2) 18%,var(--card));border-radius:14px;padding:8px 12px;font-size:14px;margin:8px 0}
+#sol ol{margin:6px 0 0;padding-left:20px}
+#sol li{margin-bottom:6px}
+button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid var(--f1);outline-offset:2px}
+</style>
+</head>
+<body>
+<main>
+<h1>힘의 합성과 분해</h1>
+<p class="sub">Aero Physics 01 연습 시뮬레이터 (단답형)</p>
+<div class="top"><button id="bt">새 유형</button><button id="bq">새 문제</button></div>
+<details class="card"><summary>문제 유형 선택 <b id="cnt"></b></summary><div id="chips"></div></details>
+<div class="bar"><span id="tname"></span><span id="score"></span></div>
+<canvas id="cv" width="640" height="400"></canvas>
+<div class="card" id="qp"></div>
+<div id="ans"></div>
+<p class="msg" id="msg"></p>
+<button class="main" id="ck">확인</button>
+<section class="card" id="sol" hidden></section>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const R=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
+const pick=a=>a[R(0,a.length-1)];
+const shuf=a=>a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(v=>v[1]);
+const cv=$('cv'),cx=cv.getContext('2d');
+const C=()=>{const s=getComputedStyle(document.documentElement),g=n=>s.getPropertyValue(n).trim();return{ink:g('--ink'),f1:g('--f1'),f2:g('--f2'),res:g('--res'),grid:g('--grid'),bg:g('--card')}};
+function clear(){const c=C();cx.setLineDash([]);cx.fillStyle=c.bg;cx.fillRect(0,0,640,400);return c}
+function arrow(x0,y0,x1,y1,col,lab,dash,w=5,lx=0,ly=0){
+ cx.save();cx.strokeStyle=cx.fillStyle=col;cx.lineWidth=w;if(dash)cx.setLineDash([10,8]);
+ const a=Math.atan2(y1-y0,x1-x0),h=12+w*1.6,bx=x1-h*.8*Math.cos(a),by=y1-h*.8*Math.sin(a);
+ cx.beginPath();cx.moveTo(x0,y0);cx.lineTo(bx,by);cx.stroke();cx.setLineDash([]);
+ cx.beginPath();cx.moveTo(x1,y1);cx.lineTo(x1-h*Math.cos(a-.4),y1-h*Math.sin(a-.4));cx.lineTo(x1-h*Math.cos(a+.4),y1-h*Math.sin(a+.4));cx.closePath();cx.fill();
+ if(lab){cx.font='bold 22px sans-serif';cx.textAlign='center';cx.textBaseline='middle';
+  const dx=lx||Math.cos(a)*26,dy=ly||Math.sin(a)*20;cx.fillText(lab,x1+dx,y1+dy)}
+ cx.restore()}
+function dot(x,y,c){cx.fillStyle=c.ink;cx.beginPath();cx.arc(x,y,9,0,7);cx.fill()}
+/* 모든 화살표는 격자 교차점 (320,200)에서 시작 */
+function gridDraw(vecs){const c=clear();cx.strokeStyle=c.grid;cx.lineWidth=1.5;
+ for(let x=0;x<=640;x+=40){cx.beginPath();cx.moveTo(x,0);cx.lineTo(x,400);cx.stroke()}
+ for(let y=0;y<=400;y+=40){cx.beginPath();cx.moveTo(0,y);cx.lineTo(640,y);cx.stroke()}
+ vecs.forEach(v=>{if(v.x||v.y)arrow(320,200,320+v.x*40,200-v.y*40,c[v.c],v.l,v.d,v.w)});dot(320,200,c)}
+const fmtN=n=>Number.isInteger(Math.sqrt(n))?String(Math.sqrt(n)):'√'+n;
+const W3=v=>v>0?'오른쪽':v<0?'왼쪽':'없음';
+/* 입력 해석: 루트는 √, v 어느 쪽으로 써도 인정 */
+function pn(s){s=s.replace(/[−–]/g,'-').replace(/\s/g,'').replace(/[Nn뉴턴]+$/,'');
+ const m=s.match(/^(-?\d*\.?\d*)\*?(?:√|sqrt|root|루트|v)\(?(\d+)\)?$/i);
+ if(m){const c=m[1]===''?1:m[1]==='-'?-1:parseFloat(m[1]);return c*Math.sqrt(+m[2])}
+ return /^-?\d*\.?\d+$/.test(s)?parseFloat(s):NaN}
+const numOK=(v,b)=>Math.abs(pn(v)-b.ans)<.02;
+const num=(lab,ans,unit,show)=>({lab,ans,unit:unit??'N',show:show??String(ans),ph:'숫자'});
+const ROOTNOTE='※ 정답에 루트(√)가 필요하면 v로 입력해도 인정돼요. 예: v5 = √5, 5v3 = 5√3';
+
+/* 유형 1: 힘의 합성 개념 (사진 형식, ㄱㄴㄷ 버튼으로 답 작성) */
+const POOL=[
+ ['힘은 크기와 방향을 모두 가진 물리량(벡터)이다.','힘은 "얼마나 세게(크기)", "어느 쪽으로(방향)"를 모두 말해야 하므로 벡터예요.'],
+ ['크기가 같고 방향이 반대인 두 힘의 합력은 0이다.','같은 크기로 서로 반대로 당기면 힘이 완전히 상쇄돼 합력이 0이에요. (줄다리기가 비긴 상태)'],
+ ['힘의 크기만 알면 합력을 구할 수 있다.__X','합력은 방향에 따라 달라져요. 같은 3N, 4N이라도 같은 방향이면 7N, 수직이면 5N이에요.'],
+ ['물체가 일정한 속도로 직선 운동하면 알짜힘은 0이다.','속도가 변하지 않으면 힘이 물체를 가속시키지 않는다는 뜻이므로 알짜힘은 0이에요.'],
+ ['알짜힘이 0이면 물체는 반드시 정지해 있다.__X','알짜힘이 0이어도 원래 움직이던 물체는 같은 속도로 계속 움직여요(등속 직선 운동).'],
+ ['같은 방향으로 작용하는 두 힘의 합력 크기는 두 힘 크기의 차이다.__X','같은 방향이면 화살표를 이어 붙여 길어지므로 "합"이에요. "차"는 반대 방향일 때 써요.'],
+ ['벡터에 2를 곱하면 방향은 그대로, 크기는 2배가 된다.','스칼라(그냥 숫자)를 곱하면 화살표 길이만 그 배수로 바뀌고 방향은 같아요.'],
+ ['벡터에 -1을 곱하면 크기는 같고 방향은 반대가 된다.','음수를 곱하면 화살표가 거꾸로 뒤집혀요. 평형을 만드는 힘이 바로 이런 반대 힘이에요.'],
+ ['서로 수직인 두 힘의 합력은 두 힘의 크기를 더한 값이다.__X','수직이면 직각삼각형이 만들어져 피타고라스 정리로 구해요. 3N과 4N이면 7N이 아니라 5N이에요.'],
+ ['힘의 평형은 알짜힘이 0인 상태이다.','여러 힘이 작용해도 모두 합쳤을 때 0이면 힘의 평형이에요.']];
+function gWind(){let it;
+ do{it=shuf(POOL).slice(0,3).map(row=>{const bad=row[0].endsWith('__X');return{txt:bad?row[0].slice(0,-2):row[0],ok:bad?0:1,why:row[1]}})}while(!it.some(x=>x.ok));
+ const L='ㄱㄴㄷ',ans=it.map((x,i)=>x.ok?L[i]:'').join('');
+ return{kind:'letters',
+ p:`그림은 힘의 합성과 분해에 대한 설명을 나타낸 것이다.<br>다음 &lt;보기&gt; 중 옳은 것만을 있는 대로 고르시오.`,
+ extra:`<div class="bogi"><span>보 기</span>${it.map((x,i)=>`${L[i]}. ${x.txt}`).join('<br>')}</div>`,
+ note:'옳다고 생각하는 보기 버튼을 눌러 답을 표시하세요. (중복 선택 가능)',
+ ans,sol:['<div class="core">핵심: 힘은 크기와 방향을 가진 벡터이고, 힘의 평형은 알짜힘이 0인 상태예요. 벡터의 합과 분해는 방향까지 함께 고려해야 해요.</div>',
+ ...it.map((x,i)=>`${L[i]}. ${x.txt} → <b>${x.ok?'O':'X'}</b> : ${x.why}`),`옳은 것은 <b>${ans?[...ans].join(', '):'없음'}</b>이에요.`]}}
+
+/* 유형 2: 힘의 합성 (한 직선 위 또는 수직인 두 힘, 랜덤) */
+function gForceLine(){const u=pick([1,2,5,10]),same=R(0,1),d1=pick([1,-1]);let a,b;
+ if(same){do{a=R(1,5);b=R(1,Math.min(6,7-a))}while(a==b)}else{do{a=R(1,6);b=R(1,6)}while(a==b)}
+ const d2=same?d1:-d1,s=a*d1+b*d2,as=Math.abs(s)*u,ua=a*u,ub=b*u;
+ return{p:`한 물체에 두 힘 F₁, F₂가 <b>한 직선 위</b>에서 작용해요. 격자 한 칸은 ${u}N이에요.`,
+ blanks:[num('합력의 크기',as)],
+ sol:['<div class="core">핵심: 한 직선 위의 힘은 방향을 보고 더해요.</div>',
+ `화살표 길이를 격자로 읽으면 F₁ = ${a}칸 × ${u}N = <b>${ua}N</b>, F₂ = ${b}칸 × ${u}N = <b>${ub}N</b>.`,
+ same?`두 힘이 <b>같은 방향</b>이라 화살표를 이어 붙이면 길어져요. ${ua} + ${ub} = <b>${as}N</b>, 방향은 ${W3(s)}.`:`두 힘이 <b>반대 방향</b>이라 줄다리기와 같아요. 큰 힘에서 작은 힘을 빼요: ${Math.max(ua,ub)} − ${Math.min(ua,ub)} = <b>${as}N</b>, 방향은 더 큰 힘 쪽인 ${W3(s)}.`],
+ draw(rev){const v1={x:a*d1,y:0,c:'f1',l:'F₁'},v2={x:b*d2,y:0,c:'f2',l:'F₂'},e=rev?[{x:s,y:0,c:'res',l:'합력',d:1,w:4}]:[];
+  if(same){const big=a>b?v1:v2,sm=big==v1?v2:v1;big.w=11;sm.w=4;gridDraw([big,sm,...e])}else gridDraw([v1,v2,...e])}}}
+function gForcePerp(){const u=pick([1,2,5,10]),[p,q]=pick([[3,4],[4,3]]),sx=pick([1,-1]),sy=pick([1,-1]),a=p*u,b=q*u,c=5*u;
+ return{p:`한 물체에 서로 <b>수직</b>인 두 힘 F₁, F₂가 작용해요. 격자 한 칸은 ${u}N이에요.`,
+ blanks:[num('합력의 크기',c)],
+ sol:['<div class="core">핵심: 수직인 두 힘을 화살표로 이어 붙이면 직각삼각형이 생기고, 합력은 그 빗변이에요.</div>',
+ `격자로 읽으면 F₁ = ${p}칸 × ${u}N = <b>${a}N</b>, F₂ = ${q}칸 × ${u}N = <b>${b}N</b>.`,
+ `피타고라스 정리: (합력)² = F₁² + F₂² = ${a*a} + ${b*b} = ${a*a+b*b}. 제곱해서 ${a*a+b*b}가 되는 수는 ${c}이므로 합력은 <b>${c}N</b>이에요.`],
+ draw(rev){gridDraw([{x:p*sx,y:0,c:'f1',l:'F₁'},{x:0,y:q*sy,c:'f2',l:'F₂'},...(rev?[{x:p*sx,y:q*sy,c:'res',l:'합력',d:1,w:4}]:[])])}}}
+function gForce(){return (Math.random()<.5?gForceLine():gForcePerp())}
+
+/* 유형 3: 격자 위 알짜힘 */
+function rnd(n){for(;;){const f=[];let X=0,Y=0;for(let i=0;i<n;i++){const x=R(-4,4),y=R(-3,3);f.push({x,y});X+=x;Y+=y}
+ if(f.every(v=>v.x||v.y)&&(X||Y)&&Math.abs(X)<=5&&Math.abs(Y)<=4)return{f,X,Y}}}
+const LS=['F₁','F₂','F₃'],CS=['f1','f2','f1'];
+const rd=(f,X,Y)=>['각 힘을 격자로 읽어요(오른쪽·위쪽은 +, 왼쪽·아래쪽은 −):<br>'+f.map((v,i)=>`${LS[i]} = (${v.x}, ${v.y})`).join('<br>'),
+ `x성분 합: ${f.map(v=>v.x).join(' + ').replace(/\+ -/g,'− ')} = <b>${X}</b><br>y성분 합: ${f.map(v=>v.y).join(' + ').replace(/\+ -/g,'− ')} = <b>${Y}</b>`];
+function gGrid(){const n=R(2,3),{f,X,Y}=rnd(n),N=X*X+Y*Y;
+ return{p:`격자 위 물체에 ${n}개의 힘이 작용해요. 격자 한 칸은 1N이에요. (오른쪽·위쪽을 +로 합니다)`,rootnote:1,
+ blanks:[num('(1) 알짜힘의 x성분',X),num('(2) 알짜힘의 y성분',Y),num('(3) 알짜힘의 크기',Math.sqrt(N),'N',fmtN(N))],
+ sol:['<div class="core">핵심: 알짜힘 = 모든 힘의 합. 가로(x)와 세로(y)로 나누어 각각 더한 뒤 피타고라스 정리를 써요.</div>',...rd(f,X,Y),
+ `알짜힘은 (${X}, ${Y}) → 직각삼각형의 빗변이므로 ${X*X} + ${Y*Y} = <b>${N}</b>, 크기는 <b>${fmtN(N)}N</b>이에요.`],
+ draw(rev){gridDraw([...f.map((v,i)=>({x:v.x,y:v.y,c:CS[i],l:LS[i]})),...(rev?[{x:X,y:Y,c:'res',l:'알짜힘',d:1,w:4}]:[])])}}}
+
+/* 유형 4: 힘의 평형 */
+function gEq(){const {f,X,Y}=rnd(2),N=X*X+Y*Y;
+ return{p:'물체에 두 힘 F₁, F₂가 작용하고 있어요. 격자 한 칸은 1N이에요. 물체의 속도가 변하지 않으려면 추가로 어떤 힘을 주어야 할까요? (오른쪽·위쪽을 +로 합니다)',rootnote:1,
+ blanks:[num('(1) F₁+F₂의 크기',Math.sqrt(N),'N',fmtN(N)),num('(2) 추가할 힘의 x성분',-X),num('(3) 추가할 힘의 y성분',-Y)],
+ sol:['<div class="core">핵심: 속도가 변하지 않으려면 알짜힘이 0이어야 해요(힘의 평형). 지금의 합력을 정확히 상쇄하는 힘이 필요해요.</div>',...rd(f,X,Y),
+ `합력은 (${X}, ${Y}), 크기는 <b>${fmtN(N)}N</b>이에요.`,
+ `더해서 0이 되려면 <b>크기는 같고 방향은 반대</b>인 힘이 필요해요: (${-X}, ${-Y}). 그림의 점선 화살표예요.`],
+ draw(rev){gridDraw([{x:f[0].x,y:f[0].y,c:'f1',l:'F₁'},{x:f[1].x,y:f[1].y,c:'f2',l:'F₂'},...(rev?[{x:-X,y:-Y,c:'res',l:'추가힘',d:1,w:4}]:[])])}}}
+
+/* 유형 5: 빗면 힘의 분해 */
+function gIncline(){const W=pick([10,20,30,40,50,60]),th=pick([30,37,53,60]),h=W/2,r3=Math.sqrt(3)/2;
+ const T={30:[W/2,W*r3,''+h,h+'√3','sin30°=1/2, cos30°=√3/2',1],60:[W*r3,W/2,h+'√3',''+h,'sin60°=√3/2, cos60°=1/2',1],37:[W*6/10,W*8/10,''+W*6/10,''+W*8/10,'sin37°=0.6, cos37°=0.8',0],53:[W*8/10,W*6/10,''+W*8/10,''+W*6/10,'sin53°=0.8, cos53°=0.6',0]}[th];
+ const [pa,pe,sa,se,tb,rn]=T;
+ return{p:`마찰이 없는 경사각 ${th}°의 빗면 위에 무게 ${W}N인 물체가 있어요. 무게(중력)를 빗면에 <b>수평</b>한 방향과 <b>수직</b>인 방향으로 분해해 보세요.<small>참고: ${tb}</small>`,rootnote:rn,
+ blanks:[num('(1) 빗면에 수평한 방향의 성분',pa,'N',sa),num('(2) 빗면에 수직인 방향의 성분',pe,'N',se),num('(3) 두 성분을 다시 합한 힘의 크기',W)],
+ sol:['<div class="core">핵심: 벡터의 분해 — 하나의 힘을 서로 수직인 두 방향의 힘으로 나눌 수 있어요.</div>',
+ `무게 ${W}N은 아래로 향해요. 이것을 빗면 방향과 빗면에 수직인 방향으로 나누면 직각삼각형이 만들어져요.`,
+ `수평 성분 = 무게 × sin${th}° = <b>${sa}N</b>. (빗면이 가파를수록 커져요)`,
+ `수직 성분 = 무게 × cos${th}° = <b>${se}N</b>. 이 성분은 빗면이 떠받치는 힘과 균형을 이뤄요.`,
+ `두 성분을 다시 합치면(피타고라스 정리) 원래 무게 <b>${W}N</b>이 돼요.`],
+ draw(rev){const c=clear(),t=th*Math.PI/180,L=280,Lc=L*Math.cos(t),Ls=L*Math.sin(t),x0=(640-Lc)/2,y0=230,ss=Math.sin(t),cc=Math.cos(t);
+  cx.fillStyle=c.grid;cx.beginPath();cx.moveTo(x0,y0);cx.lineTo(x0+Lc,y0);cx.lineTo(x0+Lc,y0-Ls);cx.closePath();cx.fill();
+  cx.fillStyle=c.ink;cx.font='bold 20px sans-serif';cx.textAlign='left';cx.textBaseline='alphabetic';cx.fillText('θ='+th+'°',x0+34,y0+28);
+  const bx=x0+.42*Lc-ss*20,by=y0-.42*Ls-cc*20;cx.save();cx.translate(bx,by);cx.rotate(-t);cx.fillStyle=c.f2;cx.globalAlpha=.85;cx.fillRect(-28,-20,56,40);cx.restore();
+  const k=rev?95:75;
+  arrow(bx,by,bx,by+k,c.res,'무게 '+W+'N',0,5,50,4);
+  if(rev){arrow(bx,by,bx-cc*k*ss,by+ss*k*ss,c.f1,'수평',1,4,-34,-6);arrow(bx,by,bx+ss*k*cc,by+cc*k*cc,c.ink,'수직',1,4,30,-16)}}}}
+
+const TY=[['힘의 합성과 분해',gWind],['힘의 합성',gForce],['격자 위 알짜힘',gGrid],['힘의 평형',gEq],['빗면 힘의 분해',gIncline]];
+const on=TY.map(()=>1);
+let ti=0,q,done=0,ok=0,tot=0;
+function chips(){$('chips').innerHTML=TY.map((t,i)=>`<button class="chip${on[i]?' on':''}" data-i="${i}" aria-pressed="${!!on[i]}">${i+1}. ${t[0]}</button>`).join('');$('cnt').textContent='('+on.filter(Boolean).length+'/'+TY.length+')'}
+function blankHTML(){
+ const n=q.blanks.length;
+ return `<div class="bgrid">`+q.blanks.map((b,i)=>{const isLastOdd=(n%2==1)&&(i==n-1);
+  return `<div class="bl${isLastOdd?' full':''}"><label for="b${i}">${b.lab}</label><input id="b${i}" type="text" autocomplete="off" autocapitalize="off" placeholder="${b.ph}"><em id="r${i}"></em></div>`}).join('')+`</div>`}
+function render(){
+ q=TY[ti][1]();done=0;$('tname').textContent=(ti+1)+'. '+TY[ti][0];
+ const hasDraw=typeof q.draw=='function';
+ cv.style.display=hasDraw?'block':'none';if(hasDraw)q.draw(false);
+ $('qp').innerHTML=(q.fig?`<div class="fig">${q.fig}</div>`:'')+`<b class="qn">${ti+1}.</b>`+q.p+(q.extra||'')+'<div style="clear:both"></div>'+(q.note?`<small>${q.note}</small>`:'');
+ if(q.kind=='letters'){
+  $('ans').innerHTML=`<div id="letterRow">${['ㄱ','ㄴ','ㄷ'].map(l=>`<button class="lb" data-l="${l}">${l}</button>`).join('')}</div><div id="preview">(선택 없음)</div>`;
+  window._sel=new Set();
+  $('letterRow').onclick=e=>{const b=e.target.closest('.lb');if(!b||done)return;const l=b.dataset.l;
+   if(window._sel.has(l))window._sel.delete(l);else window._sel.add(l);b.classList.toggle('on');
+   const s=[...'ㄱㄴㄷ'].filter(x=>window._sel.has(x)).join('');$('preview').textContent=s||'(선택 없음)'};
+ }else{
+  $('ans').innerHTML=(q.rootnote?`<p class="note">${ROOTNOTE}</p>`:'')+blankHTML();
+ }
+ $('msg').textContent='';$('sol').hidden=true;$('ck').disabled=false;$('score').textContent='맞힌 문제 '+ok+' / '+tot}
+function check(){
+ if(done)return;done=1;tot++;let all;
+ if(q.kind=='letters'){const got=[...'ㄱㄴㄷ'].filter(x=>window._sel.has(x)).join('');all=got==q.ans;
+  [...$('letterRow').children].forEach(b=>b.disabled=true);
+  if(!all)$('preview').insertAdjacentHTML('afterend',`<div style="text-align:center" class="x">정답: ${q.ans?[...q.ans].join(', '):'없음'}</div>`);
+ }else{
+  const vs=q.blanks.map((b,i)=>$('b'+i).value.trim());let k=0;
+  q.blanks.forEach((b,i)=>{const g=numOK(vs[i],b);k+=g;const r=$('r'+i);r.textContent=g?'✓ 정답':'✗ 정답: '+b.show+(b.unit||'');r.className=g?'g':'x';$('b'+i).disabled=true});
+  all=k==q.blanks.length;
+ }
+ if(all)ok++;$('msg').textContent='';$('ck').disabled=true;if(q.draw)q.draw(true);
+ const s=$('sol');s.className='card'+(all?'':' bad');
+ s.innerHTML=`<h2>${all?'정답이에요!':'아쉬워요, 풀이를 확인해 보세요'}</h2>`+q.sol[0]+'<ol>'+q.sol.slice(1).map(x=>'<li>'+x+'</li>').join('')+'</ol>';
+ s.hidden=false;s.scrollIntoView({behavior:'smooth',block:'nearest'});$('score').textContent='맞힌 문제 '+ok+' / '+tot}
+$('bt').onclick=()=>{const c=on.map((v,j)=>v&&j!=ti?j:-1).filter(j=>j>=0);if(c.length)ti=pick(c);render()};
+$('bq').onclick=render;$('ck').onclick=check;
+$('chips').onclick=e=>{const b=e.target.closest('.chip');if(!b)return;const i=+b.dataset.i;
+ if(on[i]&&on.filter(Boolean).length==1)return;on[i]=on[i]?0:1;chips();
+ if(!on[ti]){ti=pick(on.map((v,j)=>v?j:-1).filter(j=>j>=0));render()}};
+chips();render();
+</script>
+</body>
+</html>

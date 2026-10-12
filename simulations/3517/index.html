@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>돌림힘 평형 연습</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Noto+Serif+KR:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#E9EEF2;
+    --card:#FFFFFF;
+    --ink:#16222B;
+    --ink-soft:#54646F;
+    --rule:#C3D2DC;
+    --beam:#243541;
+    --mark:#0C6B5B;
+    --miss:#B23120;
+    --dim:#B2701A;
+    --shadow:rgba(22,34,43,.10);
+    box-sizing:border-box;
+    padding-top:env(safe-area-inset-top,0px);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#111A20;
+      --card:#1A252D;
+      --ink:#E8EFF3;
+      --ink-soft:#9BAEBA;
+      --rule:#2E404C;
+      --beam:#CBD9E2;
+      --mark:#48C3A8;
+      --miss:#F08A78;
+      --dim:#E0A34A;
+      --shadow:rgba(0,0,0,.4);
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#111A20; --card:#1A252D; --ink:#E8EFF3; --ink-soft:#9BAEBA;
+    --rule:#2E404C; --beam:#CBD9E2; --mark:#48C3A8; --miss:#F08A78;
+    --dim:#E0A34A; --shadow:rgba(0,0,0,.4);
+  }
+  *,*::before,*::after{box-sizing:border-box}
+  html{scroll-padding-top:env(safe-area-inset-top,0px)}
+  body{
+    margin:0;
+    background:var(--paper);
+    background-image:
+      linear-gradient(to right, color-mix(in srgb, var(--rule) 45%, transparent) 1px, transparent 1px),
+      linear-gradient(to bottom, color-mix(in srgb, var(--rule) 45%, transparent) 1px, transparent 1px);
+    background-size:26px 26px;
+    color:var(--ink);
+    font-family:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+    font-size:16px;
+    line-height:1.6;
+    -webkit-text-size-adjust:100%;
+  }
+  .wrap{max-width:460px;margin:0 auto;padding:18px 14px 28px}
+  header{margin-bottom:14px}
+  h1{
+    font-family:"Noto Serif KR","Noto Sans KR",serif;
+    font-size:1.45rem;line-height:1.3;margin:0 0 4px;letter-spacing:-.01em;
+  }
+  .sub{margin:0;color:var(--ink-soft);font-size:.86rem}
+  .card{
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-radius:10px;
+    box-shadow:0 1px 3px var(--shadow);
+    padding:14px;
+    margin-bottom:14px;
+  }
+  .stem{font-size:.95rem;margin:0 0 10px}
+  .stem b{font-weight:700}
+  figure{margin:0;overflow-x:auto}
+  svg{display:block;width:100%;max-width:100%;height:auto}
+  .note{font-size:.8rem;color:var(--ink-soft);margin:8px 0 0}
+  .ask{font-size:.92rem;margin:0 0 10px;padding-bottom:10px;border-bottom:1px solid var(--rule)}
+  ul.claims{list-style:none;margin:0;padding:0}
+  ul.claims li{margin-bottom:8px}
+  .claim{
+    width:100%;text-align:left;display:flex;gap:10px;align-items:flex-start;
+    background:transparent;color:var(--ink);
+    border:1px solid var(--rule);border-radius:8px;
+    padding:11px 12px;font:inherit;font-size:.92rem;cursor:pointer;
+    transition:border-color .15s, background-color .15s;
+  }
+  .claim:focus-visible{outline:2px solid var(--mark);outline-offset:2px}
+  .tag{
+    flex:0 0 auto;width:26px;height:26px;border-radius:50%;
+    border:1.5px solid var(--rule);display:grid;place-items:center;
+    font-size:.85rem;font-weight:700;color:var(--ink-soft);
+  }
+  .claim[aria-pressed="true"]{border-color:var(--mark);background:color-mix(in srgb, var(--mark) 10%, transparent)}
+  .claim[aria-pressed="true"] .tag{border-color:var(--mark);background:var(--mark);color:var(--card)}
+  .claim.right{border-color:var(--mark)}
+  .claim.wrong{border-color:var(--miss)}
+  .verdict{flex:0 0 auto;font-size:.8rem;font-weight:700;margin-left:auto;white-space:nowrap}
+  .verdict.o{color:var(--mark)}
+  .verdict.x{color:var(--miss)}
+  .hint{font-size:.8rem;color:var(--ink-soft);margin:2px 0 12px}
+  .row{display:flex;gap:10px}
+  button.act{
+    flex:1;font:inherit;font-weight:700;font-size:.95rem;
+    padding:13px 10px;border-radius:9px;cursor:pointer;border:1px solid transparent;
+    transition:filter .15s;
+  }
+  button.act:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+  .primary{background:var(--mark);color:#fff}
+  .ghost{background:transparent;color:var(--ink);border-color:var(--rule)}
+  button.act:disabled{opacity:.45;cursor:default}
+  .result{margin-top:14px;display:none}
+  .result.show{display:block}
+  .banner{font-weight:700;font-size:1rem;margin:0 0 4px}
+  .banner.o{color:var(--mark)}
+  .banner.x{color:var(--miss)}
+  .answer{font-size:.88rem;color:var(--ink-soft);margin:0 0 12px}
+  .steps{margin:0;padding:0;list-style:none;font-size:.9rem}
+  .steps li{padding:10px 0;border-top:1px dashed var(--rule)}
+  .steps li:first-child{border-top:0;padding-top:0}
+  .steps h3{margin:0 0 3px;font-size:.88rem;font-weight:700}
+  .eq{
+    font-family:"Noto Serif KR",Georgia,serif;font-weight:700;
+    display:block;margin:4px 0;color:var(--dim);font-size:.92rem;
+  }
+  .score{
+    display:flex;justify-content:space-between;align-items:baseline;
+    font-size:.82rem;color:var(--ink-soft);margin:0 2px 14px;
+  }
+  .score strong{color:var(--ink);font-size:1rem}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>막대의 돌림힘 평형</h1>
+    <p class="sub">받침대를 회전축으로 잡고 옳은 설명을 모두 고르세요.</p>
+  </header>
+
+  <div class="score">
+    <span>맞힌 문제 <strong id="hit">0</strong> / <strong id="try">0</strong></span>
+    <span id="streak"></span>
+  </div>
+
+  <section class="card">
+    <p class="stem" id="stem"></p>
+    <figure id="fig"></figure>
+    <p class="note">막대의 질량은 무시한다. 막대는 수평으로 정지해 있다.</p>
+  </section>
+
+  <section class="card">
+    <p class="ask">이에 대한 설명으로 옳은 것을 모두 고르면?</p>
+    <ul class="claims" id="claims"></ul>
+    <p class="hint" id="hint">옳다고 생각하는 항목을 눌러 선택하세요.</p>
+    <div class="row">
+      <button class="act ghost" id="newBtn">새 문제</button>
+      <button class="act primary" id="checkBtn">확인</button>
+    </div>
+    <div class="result" id="result">
+      <p class="banner" id="banner"></p>
+      <p class="answer" id="answerLine"></p>
+      <ul class="steps" id="steps"></ul>
+    </div>
+  </section>
+</div>
+
+<script>
+(function(){
+  var LBL = ["ㄱ","ㄴ","ㄷ"];
+  var P = null, picked = [false,false,false], graded = false;
+  var hits = 0, tries = 0, run = 0;
+
+  function ri(a,b){ return a + Math.floor(Math.random()*(b-a+1)); }
+  function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+  function num(v){ return Math.round(v*10)/10 === Math.round(v) ? String(Math.round(v)) : (Math.round(v*10)/10).toFixed(1); }
+
+  function build(){
+    var L1 = ri(1,3), L2 = ri(1,4), L = L1 + L2;
+    var cands = [];
+    for (var w = 20; w <= 150; w += 10) if ((w*L1) % L === 0) cands.push(w);
+    var W = cands.length ? pick(cands) : ri(2,12)*10;
+
+    var F = W;                 // 물체가 막대를 당기는 힘
+    var TAU = W * L1;          // p점에 대한 무게의 돌림힘
+    var T = W * L1 / L;        // 실의 장력
+
+    var truth = [Math.random() < .55, Math.random() < .55, Math.random() < .55];
+    if (!truth[0] && !truth[1] && !truth[2]) truth[ri(0,2)] = true;
+
+    function fake(real, alts){
+      var ok = alts.filter(function(v){ return v > 0 && Math.abs(v-real) > 0.05; });
+      return ok.length ? pick(ok) : real * 2;
+    }
+
+    var shown = [
+      truth[0] ? F   : fake(F,   [F/2, F*2, T, W*L/L1, F+10]),
+      truth[1] ? TAU : fake(TAU, [W*L2, W*L, TAU/2, TAU*2, T*L1]),
+      truth[2] ? T   : fake(T,   [W-T, T*2, T/2, W*L2/L, F])
+    ];
+
+    P = {L1:L1, L2:L2, L:L, W:W, F:F, TAU:TAU, T:T, truth:truth, shown:shown};
+    picked = [false,false,false];
+    graded = false;
+    render();
+  }
+
+  function stemText(){
+    return '그림과 같이 무게가 <b>' + P.W + ' N</b>인 물체가 받침대로부터 <b>' + P.L1 +
+           ' m</b> 떨어진 곳에 매달려 있는 막대가, 받침대에서 <b>' + P.L +
+           ' m</b> 떨어진 지점에서 실로 천장에 연결되어 수평인 상태로 정지해 있다.';
+  }
+
+  function claimText(i){
+    if (i === 0) return '물체가 막대를 당기는 힘의 크기는 ' + num(P.shown[0]) + ' N이다.';
+    if (i === 1) return 'p점을 회전축으로 하는 물체의 무게에 의한 돌림힘의 크기는 ' + num(P.shown[1]) + ' N·m이다.';
+    return '실이 막대를 당기는 힘의 크기는 ' + num(P.shown[2]) + ' N이다.';
+  }
+
+  function diagram(){
+    var x0 = 64, x1 = 320, yRod = 128, yCeil = 26;
+    var s = (x1 - x0) / P.L;
+    var xo = x0 + P.L1 * s;
+    var mid1 = (x0 + xo) / 2, mid2 = (xo + x1) / 2;
+    function arrow(xa, xb, y, text){
+      return '<line x1="'+xa+'" y1="'+y+'" x2="'+xb+'" y2="'+y+'" stroke="var(--dim)" stroke-width="1.4"/>' +
+             '<path d="M'+xa+' '+y+' l7 -4 v8 z" fill="var(--dim)"/>' +
+             '<path d="M'+xb+' '+y+' l-7 -4 v8 z" fill="var(--dim)"/>' +
+             '<line x1="'+xa+'" y1="'+(y-8)+'" x2="'+xa+'" y2="'+(y+8)+'" stroke="var(--dim)" stroke-width="1"/>' +
+             '<line x1="'+xb+'" y1="'+(y-8)+'" x2="'+xb+'" y2="'+(y+8)+'" stroke="var(--dim)" stroke-width="1"/>' +
+             '<text x="'+((xa+xb)/2)+'" y="'+(y-11)+'" fill="var(--dim)" font-size="13" font-weight="700" text-anchor="middle">'+text+'</text>';
+    }
+    return '<svg viewBox="0 0 360 214" role="img" aria-label="받침대 위 막대와 매달린 물체, 천장에 연결된 실">' +
+      '<defs><pattern id="hx" width="7" height="7" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">' +
+        '<line x1="0" y1="0" x2="0" y2="7" stroke="var(--rule)" stroke-width="3"/></pattern></defs>' +
+      '<rect x="18" y="12" width="324" height="14" fill="url(#hx)"/>' +
+      '<line x1="18" y1="26" x2="342" y2="26" stroke="var(--beam)" stroke-width="2.5"/>' +
+      '<text x="342" y="9" fill="var(--ink-soft)" font-size="12" text-anchor="end">천장</text>' +
+      '<line x1="'+x1+'" y1="26" x2="'+x1+'" y2="'+yRod+'" stroke="var(--beam)" stroke-width="2"/>' +
+      '<text x="'+(x1+7)+'" y="80" fill="var(--ink-soft)" font-size="12">실</text>' +
+      arrow(x0, xo, 104, P.L1 + ' m') + arrow(xo, x1, 104, P.L2 + ' m') +
+      '<line x1="'+x0+'" y1="'+yRod+'" x2="'+x1+'" y2="'+yRod+'" stroke="var(--beam)" stroke-width="5" stroke-linecap="round"/>' +
+      '<text x="'+(x1-4)+'" y="'+(yRod+20)+'" fill="var(--ink-soft)" font-size="12" text-anchor="end">막대</text>' +
+      '<circle cx="'+x0+'" cy="'+yRod+'" r="4" fill="var(--beam)"/>' +
+      '<text x="'+(x0-9)+'" y="'+(yRod-6)+'" fill="var(--ink)" font-size="14" font-weight="700" text-anchor="end">p</text>' +
+      '<path d="M'+x0+' '+yRod+' L'+(x0-16)+' '+(yRod+34)+' L'+(x0+16)+' '+(yRod+34)+' Z" fill="none" stroke="var(--beam)" stroke-width="2"/>' +
+      '<rect x="18" y="'+(yRod+34)+'" width="120" height="18" fill="url(#hx)"/>' +
+      '<line x1="18" y1="'+(yRod+34)+'" x2="138" y2="'+(yRod+34)+'" stroke="var(--beam)" stroke-width="2"/>' +
+      '<text x="78" y="'+(yRod+68)+'" fill="var(--ink-soft)" font-size="12" text-anchor="middle">받침대</text>' +
+      '<line x1="'+xo+'" y1="'+yRod+'" x2="'+xo+'" y2="'+(yRod+16)+'" stroke="var(--beam)" stroke-width="1.6"/>' +
+      '<rect x="'+(xo-27)+'" y="'+(yRod+16)+'" width="54" height="26" rx="3" fill="var(--card)" stroke="var(--beam)" stroke-width="1.8"/>' +
+      '<text x="'+xo+'" y="'+(yRod+34)+'" fill="var(--ink)" font-size="13" font-weight="700" text-anchor="middle">'+P.W+' N</text>' +
+    '</svg>';
+  }
+
+  function render(){
+    document.getElementById('stem').innerHTML = stemText();
+    document.getElementById('fig').innerHTML = diagram();
+    var ul = document.getElementById('claims');
+    ul.innerHTML = '';
+    for (var i = 0; i < 3; i++){
+      var li = document.createElement('li');
+      var b = document.createElement('button');
+      b.className = 'claim';
+      b.type = 'button';
+      b.setAttribute('aria-pressed', 'false');
+      b.dataset.i = String(i);
+      b.innerHTML = '<span class="tag">' + LBL[i] + '</span><span>' + claimText(i) + '</span>';
+      li.appendChild(b);
+      ul.appendChild(li);
+    }
+    document.getElementById('hint').textContent = '옳다고 생각하는 항목을 눌러 선택하세요.';
+    document.getElementById('result').className = 'result';
+    document.getElementById('checkBtn').disabled = false;
+  }
+
+  function labelList(flags){
+    var out = [];
+    for (var i = 0; i < 3; i++) if (flags[i]) out.push(LBL[i]);
+    return out.length ? out.join(', ') : '없음';
+  }
+
+  function grade(){
+    if (graded) return;
+    graded = true;
+    var ok = true;
+    for (var i = 0; i < 3; i++) if (picked[i] !== P.truth[i]) ok = false;
+
+    var btns = document.querySelectorAll('.claim');
+    for (var j = 0; j < btns.length; j++){
+      var k = Number(btns[j].dataset.i);
+      btns[j].classList.add(P.truth[k] ? 'right' : 'wrong');
+      var v = document.createElement('span');
+      v.className = 'verdict ' + (P.truth[k] ? 'o' : 'x');
+      v.textContent = P.truth[k] ? '옳음' : '틀림';
+      btns[j].appendChild(v);
+    }
+
+    tries++; if (ok){ hits++; run++; } else run = 0;
+    document.getElementById('hit').textContent = hits;
+    document.getElementById('try').textContent = tries;
+    document.getElementById('streak').textContent = run >= 2 ? run + '문제 연속 정답' : '';
+
+    var banner = document.getElementById('banner');
+    banner.textContent = ok ? '정답입니다' : '다시 확인해 보세요';
+    banner.className = 'banner ' + (ok ? 'o' : 'x');
+    document.getElementById('answerLine').textContent =
+      '정답: ' + labelList(P.truth) + ' · 내 선택: ' + labelList(picked);
+
+    var W = P.W, L1 = P.L1, L2 = P.L2, L = P.L, T = P.T;
+    var steps = [
+      ['ㄱ. 물체가 막대를 당기는 힘',
+       '실에 매달린 물체는 정지해 있으므로 물체에 작용하는 힘은 평형입니다. 막대가 물체를 위로 당기는 힘이 ' + W +
+       ' N이고, 작용·반작용에 의해 물체도 막대를 아래로 ' + W + ' N으로 당깁니다.',
+       'F = W = ' + W + ' N'],
+      ['ㄴ. p점에 대한 무게의 돌림힘',
+       '회전축 p에서 작용선까지의 거리가 ' + L1 + ' m이고 힘은 ' + W + ' N이므로,',
+       'τ = ' + W + ' N × ' + L1 + ' m = ' + num(P.TAU) + ' N·m'],
+      ['ㄷ. 실이 막대를 당기는 힘',
+       '막대가 회전하지 않으므로 p점에 대한 돌림힘의 합이 0입니다. 물체가 시계 방향으로 돌리는 돌림힘과 실이 반시계 방향으로 돌리는 돌림힘이 같아야 합니다.',
+       num(P.TAU) + ' = T × ' + L + ' m  →  T = ' + num(T) + ' N'],
+      ['마무리 확인',
+       '받침대가 막대를 떠받치는 힘도 함께 구해 보면 힘의 평형이 성립합니다: N + ' + num(T) + ' = ' + W + ' 이므로 N = ' + num(W - T) + ' N.',
+       '']
+    ];
+    var html = '';
+    for (var s = 0; s < steps.length; s++){
+      html += '<li><h3>' + steps[s][0] + '</h3><span>' + steps[s][1] + '</span>' +
+              (steps[s][2] ? '<span class="eq">' + steps[s][2] + '</span>' : '') + '</li>';
+    }
+    document.getElementById('steps').innerHTML = html;
+    document.getElementById('hint').textContent = '새 문제를 누르면 숫자가 바뀝니다.';
+    document.getElementById('result').className = 'result show';
+    document.getElementById('checkBtn').disabled = true;
+    void L2;
+  }
+
+  document.getElementById('claims').addEventListener('click', function(e){
+    var b = e.target.closest('.claim');
+    if (!b || graded) return;
+    var i = Number(b.dataset.i);
+    picked[i] = !picked[i];
+    b.setAttribute('aria-pressed', picked[i] ? 'true' : 'false');
+  });
+  document.getElementById('checkBtn').addEventListener('click', grade);
+  document.getElementById('newBtn').addEventListener('click', build);
+
+  build();
+})();
+</script>
+</body>
+</html>

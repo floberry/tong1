@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>등속 원운동 실전 연습</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;700&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:      #EAF0F3;
+    --paper-2:    #F6F9FA;
+    --ink:        #1E2A33;
+    --ink-soft:   #55666F;
+    --line:       #C7D4DA;
+    --line-soft:  #DCE5E9;
+    --tension:    #C97A2E;   /* amber — force / tension */
+    --velocity:   #2A7F8C;   /* teal — motion / velocity */
+    --good:       #2F8F5B;
+    --bad:        #C24B45;
+    --card:       #FFFFFF;
+    --shadow:     0 1px 0 rgba(30,42,51,0.06);
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:    #12181C;
+      --paper-2:  #171F24;
+      --ink:      #E9EFF2;
+      --ink-soft: #93A5AD;
+      --line:     #2B3A42;
+      --line-soft:#233039;
+      --card:     #1B242A;
+      --shadow:   0 1px 0 rgba(0,0,0,0.3);
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:    #12181C;
+    --paper-2:  #171F24;
+    --ink:      #E9EFF2;
+    --ink-soft: #93A5AD;
+    --line:     #2B3A42;
+    --line-soft:#233039;
+    --card:     #1B242A;
+    --shadow:   0 1px 0 rgba(0,0,0,0.3);
+  }
+  html{ scroll-padding-top: env(safe-area-inset-top, 0px); }
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  html,body{ height:100%; }
+  body{
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Noto Sans KR", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    display:flex;
+    justify-content:center;
+  }
+  .app{
+    width:100%;
+    max-width: 480px;
+    min-height: 100%;
+    padding: 20px 16px calc(28px + env(safe-area-inset-bottom,0px));
+    display:flex;
+    flex-direction:column;
+    gap: 14px;
+  }
+
+  /* ---------- Header ---------- */
+  header{
+    padding: 4px 2px 10px;
+  }
+  .eyebrow{
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    letter-spacing: 0.01em;
+  }
+  h1{
+    font-family:"Noto Serif KR", serif;
+    font-weight:700;
+    font-size: 23px;
+    line-height:1.35;
+    margin-top: 4px;
+    letter-spacing: -0.01em;
+  }
+  h1 em{
+    font-style: normal;
+    color: var(--velocity);
+  }
+  .sub{
+    margin-top:6px;
+    font-size:13.5px;
+    color: var(--ink-soft);
+    line-height:1.5;
+  }
+
+  /* ---------- Card shell ---------- */
+  .card{
+    background: var(--card);
+    border: 1px solid var(--line-soft);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+    padding: 16px;
+  }
+
+  /* ---------- Diagram ---------- */
+  .diagram-card{ padding: 10px 10px 14px; }
+  .diagram-wrap{
+    width:100%;
+    aspect-ratio: 3 / 3.6;
+    position:relative;
+  }
+  svg{ width:100%; height:100%; display:block; }
+  .badge-row{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    justify-content:center;
+    padding: 2px 6px 4px;
+  }
+  .badge{
+    display:flex;
+    align-items:baseline;
+    gap:5px;
+    background: var(--paper-2);
+    border:1px solid var(--line-soft);
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-size: 13px;
+  }
+  .badge .k{ color:var(--ink-soft); font-size:12px; }
+  .badge .v{ font-weight:700; font-variant-numeric: tabular-nums; }
+  .badge.tension .v{ color:var(--tension); }
+  .badge.velocity .v{ color:var(--velocity); }
+
+  /* ---------- Problem text ---------- */
+  .problem p{
+    font-size: 15px;
+    line-height: 1.75;
+  }
+  .problem .figure{
+    color: var(--ink);
+    font-weight:700;
+  }
+  .problem .num{
+    font-weight:700;
+    font-variant-numeric: tabular-nums;
+  }
+  .problem .num.v{ color: var(--velocity); }
+  .problem .num.r{ color: var(--tension); }
+  .problem .num.m{ color: var(--ink); }
+
+  /* ---------- Answer ---------- */
+  .answer-row{
+    display:flex;
+    align-items:stretch;
+    gap:10px;
+  }
+  .answer-field{
+    flex:1;
+    display:flex;
+    align-items:center;
+    background: var(--paper-2);
+    border: 1.5px solid var(--line);
+    border-radius: 10px;
+    padding: 0 12px;
+  }
+  .answer-field input{
+    flex:1;
+    border:none;
+    background:transparent;
+    outline:none;
+    font-size: 17px;
+    font-weight:700;
+    color: var(--ink);
+    font-family: "Noto Sans KR", sans-serif;
+    padding: 12px 4px;
+    min-width: 0;
+    font-variant-numeric: tabular-nums;
+  }
+  .answer-field input::placeholder{ color: var(--ink-soft); font-weight:400; }
+  .unit{ color: var(--ink-soft); font-size:14px; font-weight:500; }
+  .answer-field.correct{ border-color: var(--good); }
+  .answer-field.wrong{ border-color: var(--bad); }
+
+  button{
+    font-family:"Noto Sans KR", sans-serif;
+    cursor:pointer;
+    border:none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .btn-check{
+    background: var(--ink);
+    color: var(--paper-2);
+    font-weight:700;
+    font-size:15px;
+    border-radius: 10px;
+    padding: 0 20px;
+    white-space:nowrap;
+  }
+  :root[data-theme="dark"] .btn-check, @media (prefers-color-scheme: dark){ .btn-check{ color: var(--paper); } }
+  .btn-new{
+    width:100%;
+    margin-top: 2px;
+    background: transparent;
+    color: var(--velocity);
+    border: 1.5px solid var(--velocity);
+    font-weight:700;
+    font-size:14.5px;
+    border-radius: 10px;
+    padding: 11px 0;
+  }
+  .btn-new:active{ transform: scale(0.99); }
+  .btn-check:active{ transform: scale(0.99); }
+
+  /* ---------- Feedback ---------- */
+  .feedback{
+    display:none;
+    border-radius: 14px;
+    padding: 15px 16px;
+    font-size: 14px;
+    line-height:1.7;
+  }
+  .feedback.show{ display:block; }
+  .feedback.good{ background: color-mix(in srgb, var(--good) 12%, var(--card)); border:1px solid color-mix(in srgb, var(--good) 40%, var(--line-soft)); }
+  .feedback.bad{ background: color-mix(in srgb, var(--bad) 10%, var(--card)); border:1px solid color-mix(in srgb, var(--bad) 35%, var(--line-soft)); }
+  .feedback .verdict{
+    font-weight:700;
+    font-size:15px;
+    display:flex;
+    align-items:center;
+    gap:7px;
+    margin-bottom:8px;
+  }
+  .feedback.good .verdict{ color: var(--good); }
+  .feedback.bad .verdict{ color: var(--bad); }
+  .feedback .dot{
+    width:8px; height:8px; border-radius:50%;
+    background: currentColor;
+    flex:none;
+  }
+  .steps{ margin-top:2px; }
+  .steps .line{
+    display:flex;
+    gap:10px;
+    padding: 7px 0;
+    border-top: 1px dashed var(--line-soft);
+  }
+  .steps .line:first-child{ border-top:none; }
+  .steps .tag{
+    flex:none;
+    width: 74px;
+    color: var(--ink-soft);
+    font-size:12.5px;
+    padding-top:1px;
+  }
+  .steps .expr{
+    font-variant-numeric: tabular-nums;
+    color: var(--ink);
+  }
+  .steps .expr b{ color: var(--tension); }
+
+  footer{
+    text-align:center;
+    color: var(--ink-soft);
+    font-size:11.5px;
+    padding-top:4px;
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header>
+    <div class="eyebrow">등속 원운동 · 실전 연습 3</div>
+    <h1>수평면 위의 물체와<br><em>실로 연결된 추</em></h1>
+    <p class="sub">마찰이 없는 수평면 위에서 원운동하는 물체 B와, 구멍을 통해 실로 연결되어 수직으로 매달린 채 정지해 있는 물체 A. A의 질량을 구해보세요.</p>
+  </header>
+
+  <div class="card diagram-card">
+    <div class="diagram-wrap">
+      <svg id="stage" viewBox="0 0 340 420" xmlns="http://www.w3.org/2000/svg">
+        <!-- table top (perspective ellipse) -->
+        <ellipse cx="170" cy="118" rx="146" ry="58" fill="none" stroke="var(--line)" stroke-width="2"/>
+        <ellipse cx="170" cy="118" rx="146" ry="58" fill="var(--paper-2)" opacity="0.5"/>
+        <!-- table front edge shading -->
+        <path d="M 24 118 A 146 58 0 0 0 316 118" fill="none" stroke="var(--line)" stroke-width="2"/>
+
+        <!-- orbit path (dashed) -->
+        <ellipse id="orbit" cx="170" cy="118" rx="92" ry="36" fill="none" stroke="var(--velocity)" stroke-width="1.6" stroke-dasharray="4 5" opacity="0.55"/>
+
+        <!-- string on table (center to B) -->
+        <line id="stringB" x1="170" y1="118" x2="262" y2="118" stroke="var(--ink)" stroke-width="1.6"/>
+
+        <!-- center pole / hole -->
+        <circle cx="170" cy="118" r="4.5" fill="var(--ink)"/>
+
+        <!-- vertical string through hole down to A -->
+        <line x1="170" y1="118" x2="170" y2="300" stroke="var(--ink)" stroke-width="1.6" stroke-dasharray="3 4"/>
+
+        <!-- block A -->
+        <rect x="148" y="300" width="44" height="44" rx="4" fill="var(--paper-2)" stroke="var(--ink)" stroke-width="2"/>
+        <text x="170" y="327" text-anchor="middle" font-family="Noto Sans KR" font-weight="700" font-size="16" fill="var(--ink)">A</text>
+
+        <!-- tension arrow (up) -->
+        <line x1="128" y1="342" x2="128" y2="304" stroke="var(--tension)" stroke-width="2.4" marker-end="url(#arrowT)"/>
+        <text x="118" y="296" text-anchor="end" font-family="Noto Sans KR" font-weight="700" font-size="13" fill="var(--tension)">T</text>
+
+        <!-- weight arrow (down) -->
+        <line x1="212" y1="304" x2="212" y2="342" stroke="var(--ink-soft)" stroke-width="2.4" marker-end="url(#arrowW)"/>
+        <text x="222" y="336" text-anchor="start" font-family="Noto Sans KR" font-weight="700" font-size="13" fill="var(--ink-soft)">m_A g</text>
+
+        <!-- B (moving object) -->
+        <circle id="ballB" cx="262" cy="118" r="8" fill="var(--velocity)"/>
+        <text id="labelB" x="262" y="98" text-anchor="middle" font-family="Noto Sans KR" font-weight="700" font-size="14" fill="var(--velocity)">B</text>
+
+        <!-- velocity arrow on B, tangential -->
+        <line id="vArrow" x1="262" y1="118" x2="262" y2="90" stroke="var(--velocity)" stroke-width="2.2" marker-end="url(#arrowV)"/>
+
+        <defs>
+          <marker id="arrowT" markerWidth="8" markerHeight="8" refX="4" refY="7" orient="auto">
+            <path d="M0,7 L4,0 L8,7 Z" fill="var(--tension)"/>
+          </marker>
+          <marker id="arrowW" markerWidth="8" markerHeight="8" refX="4" refY="1" orient="auto">
+            <path d="M0,1 L4,8 L8,1 Z" fill="var(--ink-soft)"/>
+          </marker>
+          <marker id="arrowV" markerWidth="8" markerHeight="8" refX="4" refY="1" orient="auto">
+            <path d="M0,1 L4,8 L8,1 Z" fill="var(--velocity)"/>
+          </marker>
+        </defs>
+
+        <text x="170" y="66" text-anchor="middle" font-family="Noto Sans KR" font-size="12" fill="var(--ink-soft)">마찰 없는 수평면</text>
+        <text x="200" y="360" text-anchor="middle" font-family="Noto Sans KR" font-size="12" fill="var(--ink-soft)">A는 정지 상태 (연직 방향 힘평형)</text>
+      </svg>
+    </div>
+    <div class="badge-row">
+      <div class="badge velocity"><span class="k">반지름 r</span><span class="v" id="badgeR">0.4 m</span></div>
+      <div class="badge velocity"><span class="k">속력 v</span><span class="v" id="badgeV">2 m/s</span></div>
+      <div class="badge"><span class="k">B 질량</span><span class="v" id="badgeM">1 kg</span></div>
+    </div>
+  </div>
+
+  <div class="card problem">
+    <p>
+      그림과 같이 물체 A와 실로 연결된 물체 B가 마찰이 없는 수평면에서
+      반지름이 <span class="num r" id="txtR">0.4 m</span>인 원궤도를 따라
+      <span class="num v" id="txtV">2 m/s</span>의 속력으로 등속 원운동을 한다.
+      B의 질량은 <span class="num m" id="txtM">1 kg</span>이다.
+      A의 질량은? <span style="color:var(--ink-soft)">(단, 중력 가속도는 10 m/s²이고, 물체의 크기와 실의 질량은 무시한다.)</span>
+    </p>
+  </div>
+
+  <div class="card">
+    <div class="answer-row">
+      <div class="answer-field" id="answerField">
+        <input type="number" step="0.01" inputmode="decimal" id="answerInput" placeholder="답을 입력">
+        <span class="unit">kg</span>
+      </div>
+      <button class="btn-check" id="checkBtn">확인</button>
+    </div>
+  </div>
+
+  <div class="feedback" id="feedback">
+    <div class="verdict" id="verdictText"><span class="dot"></span><span id="verdictLabel"></span></div>
+    <div class="steps" id="stepsBox"></div>
+  </div>
+
+  <button class="btn-new" id="newBtn">새 문제로 다시 풀기</button>
+
+  <footer>등속 원운동 · T = m<tspan>B</tspan>v²/r = m<tspan>A</tspan>g</footer>
+</div>
+
+<script>
+(function(){
+  const RADII   = [0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1.0];
+  const SPEEDS  = [1, 1.5, 2, 2.5, 3, 3.5, 4];
+  const MASSES  = [0.5, 1, 1.5, 2, 2.5, 3];
+  const G = 10;
+
+  let problem = null;
+  let angle = 0;
+  let lastTime = null;
+  let checked = false;
+  let rafId = null;
+
+  const el = {
+    badgeR: document.getElementById('badgeR'),
+    badgeV: document.getElementById('badgeV'),
+    badgeM: document.getElementById('badgeM'),
+    txtR: document.getElementById('txtR'),
+    txtV: document.getElementById('txtV'),
+    txtM: document.getElementById('txtM'),
+    orbit: document.getElementById('orbit'),
+    ballB: document.getElementById('ballB'),
+    labelB: document.getElementById('labelB'),
+    stringB: document.getElementById('stringB'),
+    vArrow: document.getElementById('vArrow'),
+    answerInput: document.getElementById('answerInput'),
+    answerField: document.getElementById('answerField'),
+    checkBtn: document.getElementById('checkBtn'),
+    newBtn: document.getElementById('newBtn'),
+    feedback: document.getElementById('feedback'),
+    verdictLabel: document.getElementById('verdictLabel'),
+    stepsBox: document.getElementById('stepsBox'),
+  };
+
+  function fmt(n){
+    // trims trailing zeros, keeps up to 2 decimals
+    return (Math.round(n * 100) / 100).toString();
+  }
+
+  function pick(arr){ return arr[Math.floor(Math.random() * arr.length)]; }
+
+  function generateProblem(){
+    const r = pick(RADII);
+    const v = pick(SPEEDS);
+    const mB = pick(MASSES);
+    const mA = (mB * v * v) / (G * r);
+    return { r, v, mB, mA: Math.round(mA * 100) / 100 };
+  }
+
+  function renderProblem(){
+    el.badgeR.textContent = fmt(problem.r) + ' m';
+    el.badgeV.textContent = fmt(problem.v) + ' m/s';
+    el.badgeM.textContent = fmt(problem.mB) + ' kg';
+    el.txtR.textContent = fmt(problem.r) + ' m';
+    el.txtV.textContent = fmt(problem.v) + ' m/s';
+    el.txtM.textContent = fmt(problem.mB) + ' kg';
+
+    // scale orbit ellipse with radius (visual only, clamped for legibility)
+    const rx = 40 + Math.min(problem.r, 1.0) * 95;
+    const ry = rx * (36/92);
+    el.orbit.setAttribute('rx', rx.toFixed(1));
+    el.orbit.setAttribute('ry', ry.toFixed(1));
+
+    angle = 0;
+  }
+
+  function resetAnswerUI(){
+    checked = false;
+    el.answerInput.value = '';
+    el.answerInput.disabled = false;
+    el.answerField.classList.remove('correct','wrong');
+    el.feedback.classList.remove('show','good','bad');
+    el.checkBtn.textContent = '확인';
+    el.answerInput.focus({preventScroll:true});
+  }
+
+  function newProblem(){
+    problem = generateProblem();
+    renderProblem();
+    resetAnswerUI();
+  }
+
+  function checkAnswer(){
+    if(checked){
+      newProblem();
+      return;
+    }
+    const raw = el.answerInput.value.trim();
+    if(raw === ''){
+      el.answerInput.focus();
+      return;
+    }
+    const userVal = parseFloat(raw);
+    const correct = Math.abs(userVal - problem.mA) <= 0.03;
+    checked = true;
+    el.answerInput.disabled = true;
+
+    el.feedback.classList.add('show');
+    el.answerField.classList.add(correct ? 'correct' : 'wrong');
+    el.feedback.classList.add(correct ? 'good' : 'bad');
+    el.verdictLabel.textContent = correct
+      ? `정답이에요! A의 질량은 ${fmt(problem.mA)} kg 입니다.`
+      : `아쉬워요. 정답은 ${fmt(problem.mA)} kg 이에요.`;
+
+    el.stepsBox.innerHTML = `
+      <div class="line">
+        <div class="tag">A의 평형</div>
+        <div class="expr">A는 정지해 있으므로 실의 장력 <b>T</b>가 A의 무게와 같다 &nbsp;→&nbsp; <b>T = m<sub>A</sub>·g</b></div>
+      </div>
+      <div class="line">
+        <div class="tag">B의 원운동</div>
+        <div class="expr">같은 실이 구멍을 지나 B의 구심력을 제공한다 &nbsp;→&nbsp; <b>T = m<sub>B</sub>v²/r</b></div>
+      </div>
+      <div class="line">
+        <div class="tag">두 식 연결</div>
+        <div class="expr">m<sub>A</sub>·g = m<sub>B</sub>v²/r</div>
+      </div>
+      <div class="line">
+        <div class="tag">값 대입</div>
+        <div class="expr">m<sub>A</sub> = (${fmt(problem.mB)} × ${fmt(problem.v)}²) / (${G} × ${fmt(problem.r)})</div>
+      </div>
+      <div class="line">
+        <div class="tag">결과</div>
+        <div class="expr">m<sub>A</sub> = <b>${fmt(problem.mA)} kg</b></div>
+      </div>
+    `;
+
+    el.checkBtn.textContent = '다음 문제';
+    el.feedback.scrollIntoView({behavior:'smooth', block:'nearest'});
+  }
+
+  function animate(t){
+    if(lastTime === null) lastTime = t;
+    const dt = (t - lastTime) / 1000;
+    lastTime = t;
+
+    if(problem){
+      // visual angular speed: proportional to v/r but clamped for comfort
+      const omega = Math.min(Math.max(problem.v / problem.r, 0.6), 3.2);
+      angle += omega * dt;
+
+      const rx = parseFloat(el.orbit.getAttribute('rx'));
+      const ry = parseFloat(el.orbit.getAttribute('ry'));
+      const cx = 170, cy = 118;
+      const bx = cx + rx * Math.cos(angle);
+      const by = cy + ry * Math.sin(angle);
+
+      el.ballB.setAttribute('cx', bx.toFixed(1));
+      el.ballB.setAttribute('cy', by.toFixed(1));
+      el.labelB.setAttribute('x', bx.toFixed(1));
+      el.labelB.setAttribute('y', (by - 20).toFixed(1));
+      el.stringB.setAttribute('x2', bx.toFixed(1));
+      el.stringB.setAttribute('y2', by.toFixed(1));
+
+      // tangential velocity arrow
+      const tx = -Math.sin(angle), ty = Math.cos(angle) * (ry/rx);
+      const tlen = Math.hypot(tx, ty) || 1;
+      const ux = (tx/tlen), uy = (ty/tlen);
+      el.vArrow.setAttribute('x1', bx.toFixed(1));
+      el.vArrow.setAttribute('y1', by.toFixed(1));
+      el.vArrow.setAttribute('x2', (bx + ux*26).toFixed(1));
+      el.vArrow.setAttribute('y2', (by + uy*26).toFixed(1));
+    }
+    rafId = requestAnimationFrame(animate);
+  }
+
+  el.checkBtn.addEventListener('click', checkAnswer);
+  el.newBtn.addEventListener('click', newProblem);
+  el.answerInput.addEventListener('keydown', function(e){
+    if(e.key === 'Enter'){ e.preventDefault(); checkAnswer(); }
+  });
+
+  newProblem();
+  rafId = requestAnimationFrame(animate);
+})();
+</script>
+</body>
+</html>

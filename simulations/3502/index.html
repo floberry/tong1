@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>행성 대탐험 · 케플러 법칙 연습</title>
+<style>
+:root{
+  --ink:#2b2350; --sub:#6b6390; --bg:#fff7e8; --card:#ffffff; --line:#e9dfc8;
+  --pink:#ff7aa8; --blue:#4d9dff; --yellow:#ffc933; --ok:#1fa971; --no:#e5484d;
+  --space:#1c1748;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0}
+body{
+  background:var(--bg);color:var(--ink);
+  font-family:"Jua","Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+  line-height:1.5;
+  padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0);
+}
+.wrap{max-width:480px;margin:0 auto;padding:14px 14px 40px}
+header{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
+h1{font-size:20px;margin:0;font-weight:800;letter-spacing:-.5px}
+.score{background:var(--card);border:2px solid var(--line);border-radius:999px;padding:4px 12px;font-size:13px;font-weight:700;white-space:nowrap}
+.story{background:var(--yellow);border-radius:16px;padding:10px 14px;font-weight:700;font-size:14px;margin-bottom:12px}
+.qtext{font-size:15px;font-weight:600;margin:0 0 10px}
+.qtext b{font-size:18px;color:var(--pink)}
+.given{background:var(--card);border:2px dashed var(--line);border-radius:14px;padding:10px 14px;font-size:14px;margin-bottom:12px}
+.given ul{margin:4px 0 0;padding-left:18px}
+.given li{margin:1px 0}
+.given .v{font-weight:800;color:#e0457b}
+.stage{background:var(--space);border-radius:18px;padding:6px;margin-bottom:6px;position:relative}
+.stage svg{width:100%;height:auto;display:block}
+.stagebar{display:flex;justify-content:space-between;align-items:center;font-size:12px;margin-bottom:12px;gap:8px;color:var(--sub)}
+.pill{border:0;background:var(--card);border:2px solid var(--line);border-radius:999px;padding:5px 12px;font:inherit;font-size:13px;font-weight:700;color:var(--ink);cursor:pointer}
+.legend{display:none}
+.legend.on{display:inline}
+.sw{display:inline-block;width:10px;height:10px;border-radius:3px;vertical-align:-1px;margin:0 3px 0 6px}
+.chat{display:flex;flex-direction:column;gap:12px;margin:14px 0}
+.row{display:flex;align-items:flex-end;gap:8px}
+.who{width:74px;flex:none;text-align:center;font-size:11px;font-weight:800}
+.who svg{width:70px;height:80px;display:block;margin:0 auto}
+.bubble{position:relative;flex:1;background:var(--card);border:2.5px solid var(--ink);border-radius:18px;padding:10px 12px;font-size:14.5px;font-weight:600;line-height:1.45}
+.bubble::before{content:"";position:absolute;left:-11px;bottom:18px;width:16px;height:16px;background:var(--card);border-left:2.5px solid var(--ink);border-bottom:2.5px solid var(--ink);transform:rotate(45deg);border-radius:0 0 0 4px}
+.bubble .badge{display:none;position:absolute;top:-11px;right:10px;padding:1px 10px;border-radius:999px;color:#fff;font-size:12px;font-weight:800}
+.checked .bubble.t{background:#e9fbf2;border-color:var(--ok)}
+.checked .bubble.t::before{background:#e9fbf2;border-color:var(--ok)}
+.checked .bubble.f{background:#fff0f0;border-color:var(--no)}
+.checked .bubble.f::before{background:#fff0f0;border-color:var(--no)}
+.checked .bubble .badge{display:block}
+.bubble.t .badge{background:var(--ok)}
+.bubble.f .badge{background:var(--no)}
+.ask{font-weight:700;font-size:15px;margin:6px 0 8px}
+.opts{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:12px}
+.opt{border:2.5px solid var(--line);background:var(--card);border-radius:12px;padding:10px 0 8px;font:inherit;font-weight:800;font-size:14px;color:var(--ink);cursor:pointer;line-height:1.25}
+.opt small{display:block;font-size:11px;color:var(--sub);font-weight:600}
+.opt.sel{border-color:var(--blue);background:#eaf3ff}
+.opt.right{border-color:var(--ok);background:#e2f8ee}
+.opt.wrong{border-color:var(--no);background:#ffeaea}
+.btns{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn{border:0;border-radius:14px;padding:14px 0;font:inherit;font-weight:800;font-size:16px;cursor:pointer;color:#fff}
+.btn.go{background:var(--blue);box-shadow:0 4px 0 #2f78d1}
+.btn.go:disabled{background:#b9c8dc;box-shadow:0 4px 0 #9aabc2;cursor:not-allowed}
+.btn.nw{background:var(--pink);box-shadow:0 4px 0 #d9527f}
+.btn:active:not(:disabled){transform:translateY(3px);box-shadow:none}
+#result{margin-top:16px;display:none}
+#result.on{display:block}
+.verdict{border-radius:16px;padding:12px 14px;font-weight:800;font-size:17px;margin-bottom:10px}
+.verdict.ok{background:#e2f8ee;color:#0f7a51}
+.verdict.no{background:#ffeaea;color:#b3282d}
+.ex{background:var(--card);border-left:6px solid var(--line);border-radius:12px;padding:9px 12px;margin-bottom:8px;font-size:14px}
+.ex.t{border-left-color:var(--ok)}
+.ex.f{border-left-color:var(--no)}
+.ex b{display:block;margin-bottom:2px}
+.tip{background:#eef0ff;border-radius:12px;padding:9px 12px;font-size:13px;color:var(--sub);margin-top:4px}
+@media (prefers-reduced-motion:no-preference){
+  .bubble{animation:pop .35s ease both}
+  @keyframes pop{from{transform:scale(.92);opacity:0}to{transform:none;opacity:1}}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>🪐 행성 대탐험</h1>
+    <div class="score" id="score">0 / 0 · 🔥0</div>
+  </header>
+
+  <div class="story" id="story"></div>
+
+  <p class="qtext"><b>5.</b> 그림은 행성이 태양을 한 초점으로 하는 타원 궤도를 따라 운동하는 것에 대해 학생 A, B, C가 대화하는 모습을 나타낸 것이다.</p>
+
+  <div class="given" id="given"></div>
+
+  <div class="stage"><div id="diagram"></div></div>
+  <div class="stagebar">
+    <button class="pill" id="playBtn">⏸ 멈추기</button>
+    <span class="legend" id="legend"><span class="sw" style="background:#ff9f43"></span>p→q 넓이<span class="sw" style="background:#54d6ff"></span>q→r 넓이</span>
+  </div>
+
+  <div class="chat" id="chat"></div>
+
+  <div class="ask">제시한 내용이 옳은 학생만을 있는 대로 고른 것은?</div>
+  <div class="opts" id="opts"></div>
+
+  <div class="btns">
+    <button class="btn nw" id="newBtn">🎲 새 문제</button>
+    <button class="btn go" id="checkBtn" disabled>✅ 확인</button>
+  </div>
+
+  <div id="result"></div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const pick = a => a[Math.floor(Math.random()*a.length)];
+const rnd = (a,b) => a + Math.random()*(b-a);
+const fmt = n => String(Math.round(n*100)/100);
+const shuffle = a => { a = a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; };
+
+/* ---------- 캐릭터 (직접 그린 오리지널 캐릭터) ---------- */
+const CHARS = [
+  { name:"몽이", svg:`<svg viewBox="0 0 80 90"><ellipse cx="26" cy="20" rx="8" ry="18" fill="#ff8fb4"/><ellipse cx="54" cy="20" rx="8" ry="18" fill="#ff8fb4"/><ellipse cx="26" cy="22" rx="4" ry="12" fill="#ffd3e2"/><ellipse cx="54" cy="22" rx="4" ry="12" fill="#ffd3e2"/><ellipse cx="40" cy="58" rx="31" ry="28" fill="#ffb3cc"/><ellipse cx="40" cy="66" rx="16" ry="12" fill="#ffe3ee"/><circle cx="29" cy="52" r="4" fill="#2b2350"/><circle cx="51" cy="52" r="4" fill="#2b2350"/><circle cx="30.3" cy="50.7" r="1.4" fill="#fff"/><circle cx="52.3" cy="50.7" r="1.4" fill="#fff"/><circle cx="21" cy="62" r="5" fill="#ff7aa8" opacity=".55"/><circle cx="59" cy="62" r="5" fill="#ff7aa8" opacity=".55"/><ellipse cx="40" cy="60" rx="3" ry="2.2" fill="#e0457b"/><path d="M34 66q6 6 12 0" stroke="#2b2350" stroke-width="2" fill="none" stroke-linecap="round"/></svg>` },
+  { name:"뽀짝이", svg:`<svg viewBox="0 0 80 90"><circle cx="16" cy="30" r="11" fill="#79b8ff"/><circle cx="64" cy="30" r="11" fill="#79b8ff"/><circle cx="16" cy="30" r="5.5" fill="#bfe0ff"/><circle cx="64" cy="30" r="5.5" fill="#bfe0ff"/><circle cx="40" cy="54" r="31" fill="#8ecbff"/><ellipse cx="40" cy="64" rx="15" ry="11" fill="#fff"/><circle cx="29" cy="47" r="4" fill="#2b2350"/><circle cx="51" cy="47" r="4" fill="#2b2350"/><circle cx="30.3" cy="45.7" r="1.4" fill="#fff"/><circle cx="52.3" cy="45.7" r="1.4" fill="#fff"/><ellipse cx="40" cy="59" rx="4.5" ry="3" fill="#2b2350"/><path d="M40 62v3M34 68q6 5 12 0" stroke="#2b2350" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="22" cy="58" r="4.5" fill="#ff9dbd" opacity=".6"/><circle cx="58" cy="58" r="4.5" fill="#ff9dbd" opacity=".6"/></svg>` },
+  { name:"말랑이", svg:`<svg viewBox="0 0 80 90"><path d="M40 8q-6 8 0 14M40 8q8 4 4 14M40 8q-10 2-8 12" stroke="#ffb400" stroke-width="4" fill="none" stroke-linecap="round"/><ellipse cx="40" cy="56" rx="31" ry="29" fill="#ffe066"/><ellipse cx="9" cy="58" rx="7" ry="11" fill="#ffd028" transform="rotate(-20 9 58)"/><ellipse cx="71" cy="58" rx="7" ry="11" fill="#ffd028" transform="rotate(20 71 58)"/><circle cx="29" cy="50" r="4" fill="#2b2350"/><circle cx="51" cy="50" r="4" fill="#2b2350"/><circle cx="30.3" cy="48.7" r="1.4" fill="#fff"/><circle cx="52.3" cy="48.7" r="1.4" fill="#fff"/><path d="M34 58h12l-6 9z" fill="#ff8a3d"/><circle cx="21" cy="62" r="5" fill="#ff7a7a" opacity=".5"/><circle cx="59" cy="62" r="5" fill="#ff7a7a" opacity=".5"/></svg>` }
+];
+const LABELS = ["A","B","C"];
+const PREFIX = ["내 생각엔 ","분명히 ","아하! ","잘 봐, ","히힛, ","내가 알기론 ","오호~ ","확실해! ","음… ","헤헤, "];
+
+/* ---------- 이야기 배너 ---------- */
+const STORIES = [
+  "🍡 간식별 우주에서 떡꼬치 행성이 커다란 호빵 태양 둘레를 돌고 있어요!",
+  "📦 우주 택배 행성이 태양 주변을 한 바퀴 돌며 배달 중이에요!",
+  "🍦 아이스크림 행성이 태양 근처에서는 녹을 것 같아요… 얼마나 빠르게 지나갈까요?",
+  "🎡 놀이공원 행성이 타원 궤도 롤러코스터를 타고 있어요!",
+  "🌙 잠꾸러기 행성이 태양에 가까워지면 잠이 확 깬대요. 왜일까요?",
+  "🏃 우주 마라톤! 행성이 태양을 초점으로 타원 트랙을 달려요.",
+  "🧁 컵케이크 행성이 태양 빛을 받으며 타원 길을 걸어가요!",
+  "🚀 친구들이 우주선 창문으로 행성의 움직임을 관찰하고 있어요!"
+];
+const PLANET_COLORS = ["#4dabf7","#69db7c","#ff8787","#b197fc","#ffa94d","#38d9a9"];
+
+/* ---------- 상태 ---------- */
+let Q = null, chosen = -1, checked = false;
+let stats = {ok:0, total:0, streak:0};
+let tM = 0, playing = true, lastT = 0;
+
+const OPTIONS = [["A"],["B"],["A","C"],["B","C"],["A","B","C"]];
+const CIRC = ["①","②","③","④","⑤"];
+
+/* ---------- 케플러 ---------- */
+function solveE(M, e){ let E = M; for(let i=0;i<8;i++) E = M + e*Math.sin(E); return E; }
+
+/* ---------- 문제 생성 ---------- */
+function makeQuestion(){
+  const dp = pick([1,1.5,2,2.5,3]);
+  const m = pick([2,3,4,5,6]);
+  const dr = dp*m, a = (dp+dr)/2, e = (dr-dp)/(dr+dp);
+  const T = pick([2,3,4,6,8,12]);
+  const s = Math.random()<.5 ? 1 : -1;      // 근일점이 오른쪽/왼쪽
+  const sgn = Math.random()<.5 ? 1 : -1;    // q가 위/아래
+  let E, f1;
+  do {
+    E = Math.random()<.45 ? Math.PI/2 : rnd(55,125)*Math.PI/180;
+    f1 = (E - e*Math.sin(E))/(2*Math.PI);
+  } while (Math.abs(f1-.25) < .03);
+  const f2 = .5 - f1, t1 = f1*T, t2 = f2*T;
+  const Dq = a*(1 - e*Math.cos(E));
+  const D = {p:dp, q:Dq, r:dr};
+
+  const c = [];
+  const add = (tag,text,truth,why)=>c.push({tag,text,truth,why});
+  const pts = ['p','q','r'];
+  for(const X of pts) for(const Y of pts){
+    if(X===Y) continue;
+    const closer = D[X] < D[Y], near = closer ? X : Y;
+    const dtxt = `태양까지 거리는 ${X}에서 ${fmt(D[X])}, ${Y}에서 ${fmt(D[Y])}(억 km)이라서 더 가까운 곳은 ${near}예요.`;
+    for(const cmp of ["커","작아"]){
+      const tr = cmp==="커" ? closer : !closer;
+      add('speed', `행성의 속력은 ${X}에서가 ${Y}에서보다 ${cmp}.`, tr,
+        `${dtxt} 면적 속도가 일정하므로(케플러 제2법칙) 태양에 가까울수록 빨라요 → 속력은 ${near}에서 더 커요.`);
+      add('acc', `행성의 가속도 크기는 ${X}에서가 ${Y}에서보다 ${cmp}.`, tr,
+        `${dtxt} 만유인력은 거리의 제곱에 반비례하므로 가까울수록 가속도가 커요 → 가속도 크기는 ${near}에서 더 커요.`);
+    }
+  }
+  add('speed',"행성이 운동하는 동안 행성의 속력은 일정해.",false,"태양에 가까울수록 빠르고 멀수록 느려서 위치마다 속력이 달라요.");
+  add('speed',"행성의 속력이 가장 큰 곳은 p야.",true,"p는 근일점(태양과 가장 가까운 곳)이라 속력이 가장 커요.");
+  add('speed',"행성의 속력이 가장 작은 곳은 p야.",false,"p는 근일점이라 속력이 가장 '큰' 곳이에요. 가장 느린 곳은 원일점 r이에요.");
+  add('acc',"행성이 운동하는 동안 행성의 가속도 크기는 일정해.",false,"가속도는 태양과의 거리에 따라 변해요. (거리가 멀수록 작아져요)");
+  add('acc',"행성의 가속도 크기가 가장 큰 곳은 p야.",true,"p에서 태양과의 거리가 가장 가까워서 만유인력, 즉 가속도가 가장 커요.");
+  add('acc',"행성의 가속도 크기가 가장 큰 곳은 r야.",false,"r는 태양에서 가장 먼 원일점이라 가속도가 가장 '작아요'.");
+  for(const [rel,tr] of [["과 같아.", f1===f2],["보다 짧아.", f1<f2],["보다 길어.", f1>f2]]){
+    add('time', `행성이 p에서 q까지 운동하는 데 걸리는 시간은 q에서 r까지 운동하는 데 걸리는 시간${rel}`, tr,
+      `면적 속도가 일정하므로 걸리는 시간은 태양이 쓸고 지나간 넓이에 비례해요. 그림의 주황(p→q)이 하늘색(q→r)보다 ${f1<f2?'작아서':'커서'} p→q는 ${fmt(t1)}년, q→r는 ${fmt(t2)}년(주기 ${T}년 기준)이에요.`);
+  }
+  for(const [rel,tr] of [["같아.",true],["보다 짧아.",false],["보다 길어.",false]]){
+    add('half', `행성이 p에서 r까지 운동하는 데 걸리는 시간은 r에서 다시 p까지 운동하는 데 걸리는 시간${rel.startsWith('보다')?rel:'과 '+rel}`, tr,
+      `타원 궤도는 p–r 축에 대칭이라서 p→r와 r→p는 각각 주기의 절반(${T/2}년)으로 같아요.`);
+  }
+  add('sunpos',"태양은 타원의 한 초점에 있어.",true,"케플러 제1법칙: 행성은 태양을 한 초점으로 하는 타원 궤도를 돌아요.");
+  add('sunpos',"태양은 타원의 중심 O에 있어.",false,"태양은 중심 O가 아니라 초점에 있어요. (그림에서 태양은 O에서 p쪽으로 치우쳐 있어요)");
+  add('area',"같은 시간 동안 태양과 행성을 잇는 선이 쓸고 지나가는 넓이는 항상 같아.",true,"케플러 제2법칙(면적 속도 일정 법칙)이에요.");
+  add('area',"같은 시간 동안 태양과 행성을 잇는 선이 쓸고 지나가는 넓이는 p 근처에서가 r 근처에서보다 커.",false,"넓이는 항상 같아요. 그래서 태양에 가까운 p 근처에서 더 빨리 움직이는 거예요.");
+  add('force',"행성에 작용하는 힘의 방향은 항상 태양을 향해.",true,"행성에 작용하는 힘은 태양이 당기는 만유인력이라 항상 태양 쪽이에요.");
+  add('force',"행성에 작용하는 힘의 방향은 항상 행성의 운동 방향과 같아.",false,"운동 방향은 궤도의 접선 방향이고, 힘은 태양을 향해서 대부분의 위치에서 서로 달라요.");
+  add('dist',"태양과 행성 사이의 거리가 가장 먼 곳은 r야.",true,"r는 원일점으로 태양에서 가장 먼 곳이에요.");
+  add('dist',"행성이 운동하는 동안 태양과 행성 사이의 거리는 일정해.",false,`타원 궤도라서 거리가 ${fmt(dp)}(p)에서 ${fmt(dr)}(r)까지 변해요.`);
+
+  /* 참·거짓 패턴: 정답 선지에 맞춰 3명 배정 */
+  const ans = Math.floor(Math.random()*5);
+  const truthSet = OPTIONS[ans];
+  const truths = LABELS.map(l => truthSet.includes(l));
+  const tags = shuffle([...new Set(c.map(x=>x.tag))]);
+  const chars = shuffle(CHARS);
+  const stmts = [];
+  let ti = 0;
+  for(let i=0;i<3;i++){
+    const want = truths[i];
+    let cand = null;
+    while(!cand){
+      const tag = tags[ti++ % tags.length];
+      const pool = c.filter(x=>x.tag===tag && x.truth===want);
+      if(pool.length){ cand = pick(pool); tags.splice(tags.indexOf(tag),1); ti--; }
+    }
+    stmts.push({...cand, prefix: pick(PREFIX), ch: chars[i]});
+  }
+  return {dp,dr,a,e,T,s,sgn,E,f1,f2,t1,t2,Dq,stmts,ans,truths,
+          story:pick(STORIES), pcolor:pick(PLANET_COLORS)};
+}
+
+/* ---------- 그림 ---------- */
+const W=360,H=330,CX=180,CY=165,AX=140;
+function geo(){
+  const e=Q.e, B=AX*Math.sqrt(1-e*e), C=AX*e;
+  return {B,C,sunX:CX+Q.s*C};
+}
+function P(E,g){ return [CX+Q.s*AX*Math.cos(E), CY - Q.sgn*g.B*Math.sin(E)]; }
+function wedge(E0,E1,g,fill){
+  let d=`M${g.sunX.toFixed(1)} ${CY}`;
+  const n=28;
+  for(let i=0;i<=n;i++){ const E=E0+(E1-E0)*i/n; const [x,y]=P(E,g); d+=` L${x.toFixed(1)} ${y.toFixed(1)}`; }
+  return `<path d="${d} Z" fill="${fill}" stroke="none"/>`;
+}
+function buildDiagram(){
+  const g=geo();
+  const [px,py]=P(0,g),[rx,ry]=P(Math.PI,g),[qx,qy]=P(Q.E,g);
+  const lab=(x,y,t)=>`<text x="${x}" y="${y}" fill="#fff" font-size="20" font-weight="800" text-anchor="middle" font-family="Georgia,serif" font-style="italic">${t}</text>`;
+  let svg=`<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="sg"><stop offset="0" stop-color="#fff6a8"/><stop offset=".55" stop-color="#ffc933"/><stop offset="1" stop-color="#ff8a3d"/></radialGradient>
+  </defs>`;
+  for(let i=0;i<26;i++){ svg+=`<circle cx="${(i*97)%W}" cy="${(i*61+13)%H}" r="${i%4===0?1.6:.9}" fill="#fff" opacity="${.35+(i%3)*.2}"/>`; }
+  if(checked){
+    svg+=wedge(0,Q.E,g,"rgba(255,159,67,.55)")+wedge(Q.E,Math.PI,g,"rgba(84,214,255,.45)");
+  }
+  svg+=`<ellipse cx="${CX}" cy="${CY}" rx="${AX}" ry="${g.B}" fill="none" stroke="#c9c2ff" stroke-width="2" stroke-dasharray="1 0"/>
+  <line x1="${CX-AX-8}" y1="${CY}" x2="${CX+AX+8}" y2="${CY}" stroke="#8f88d6" stroke-width="1.2" stroke-dasharray="4 4"/>
+  <circle cx="${CX}" cy="${CY}" r="2.6" fill="#fff"/>${lab(CX+(Q.s>0?-10:10),CY+ (Q.sgn>0?18:-8),"O")}
+  <path id="trail" d="" fill="rgba(255,255,255,.28)"/>
+  <circle cx="${g.sunX}" cy="${CY}" r="15" fill="url(#sg)"/>
+  <text x="${g.sunX}" y="${CY+ (Q.sgn>0?-22:34)}" fill="#ffe28a" font-size="12" font-weight="800" text-anchor="middle">태양</text>
+  <circle cx="${px}" cy="${py}" r="3.6" fill="#fff"/>${lab(px+Q.s*14,py+7,"p")}
+  <circle cx="${rx}" cy="${ry}" r="3.6" fill="#fff"/>${lab(rx-Q.s*14,ry+7,"r")}
+  <circle cx="${qx}" cy="${qy}" r="3.6" fill="#fff"/>${lab(qx,qy-Q.sgn*13+(Q.sgn>0?0:14),"q")}
+  <g id="planet"><circle r="10" fill="${Q.pcolor}" stroke="#fff" stroke-width="2"/><circle cx="-3.5" cy="-1" r="1.5" fill="#2b2350"/><circle cx="3.5" cy="-1" r="1.5" fill="#2b2350"/><path d="M-3 3q3 3 6 0" stroke="#2b2350" stroke-width="1.3" fill="none" stroke-linecap="round"/></g>
+  <text x="${W-8}" y="${H-8}" fill="#8f88d6" font-size="11" text-anchor="end">행성</text>
+  </svg>`;
+  $("diagram").innerHTML=svg;
+  $("legend").classList.toggle("on",checked);
+  frame(0,true);
+}
+function frame(dt,force){
+  if(!Q) return;
+  if(playing && !force) tM += dt/9000*2*Math.PI;
+  const g=geo();
+  const E=solveE(tM%(2*Math.PI), Q.e);
+  // 행성은 p→q→r 방향(q가 있는 쪽 반원)으로 먼저 진행
+  const Ex = E;
+  const [x,y]=P(Ex,g);
+  const pl=$("planet"); if(pl) pl.setAttribute("transform",`translate(${x.toFixed(1)} ${y.toFixed(1)})`);
+  const tr=$("trail");
+  if(tr){
+    let d=`M${g.sunX.toFixed(1)} ${CY}`;
+    for(let i=0;i<=12;i++){
+      const M=tM - (12-i)/12*0.9;
+      const Ei=solveE(((M%(2*Math.PI))+2*Math.PI)%(2*Math.PI), Q.e);
+      const [xi,yi]=P(Ei,g); d+=` L${xi.toFixed(1)} ${yi.toFixed(1)}`;
+    }
+    tr.setAttribute("d",d+" Z");
+  }
+}
+function loop(t){
+  const dt = lastT ? Math.min(t-lastT,60) : 0; lastT=t;
+  frame(dt,false);
+  requestAnimationFrame(loop);
+}
+
+/* ---------- 화면 ---------- */
+function render(){
+  $("story").textContent=Q.story;
+  $("given").innerHTML=`<b>주어진 값</b><ul>
+    <li>p는 근일점, r는 원일점, q는 타원 궤도상의 점, O는 타원의 중심이다.</li>
+    <li>태양~p 거리 <span class="v">${fmt(Q.dp)}</span>억 km, 태양~r 거리 <span class="v">${fmt(Q.dr)}</span>억 km</li>
+    <li>행성의 공전 주기 <span class="v">${Q.T}</span>년</li></ul>`;
+  $("chat").className="chat";
+  $("chat").innerHTML=Q.stmts.map((s,i)=>`
+    <div class="row">
+      <div class="who">${s.ch.svg}학생 ${LABELS[i]}<br>${s.ch.name}</div>
+      <div class="bubble" id="b${i}">${s.prefix}${s.text}<span class="badge" id="bd${i}"></span></div>
+    </div>`).join("");
+  $("opts").innerHTML=OPTIONS.map((o,i)=>`<button class="opt" data-i="${i}">${CIRC[i]}<small>${o.join(", ")}</small></button>`).join("");
+  document.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{
+    if(checked) return;
+    chosen=+b.dataset.i;
+    document.querySelectorAll(".opt").forEach(x=>x.classList.toggle("sel",+x.dataset.i===chosen));
+    $("checkBtn").disabled=false;
+  });
+  $("result").className=""; $("result").innerHTML="";
+  $("checkBtn").disabled=true;
+  buildDiagram();
+}
+function newQuestion(){
+  Q=makeQuestion(); chosen=-1; checked=false; tM=Math.random()*0.5;
+  render();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function check(){
+  if(chosen<0||checked) return;
+  checked=true;
+  const ok = chosen===Q.ans;
+  stats.total++; if(ok){stats.ok++;stats.streak++;} else stats.streak=0;
+  $("score").textContent=`${stats.ok} / ${stats.total} · 🔥${stats.streak}`;
+  $("chat").classList.add("checked");
+  Q.stmts.forEach((s,i)=>{
+    $("b"+i).classList.add(s.truth?"t":"f");
+    $("bd"+i).textContent=s.truth?"⭕ 옳음":"❌ 틀림";
+  });
+  document.querySelectorAll(".opt").forEach(b=>{
+    const i=+b.dataset.i; b.classList.remove("sel");
+    if(i===Q.ans) b.classList.add("right"); else if(i===chosen) b.classList.add("wrong");
+  });
+  const good = Q.stmts.map((s,i)=>s.truth?LABELS[i]:null).filter(Boolean).join(", ");
+  $("result").innerHTML=`
+    <div class="verdict ${ok?'ok':'no'}">${ok?'🎉 정답이에요!':'😢 아쉬워요!'} 정답은 ${CIRC[Q.ans]} (${good})</div>
+    ${Q.stmts.map((s,i)=>`<div class="ex ${s.truth?'t':'f'}"><b>${s.ch.name}(학생 ${LABELS[i]}) ${s.truth?'⭕ 옳은 설명':'❌ 틀린 설명'}</b>${s.why}</div>`).join("")}
+    <div class="tip">💡 핵심: ① 태양은 초점 ② 면적 속도 일정 → 태양에 가까울수록 빠르다 ③ 가속도 크기는 거리의 제곱에 반비례한다.</div>`;
+  $("result").className="on";
+  buildDiagram();
+  setTimeout(()=>$("result").scrollIntoView({behavior:"smooth",block:"nearest"}),80);
+}
+
+$("newBtn").onclick=newQuestion;
+$("checkBtn").onclick=check;
+$("playBtn").onclick=()=>{playing=!playing;$("playBtn").textContent=playing?"⏸ 멈추기":"▶ 돌리기";};
+newQuestion();
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>

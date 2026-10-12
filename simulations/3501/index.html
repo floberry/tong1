@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>등속 원운동 문제 연습</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#eef2f7;
+  --card:#ffffff;
+  --ink:#16202f;
+  --muted:#5f6b7e;
+  --line:#d8e0ea;
+  --accent:#2457d6;
+  --accent-ink:#ffffff;
+  --accent-soft:#e4ecfd;
+  --ok:#0d7a55;
+  --ok-soft:#dcf4ea;
+  --bad:#c0293b;
+  --bad-soft:#fde6e9;
+  --vcol:#0f9d6b;
+  --tcol:#d9382f;
+  --wcol:#7a4fd0;
+  --tabletop:#e7d5b3;
+  --tableside:#c8b083;
+  --leg:#9a8862;
+  --ground:#b9c3d1;
+  --hole:#3a3325;
+  --bar:rgba(238,242,247,.92);
+  --shadow:0 1px 0 rgba(22,32,47,.04), 0 6px 18px rgba(22,32,47,.06);
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0f151f;
+    --card:#18202d;
+    --ink:#e8edf5;
+    --muted:#95a2b6;
+    --line:#2a3546;
+    --accent:#6f95ff;
+    --accent-ink:#0b1220;
+    --accent-soft:#1f2b48;
+    --ok:#4fd6a0;
+    --ok-soft:#12372b;
+    --bad:#ff7a88;
+    --bad-soft:#42202a;
+    --vcol:#3fd39b;
+    --tcol:#ff6b60;
+    --wcol:#a888f5;
+    --tabletop:#4a4030;
+    --tableside:#382f22;
+    --leg:#6c5f45;
+    --ground:#2f3a4b;
+    --hole:#0b0906;
+    --bar:rgba(15,21,31,.92);
+    --shadow:0 1px 0 rgba(0,0,0,.3), 0 6px 18px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0f151f;
+  --card:#18202d;
+  --ink:#e8edf5;
+  --muted:#95a2b6;
+  --line:#2a3546;
+  --accent:#6f95ff;
+  --accent-ink:#0b1220;
+  --accent-soft:#1f2b48;
+  --ok:#4fd6a0;
+  --ok-soft:#12372b;
+  --bad:#ff7a88;
+  --bad-soft:#42202a;
+  --vcol:#3fd39b;
+  --tcol:#ff6b60;
+  --wcol:#a888f5;
+  --tabletop:#4a4030;
+  --tableside:#382f22;
+  --leg:#6c5f45;
+  --ground:#2f3a4b;
+  --hole:#0b0906;
+  --bar:rgba(15,21,31,.92);
+  --shadow:0 1px 0 rgba(0,0,0,.3), 0 6px 18px rgba(0,0,0,.35);
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px);-webkit-text-size-adjust:100%}
+*,*::before,*::after{box-sizing:inherit}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:"Noto Sans KR",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","Segoe UI",sans-serif;
+  line-height:1.6;font-size:16px;
+  -webkit-tap-highlight-color:transparent;
+}
+.app{max-width:480px;margin:0 auto;padding:0 14px}
+header{padding:18px 2px 10px;display:flex;align-items:flex-end;justify-content:space-between;gap:10px}
+header h1{margin:0;font-size:22px;line-height:1.25;font-weight:900;letter-spacing:-.02em}
+header p{margin:2px 0 0;color:var(--muted);font-size:13px}
+.score{
+  flex:none;text-align:right;font-size:12px;color:var(--muted);line-height:1.3;
+}
+.score b{display:block;font-size:20px;color:var(--ink);font-weight:900;font-variant-numeric:tabular-nums}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);margin-top:12px;overflow:hidden}
+.card-h{display:flex;align-items:center;justify-content:space-between;padding:12px 16px 0;font-size:13px;color:var(--muted);font-weight:500}
+.card-h .no{font-weight:900;color:var(--accent);font-size:14px}
+
+.problem{padding:8px 16px 16px;font-size:16px;line-height:1.75;word-break:keep-all}
+.problem .q{display:block;margin-top:8px;font-weight:700}
+.problem .note{display:block;margin-top:2px;color:var(--muted);font-size:14px}
+.val{
+  font-weight:900;color:var(--accent);background:var(--accent-soft);
+  padding:0 5px;border-radius:5px;white-space:nowrap;font-variant-numeric:tabular-nums;
+}
+
+.sim{padding:4px 8px 8px}
+.sim svg{display:block;width:100%;height:auto;max-height:52vh}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;padding:0 10px 10px;font-size:12.5px;color:var(--muted)}
+.legend i{display:inline-block;width:14px;height:4px;border-radius:2px;vertical-align:middle;margin-right:5px}
+.playbtn{
+  margin-left:auto;border:1px solid var(--line);background:transparent;color:var(--ink);
+  border-radius:999px;font:inherit;font-size:12.5px;padding:2px 12px;cursor:pointer;
+}
+.playbtn:focus-visible,.choice:focus-visible,.btn:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+.choices{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;padding:12px 14px 16px}
+.choice{
+  border:1.5px solid var(--line);background:var(--card);color:var(--ink);
+  border-radius:12px;padding:9px 0 8px;font:inherit;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;gap:0;line-height:1.25;
+  transition:transform .08s, border-color .12s, background .12s;
+}
+.choice .n{font-size:17px;color:var(--muted)}
+.choice .u{font-size:15px;font-weight:700;font-variant-numeric:tabular-nums}
+.choice:active{transform:scale(.96)}
+.choice.sel{border-color:var(--accent);background:var(--accent-soft)}
+.choice.sel .n{color:var(--accent)}
+.choice.right{border-color:var(--ok);background:var(--ok-soft)}
+.choice.right .n{color:var(--ok)}
+.choice.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.choice.wrong .n{color:var(--bad)}
+.choice:disabled{cursor:default}
+.choice:disabled:active{transform:none}
+.qline{padding:12px 16px 0;font-weight:700}
+
+.spacer{height:96px}
+.actions{
+  position:fixed;left:0;right:0;bottom:0;z-index:5;
+  background:var(--bar);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  border-top:1px solid var(--line);
+  padding:10px 14px calc(10px + env(safe-area-inset-bottom,0px));
+}
+.actions .in{max-width:480px;margin:0 auto;display:grid;grid-template-columns:1fr 1.4fr;gap:10px}
+.actions .in.three{grid-template-columns:1fr 1fr 1.3fr}
+.btn{
+  border:0;border-radius:14px;font:inherit;font-weight:700;font-size:16px;padding:14px 8px;cursor:pointer;
+  transition:transform .08s, opacity .12s;
+}
+.btn:active{transform:scale(.97)}
+.btn.ghost{background:var(--card);color:var(--ink);border:1.5px solid var(--line)}
+.btn.main{background:var(--accent);color:var(--accent-ink)}
+.btn[disabled]{opacity:.45;cursor:default}
+
+.toast{
+  position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));transform:translate(-50%,12px);
+  background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:999px;font-size:14px;font-weight:500;
+  opacity:0;pointer-events:none;transition:opacity .18s, transform .18s;z-index:20;white-space:nowrap;
+}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+
+/* result dialog */
+.overlay{
+  position:fixed;inset:0;z-index:30;background:rgba(8,12,20,.55);
+  display:none;align-items:flex-end;justify-content:center;
+}
+.overlay.on{display:flex}
+.sheet{
+  width:100%;max-width:480px;max-height:90vh;overflow-y:auto;background:var(--card);color:var(--ink);
+  border-radius:22px 22px 0 0;padding:0 0 calc(16px + env(safe-area-inset-bottom,0px));
+  animation:rise .22s ease-out;
+}
+@keyframes rise{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+.verdict{padding:22px 20px 16px;text-align:center}
+.verdict.ok{background:var(--ok-soft);color:var(--ok)}
+.verdict.no{background:var(--bad-soft);color:var(--bad)}
+.verdict .mark{
+  width:64px;height:64px;border-radius:50%;margin:0 auto 8px;display:grid;place-items:center;
+  font-size:36px;font-weight:900;color:#fff;
+  animation:pop .3s cubic-bezier(.2,1.6,.4,1);
+}
+.verdict.ok .mark{background:var(--ok)}
+.verdict.no .mark{background:var(--bad)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .verdict .mark{color:#0b1220}}
+:root[data-theme="dark"] .verdict .mark{color:#0b1220}
+@keyframes pop{from{transform:scale(.4)}to{transform:scale(1)}}
+.verdict h2{margin:0;font-size:28px;font-weight:900;letter-spacing:-.02em}
+.verdict p{margin:2px 0 0;font-size:15px;color:var(--ink)}
+.sec{padding:16px 20px 0}
+.sec h3{margin:0 0 8px;font-size:15px;font-weight:900}
+.why{background:var(--bad-soft);border-radius:12px;padding:12px 14px;font-size:15px;line-height:1.7;word-break:keep-all}
+.why p{margin:0 0 8px}
+.why p:last-child{margin-bottom:0}
+.steps{margin:0;padding-left:20px;font-size:15px;line-height:1.7;word-break:keep-all}
+.steps li{margin-bottom:12px}
+.steps li::marker{font-weight:900;color:var(--accent)}
+.eq{
+  margin:6px 0 0;padding:8px 12px;background:var(--accent-soft);border-radius:10px;
+  font-size:15px;overflow-x:auto;white-space:nowrap;font-variant-numeric:tabular-nums;
+}
+.sheet .btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:8px 20px 0}
+.sheet .btns.one{grid-template-columns:1fr}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div>
+      <h1>등속 원운동 문제 연습</h1>
+      <p>실에 연결된 두 물체, A의 질량 구하기</p>
+    </div>
+    <div class="score"><span id="scoreLabel">정답 / 푼 문제</span><b id="score">0 / 0</b></div>
+  </header>
+
+  <section class="card">
+    <div class="card-h"><span class="no" id="pno">문제 1</span><span>값은 새 문제마다 바뀝니다</span></div>
+    <div class="problem" id="problem"></div>
+  </section>
+
+  <section class="card">
+    <div class="sim">
+      <svg id="sim" viewBox="0 0 360 300" role="img" aria-label="수평면에서 원운동하는 물체 B와 실 아래로 매달린 물체 A">
+        <defs>
+          <marker id="arV" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" style="fill:var(--vcol)"/></marker>
+          <marker id="arT" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" style="fill:var(--tcol)"/></marker>
+          <marker id="arW" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" style="fill:var(--wcol)"/></marker>
+        </defs>
+        <!-- ground -->
+        <line x1="10" y1="284" x2="350" y2="284" style="stroke:var(--ground)" stroke-width="2"/>
+        <!-- legs -->
+        <line x1="44" y1="164" x2="44" y2="284" style="stroke:var(--leg)" stroke-width="6" stroke-linecap="round"/>
+        <line x1="316" y1="164" x2="316" y2="284" style="stroke:var(--leg)" stroke-width="6" stroke-linecap="round"/>
+        <!-- table -->
+        <polygon points="20,152 340,152 340,164 20,164" style="fill:var(--tableside)"/>
+        <polygon points="60,44 300,44 340,152 20,152" style="fill:var(--tabletop)"/>
+        <!-- orbit -->
+        <ellipse id="orbit" cx="180" cy="100" rx="100" ry="32" fill="none" style="stroke:var(--muted)" stroke-width="1.4" stroke-dasharray="4 4"/>
+        <!-- hole -->
+        <ellipse cx="180" cy="100" rx="7" ry="3.2" style="fill:var(--hole)"/>
+        <!-- string down to A -->
+        <line x1="180" y1="102" x2="180" y2="214" style="stroke:var(--ink)" stroke-width="1.8"/>
+        <!-- A -->
+        <rect x="152" y="214" width="56" height="34" rx="5" style="fill:var(--wcol)"/>
+        <text x="180" y="236" text-anchor="middle" font-size="17" font-weight="900" fill="#fff">A ?</text>
+        <line x1="180" y1="250" x2="180" y2="276" style="stroke:var(--wcol)" stroke-width="3" marker-end="url(#arW)"/>
+        <text x="190" y="270" font-size="13" font-weight="700" style="fill:var(--wcol)">Mg</text>
+        <!-- string to B -->
+        <line id="rope" x1="180" y1="100" x2="280" y2="100" style="stroke:var(--ink)" stroke-width="1.8"/>
+        <text id="rlab" x="230" y="92" text-anchor="middle" font-size="12" font-weight="700" style="fill:var(--ink);stroke:var(--tabletop);stroke-width:3;paint-order:stroke">0.4 m</text>
+        <!-- B -->
+        <ellipse id="B" cx="280" cy="100" rx="11" ry="9" style="fill:var(--accent);stroke:var(--card)" stroke-width="2"/>
+        <!-- vectors -->
+        <line id="vArrow" x1="0" y1="0" x2="0" y2="0" style="stroke:var(--vcol)" stroke-width="3" stroke-linecap="round" marker-end="url(#arV)"/>
+        <line id="tArrow" x1="0" y1="0" x2="0" y2="0" style="stroke:var(--tcol)" stroke-width="3" stroke-linecap="round" marker-end="url(#arT)"/>
+        <text id="vLab" x="0" y="0" text-anchor="middle" font-size="13" font-weight="900" style="fill:var(--vcol);stroke:var(--tabletop);stroke-width:3;paint-order:stroke">v</text>
+        <text id="bLab" x="0" y="0" text-anchor="middle" font-size="12.5" font-weight="900" style="fill:var(--ink);stroke:var(--tabletop);stroke-width:3;paint-order:stroke">B 1kg</text>
+      </svg>
+    </div>
+    <div class="legend">
+      <span><i style="background:var(--vcol)"></i>속도 v</span>
+      <span><i style="background:var(--tcol)"></i>실이 B를 당기는 힘 T</span>
+      <span><i style="background:var(--wcol)"></i>A의 무게 Mg</span>
+      <button class="playbtn" id="playBtn" type="button">일시정지</button>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="qline">A의 질량은?</div>
+    <div class="choices" id="choices"></div>
+  </section>
+
+  <div class="spacer"></div>
+</div>
+
+<div class="actions"><div class="in" id="actIn">
+  <button class="btn ghost" id="newBtn" type="button">새 문제</button>
+  <button class="btn main" id="checkBtn" type="button">확인</button>
+</div></div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-labelledby="vTitle">
+  <div class="sheet" id="sheet"></div>
+</div>
+
+<script>
+(function(){
+  var G = 10;
+  var CIRC = "①②③④⑤";
+  var P = null;              // current problem
+  var S = {sel:null, checked:false, everChecked:false, correct:false, counted:false, lastSel:null};
+  var stats = {ok:0, total:0, no:0};
+
+  try{
+    var raw = localStorage.getItem("circ-stats");
+    if(raw){ var o = JSON.parse(raw); if(o && typeof o.ok==="number" && typeof o.total==="number"){ stats.ok=o.ok; stats.total=o.total; } }
+  }catch(e){}
+
+  function saveStats(){ try{ localStorage.setItem("circ-stats", JSON.stringify(stats)); }catch(e){} }
+  function fmt(x){ return String(+x.toFixed(2)); }
+  function circOf(v){ return CIRC[P.opts.indexOf(v)]; }
+  function $(id){ return document.getElementById(id); }
+
+  /* ---------- problem generation ---------- */
+  var pool = [];
+  (function build(){
+    var ms=[0.5,1,1.5,2,2.5,3,4,5], rs=[0.2,0.25,0.4,0.5,0.8,1], vs=[1,1.5,2,2.5,3,3.5,4,5,6];
+    ms.forEach(function(m){ rs.forEach(function(r){ vs.forEach(function(v){
+      var M = m*v*v/(r*G), R = Math.round(M);
+      if(Math.abs(M-R)<1e-6 && R>=1 && R<=5 && v/r<=25) pool.push({m:m,r:r,v:v,M:R});
+    });});});
+  })();
+
+  var lastPos = null;     // 정답이 놓일 보기 번호(2 또는 3)가 번갈아 나오도록
+  var optVals = [1,2,3,4,5];
+  function shuffle(a){
+    a = a.slice();
+    for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; }
+    return a;
+  }
+  function buildOptions(correctM, pos){
+    var rest = shuffle(optVals.filter(function(v){ return v!==correctM; }));
+    rest.splice(pos-1, 0, correctM);
+    return rest;
+  }
+  function newProblem(){
+    var m = 1 + Math.floor(Math.random()*5);   // 랜덤 정답 kg (kg 값 자체는 더 이상 고정하지 않음)
+    var list = pool.filter(function(p){ return p.M===m && !(P && p.m===P.m && p.r===P.r && p.v===P.v); });
+    if(!list.length) list = pool.filter(function(p){ return p.M===m; });
+    P = list[Math.floor(Math.random()*list.length)];
+    var pos = (lastPos===2) ? 3 : 2;   // 정답 보기 번호가 2번, 3번으로 번갈아 나오도록 고정
+    lastPos = pos;
+    P.opts = buildOptions(P.M, pos);
+    S = {sel:null, checked:false, everChecked:false, correct:false, counted:false, lastSel:null};
+    stats.no += 1;
+    render();
+  }
+
+  function render(){
+    $("pno").textContent = "문제 " + stats.no;
+    $("problem").innerHTML =
+      "그림과 같이 물체 A와 실로 연결된 물체 B가 마찰이 없는 수평면에서 반지름이 " +
+      '<span class="val">'+fmt(P.r)+' m</span>인 원궤도를 따라 <span class="val">'+fmt(P.v)+' m/s</span>의 속력으로 등속 원운동을 한다. ' +
+      'B의 질량은 <span class="val">'+fmt(P.m)+' kg</span>이다.' +
+      '<span class="q">A의 질량은?</span>' +
+      '<span class="note">(단, 중력 가속도는 '+G+' m/s²이고, 물체의 크기, 실의 질량은 무시한다.)</span>';
+    $("rlab").textContent = fmt(P.r) + " m";
+    $("bLab").textContent = "B " + fmt(P.m) + "kg";
+    var rx = 60 + 70*P.r, ry = rx*0.32;
+    Sim.rx = rx; Sim.ry = ry;
+    var orb = $("orbit"); orb.setAttribute("rx", rx); orb.setAttribute("ry", ry);
+    // choices
+    var html = "";
+    for(var i=0;i<5;i++){
+      var v = P.opts[i];
+      html += '<button type="button" class="choice" data-v="'+v+'" aria-label="'+CIRC[i]+' '+v+'킬로그램"><span class="n">'+CIRC[i]+'</span><span class="u">'+v+' kg</span></button>';
+    }
+    $("choices").innerHTML = html;
+    setActions();
+    updateB();
+  }
+
+  function setActions(){
+    var a = $("actIn");
+    a.className = "in" + (S.everChecked ? " three" : "");
+    var h = '<button class="btn ghost" id="newBtn" type="button">새 문제</button>';
+    if(S.everChecked) h += '<button class="btn ghost" id="reviewBtn" type="button">풀이 보기</button>';
+    h += '<button class="btn main" id="checkBtn" type="button"'+(S.checked?' disabled':'')+'>확인</button>';
+    a.innerHTML = h;
+    $("newBtn").onclick = newProblem;
+    $("checkBtn").onclick = check;
+    if($("reviewBtn")) $("reviewBtn").onclick = function(){ openSheet(); };
+    $("score").textContent = stats.ok + " / " + stats.total;
+  }
+
+  /* ---------- choices ---------- */
+  $("choices").addEventListener("click", function(e){
+    var b = e.target.closest(".choice");
+    if(!b || S.checked) return;
+    S.sel = +b.getAttribute("data-v");
+    var all = $("choices").querySelectorAll(".choice");
+    for(var i=0;i<all.length;i++) all[i].classList.toggle("sel", all[i]===b);
+  });
+
+  function markChoices(){
+    var all = $("choices").querySelectorAll(".choice");
+    for(var i=0;i<all.length;i++){
+      var v = +all[i].getAttribute("data-v");
+      all[i].classList.remove("sel");
+      all[i].disabled = true;
+      if(v===P.M) all[i].classList.add("right");
+      else if(v===S.sel) all[i].classList.add("wrong");
+    }
+  }
+
+  /* ---------- check ---------- */
+  function check(){
+    if(S.sel===null){ toast("보기를 먼저 선택하세요"); return; }
+    S.checked = true;
+    S.everChecked = true;
+    S.lastSel = S.sel;
+    S.correct = (S.sel===P.M);
+    if(!S.counted){
+      S.counted = true;
+      stats.total += 1;
+      if(S.correct) stats.ok += 1;
+      saveStats();
+    }
+    markChoices();
+    setActions();
+    openSheet();
+  }
+
+  function diagnose(sel){
+    var m=P.m, r=P.r, v=P.v;
+    var c = [
+      {val:m*v/(r*G),      txt:"속력을 제곱하지 않고 <b>T = mv/r</b>로 계산하셨을 가능성이 큽니다. 구심력은 속력의 <b>제곱</b>에 비례해서 <b>mv²/r</b>입니다."},
+      {val:m*v*v/G,        txt:"반지름 r로 나누지 않고 <b>T = mv²</b>로 계산하셨을 가능성이 큽니다. 구심력은 <b>mv²/r</b>이므로 반지름으로 나누어야 합니다."},
+      {val:m*v*v/(2*r*G),  txt:"반지름 대신 지름(2r)을 넣으셨을 가능성이 큽니다. 원궤도의 <b>반지름</b> "+fmt(r)+" m를 그대로 사용해야 합니다."},
+      {val:m*v*v*r/G,      txt:"반지름으로 나누지 않고 곱하셨을 가능성이 큽니다. 구심력은 <b>mv²÷r</b>입니다."},
+      {val:v*v/(r*G),      txt:"B의 질량 m을 곱하지 않으셨을 가능성이 큽니다. 구심력은 <b>m</b>v²/r입니다."},
+      {val:m,              txt:"A의 질량이 B의 질량과 같다고 생각하셨을 가능성이 큽니다. A의 질량은 B의 질량이 아니라 <b>실의 장력 T</b>로 결정됩니다."}
+    ];
+    for(var i=0;i<c.length;i++){
+      if(Math.abs(c[i].val - sel) < 1e-6) return c[i].txt;
+    }
+    return null;
+  }
+
+  function whyHTML(){
+    var sel = S.lastSel, T = P.m*P.v*P.v/P.r, W = sel*G;
+    var h = '<p><b>'+circOf(sel)+' '+sel+' kg</b>을 고르셨습니다. 이 경우 A의 무게는 '+sel+' × '+G+' = <b>'+W+' N</b>이고, 실의 장력도 '+W+' N이어야 합니다.</p>';
+    h += '<p>그런데 B가 반지름 '+fmt(P.r)+' m, 속력 '+fmt(P.v)+' m/s로 등속 원운동하려면 필요한 구심력은 <b>'+fmt(T)+' N</b>입니다.</p>';
+    if(W>T){
+      h += '<p>장력('+W+' N)이 필요한 구심력('+fmt(T)+' N)보다 <b>크므로</b> B는 안쪽으로 끌려 들어가 반지름이 줄어듭니다(A는 내려갑니다). 반지름 '+fmt(P.r)+' m를 유지하는 등속 원운동이 되지 않습니다.</p>';
+    } else {
+      h += '<p>장력('+W+' N)이 필요한 구심력('+fmt(T)+' N)보다 <b>작으므로</b> B는 바깥으로 밀려나 반지름이 커집니다(A는 올라갑니다). 반지름 '+fmt(P.r)+' m를 유지하는 등속 원운동이 되지 않습니다.</p>';
+    }
+    var d = diagnose(sel);
+    if(d) h += '<p>💡 '+d+'</p>';
+    return h;
+  }
+
+  function solutionHTML(){
+    var T = P.m*P.v*P.v/P.r;
+    return '<ol class="steps">' +
+      '<li><b>B의 운동으로 장력 구하기</b><br>마찰이 없는 수평면에서 B가 등속 원운동을 하므로 B에 작용하는 알짜힘은 구심력입니다. 이 구심력을 만드는 힘이 바로 <b>실의 장력 T</b>입니다.' +
+      '<div class="eq">T = mv² / r = '+fmt(P.m)+' × '+fmt(P.v)+'² ÷ '+fmt(P.r)+' = <b>'+fmt(T)+' N</b></div></li>' +
+      '<li><b>A의 힘의 평형</b><br>A는 정지해 있으므로 실이 A를 당기는 힘과 A의 무게가 같습니다. 하나의 실이므로 A쪽 장력의 크기도 T입니다.' +
+      '<div class="eq">T = Mg</div></li>' +
+      '<li><b>A의 질량 구하기</b>' +
+      '<div class="eq">M = T / g = '+fmt(T)+' ÷ '+G+' = <b>'+P.M+' kg</b></div></li>' +
+      '</ol>';
+  }
+
+  function openSheet(){
+    var ok = S.correct;
+    var h = '<div class="verdict '+(ok?'ok':'no')+'">' +
+      '<div class="mark" aria-hidden="true">'+(ok?'✓':'✕')+'</div>' +
+      '<h2 id="vTitle">'+(ok?'정답입니다!':'틀렸습니다')+'</h2>' +
+      '<p>'+(ok ? '정답은 '+circOf(P.M)+' <b>'+P.M+' kg</b>입니다.' : '내 답 '+circOf(S.lastSel)+' '+S.lastSel+' kg → 정답 '+circOf(P.M)+' <b>'+P.M+' kg</b>')+'</p>' +
+      '</div>';
+    if(!ok){
+      h += '<div class="sec"><h3>왜 틀렸을까요?</h3><div class="why">'+whyHTML()+'</div></div>';
+    }
+    h += '<div class="sec"><h3>풀이</h3>'+solutionHTML()+'</div>';
+    if(ok){
+      h += '<div class="btns one"><button class="btn main" id="sNew" type="button">새 문제 풀기</button></div>';
+    } else {
+      h += '<div class="btns"><button class="btn ghost" id="sRetry" type="button">다시 풀기</button><button class="btn main" id="sNew" type="button">새 문제 풀기</button></div>';
+    }
+    $("sheet").innerHTML = h;
+    $("overlay").classList.add("on");
+    $("sheet").scrollTop = 0;
+    $("sNew").onclick = function(){ closeSheet(); newProblem(); };
+    if($("sRetry")) $("sRetry").onclick = function(){ closeSheet(); retry(); };
+    $("sNew").focus({preventScroll:true});
+  }
+  function closeSheet(){ $("overlay").classList.remove("on"); }
+  $("overlay").addEventListener("click", function(e){ if(e.target===this) closeSheet(); });
+  document.addEventListener("keydown", function(e){ if(e.key==="Escape") closeSheet(); });
+
+  function retry(){
+    S.checked = false; S.sel = null;
+    var all = $("choices").querySelectorAll(".choice");
+    for(var i=0;i<all.length;i++){ all[i].disabled=false; all[i].className="choice"; }
+    setActions();
+  }
+
+  var tt;
+  function toast(msg){
+    var t=$("toast"); t.textContent=msg; t.classList.add("on");
+    clearTimeout(tt); tt=setTimeout(function(){ t.classList.remove("on"); }, 1600);
+  }
+
+  /* ---------- simulation ---------- */
+  var Sim = {theta:Math.PI*0.82, playing:true, rx:100, ry:32, cx:180, cy:100};
+  function updateB(){
+    if(!P) return;
+    var th = Sim.theta, rx=Sim.rx, ry=Sim.ry, cx=Sim.cx, cy=Sim.cy;
+    var bx = cx + rx*Math.cos(th), by = cy + ry*Math.sin(th);
+    var depth = Math.sin(th);           // +1 = front (closer to viewer)
+    var B = $("B");
+    B.setAttribute("cx", bx); B.setAttribute("cy", by);
+    B.setAttribute("rx", 11 + 2*depth); B.setAttribute("ry", 9 + 1.6*depth);
+    var rope = $("rope");
+    rope.setAttribute("x2", bx); rope.setAttribute("y2", by);
+    var mx=(bx+cx)/2, my=(by+cy)/2;
+    var rl=$("rlab"); rl.setAttribute("x", mx); rl.setAttribute("y", my-7);
+    // velocity (tangent, counter-clockwise seen from above)
+    var tx = -rx*Math.sin(th), ty = ry*Math.cos(th);
+    var tl = Math.hypot(tx,ty)||1; tx/=tl; ty/=tl;
+    var va=$("vArrow");
+    va.setAttribute("x1", bx+tx*13); va.setAttribute("y1", by+ty*10);
+    va.setAttribute("x2", bx+tx*46); va.setAttribute("y2", by+ty*38);
+    var vl=$("vLab"); vl.setAttribute("x", bx+tx*58); vl.setAttribute("y", by+ty*42+4);
+    // tension (toward center)
+    var dx=cx-bx, dy=cy-by, dl=Math.hypot(dx,dy)||1; dx/=dl; dy/=dl;
+    var ta=$("tArrow");
+    var len = Math.min(34, dl-12);
+    ta.setAttribute("x1", bx+dx*12); ta.setAttribute("y1", by+dy*9);
+    ta.setAttribute("x2", bx+dx*(12+Math.max(len,6))); ta.setAttribute("y2", by+dy*(9+Math.max(len,6)*0.8));
+    var bl=$("bLab"); bl.setAttribute("x", bx); bl.setAttribute("y", by - 16 - 2*depth);
+  }
+  var last = performance.now();
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function frame(t){
+    var dt = Math.min(0.05, (t-last)/1000); last = t;
+    if(Sim.playing && P){
+      var w = Math.min(8, (P.v/P.r)*0.25);   // slow motion, still proportional to v/r
+      Sim.theta += w*dt;
+      updateB();
+    }
+    requestAnimationFrame(frame);
+  }
+  if(reduce){ Sim.playing=false; $("playBtn").textContent="재생"; }
+  $("playBtn").addEventListener("click", function(){
+    Sim.playing = !Sim.playing;
+    this.textContent = Sim.playing ? "일시정지" : "재생";
+  });
+
+  newProblem();
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

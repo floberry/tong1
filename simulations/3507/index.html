@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>토크 마스터 · 균형 잡기 챌린지</title>
+<style>
+:root{--bg:#0b1026;--card:#151c3d;--ink:#eaf0ff;--sub:#9fb0e0;--acc:#ffc93c;--ok:#3ddc97;--bad:#ff6b81;--line:#2a3566;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;line-height:1.5}
+.wrap{max-width:480px;margin:0 auto;padding:14px}
+h1{font-size:20px;margin:4px 0 2px}
+.tag{color:var(--sub);font-size:13px;margin:0 0 10px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:12px}
+.stats{display:flex;gap:8px;font-size:13px;margin-bottom:10px}
+.stats span{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:3px 10px}
+svg{width:100%;height:auto;display:block;background:radial-gradient(circle at 20% 10%,#2a1a6e,#0b1026 70%);border-radius:12px}
+.q{font-size:15px}.q b{color:var(--acc)}
+input[type=range]{width:100%;accent-color:var(--acc)}
+.row{display:flex;gap:8px;align-items:center}
+input[type=number]{flex:1;font-size:18px;padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);min-width:0}
+button{font-size:16px;font-weight:700;border:0;border-radius:10px;padding:11px 16px;cursor:pointer;background:var(--acc);color:#222}
+button.sec{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.meter{font-size:13px;color:var(--sub);text-align:center;margin-top:4px}
+#fb{display:none}
+#fb.ok{border-color:var(--ok)}#fb.no{border-color:var(--bad)}
+#fb h3{margin:0 0 6px;font-size:17px}
+#fb .step{margin:6px 0;font-size:14px}
+.formula{background:var(--bg);border-radius:8px;padding:6px 10px;margin:6px 0;font-family:ui-monospace,monospace;font-size:13px}
+details{margin-top:8px;font-size:14px}summary{cursor:pointer;color:var(--acc);font-weight:700}
+.hint{font-size:13px;color:var(--sub)}
+#bg,#warp{position:fixed;inset:0;width:100%;height:100%;pointer-events:none}
+#bg{z-index:0}#warp{z-index:5}.wrap{position:relative;z-index:1}
+.card{background:rgba(21,28,61,.72);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+h1{background:linear-gradient(90deg,#ff7aa8,#ffc93c,#6fe3ff,#b48cff);-webkit-background-clip:text;background-clip:text;color:transparent;display:inline-block}
+button{background:linear-gradient(135deg,#ffc93c,#ff7aa8)}
+button.sec{background:transparent}
+#fb.ok{box-shadow:0 0 18px rgba(61,220,151,.45)}
+</style>
+</head>
+<body>
+<canvas id="bg"></canvas><canvas id="warp"></canvas>
+<div class="wrap">
+  <h1>⚖️ 토크 마스터</h1>
+  <p class="tag">은하 정원 위의 화물 보급 챌린지 · 막대를 수평으로 지켜라!</p>
+  <div class="stats"><span>🔥 연속 정답 <b id="streak">0</b></span><span>✅ 정답 <b id="solved">0</b></span><span>🎯 시도 <b id="tries">0</b></span></div>
+
+  <div class="card">
+    <p class="q" id="qtext"></p>
+    <svg id="sv" viewBox="0 0 360 250" role="img" aria-label="막대와 물체 그림"></svg>
+    <div class="meter" id="meter"></div>
+    <label class="hint" for="wt">🎛 시험 무게 조작: 막대 무게 W를 바꿔 보며 기울기를 관찰하세요 → <b id="wtv">0</b> N</label>
+    <input type="range" id="wt" min="0" max="120" step="1" value="0">
+  </div>
+
+  <div class="card">
+    <div class="q"><b>W는 몇 N인가요?</b></div>
+    <div class="row" style="margin-top:8px"><input type="number" id="ans" inputmode="decimal" placeholder="정답 입력 (N)"><button id="chk">확인</button></div>
+    <div class="row" style="margin-top:8px"><button class="sec" id="newq" style="flex:1">🔄 새 문제</button></div>
+  </div>
+
+  <div class="card" id="fb"></div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+let S={n:3,B:20,W:20,theta:0,streak:0,solved:0,tries:0,done:false};
+const NS=[2,3,4,5,7];
+function newProblem(){
+  const prev=S.n+"-"+S.B;let n,B,d;
+  do{n=NS[Math.floor(Math.random()*NS.length)];d=n-1;
+     B=10+5*Math.floor(Math.random()*11);}
+  while((2*B)%d!==0||(n+"-"+B)===prev);
+  S.n=n;S.B=B;S.W=2*B/d;S.done=false;
+  $("ans").value="";$("fb").style.display="none";
+  $("qtext").innerHTML=`그림과 같이 무게가 <b>${B} N</b>인 물체가 무게가 W인 재질이 균일한 원통형 막대에 매달려서 막대가 수평 상태로 정지해 있다. 줄은 막대의 왼쪽 끝에서 <b>L</b>, 오른쪽 끝에서 <b>${n}L</b> 떨어진 곳에 있다.`;
+  $("wt").value=0;draw(0);warp(700);
+}
+function draw(wt){
+  const n=S.n,B=S.B,d=n-1;
+  const net=B*1-wt*d/2;               // 반시계(왼쪽 아래) 토크 (L 단위)
+  const sc=Math.max(B,wt*d/2,1);
+  let deg=Math.max(-18,Math.min(18,18*net/sc));
+  if(Math.abs(net)<1e-6)deg=0;
+  S.theta=deg;
+  const t=deg*Math.PI/180,u=300/(1+n),px=30+u,py=80;
+  const lx=px-u*Math.cos(t),ly=py+u*Math.sin(t);
+  const rx=px+n*u*Math.cos(t),ry=py-n*u*Math.sin(t);
+  const cx=px+d*u/2*Math.cos(t),cy=py-d*u/2*Math.sin(t);
+  const stars=DECOR;
+  const ok=Math.abs(net)<1e-6;
+  $("sv").innerHTML=`${stars}
+  <rect x="10" y="10" width="340" height="8" rx="3" fill="#6b7bb8"/>
+  <line x1="${px}" y1="18" x2="${px}" y2="${py}" stroke="#cfd7ff" stroke-width="2"/>
+  <line x1="${lx}" y1="${ly}" x2="${rx}" y2="${ry}" stroke="${ok?'#3ddc97':'#ffc93c'}" stroke-width="14" stroke-linecap="round"/>
+  <line x1="${lx}" y1="${ly}" x2="${rx}" y2="${ry}" stroke="#fff" stroke-opacity=".35" stroke-width="3" stroke-linecap="round" transform="translate(0,-3)"/>
+  <circle cx="${px}" cy="${py}" r="4" fill="#fff"/>
+  <line x1="${lx}" y1="${ly}" x2="${lx}" y2="${ly+34}" stroke="#cfd7ff" stroke-width="2"/>
+  <rect x="${lx-24}" y="${ly+34}" width="48" height="36" rx="5" fill="#ff7a59" stroke="#fff" stroke-width="1.5"/>
+  <text x="${lx}" y="${ly+57}" text-anchor="middle" fill="#fff" font-size="14" font-weight="700">${S.B} N</text>
+  <line x1="${cx}" y1="${cy}" x2="${cx}" y2="${cy+44}" stroke="#3ddc97" stroke-width="3"/>
+  <polygon points="${cx-6},${cy+40} ${cx+6},${cy+40} ${cx},${cy+52}" fill="#3ddc97"/>
+  <text x="${cx}" y="${cy+68}" text-anchor="middle" fill="#3ddc97" font-size="13" font-weight="700">W ${wt>0?'= '+wt+' N':''}</text>
+  <g transform="translate(0,-25)" stroke="#9fb0e0" stroke-width="1" fill="#9fb0e0" font-size="13" text-anchor="middle">
+   <line x1="30" y1="225" x2="${px}" y2="225"/><line x1="${px}" y1="225" x2="330" y2="225"/>
+   <line x1="30" y1="220" x2="30" y2="230"/><line x1="${px}" y1="220" x2="${px}" y2="230"/><line x1="330" y1="220" x2="330" y2="230"/>
+   <text x="${(30+px)/2}" y="242" stroke="none">L</text><text x="${(px+330)/2}" y="242" stroke="none">${n}L</text>
+  </g>`;
+  $("wtv").textContent=wt;
+  $("meter").textContent=ok?"✨ 완벽한 수평! 알짜 토크 = 0":(net>0?"⬅ 왼쪽(물체 쪽)이 내려가요 — 반시계 토크가 더 커요":"➡ 오른쪽(막대 쪽)이 내려가요 — 시계 토크가 더 커요");
+}
+function anim(from,to){
+  let k=0;const f=()=>{k+=0.04;const v=from+(to-from)*Math.min(k,1);
+    $("wt").value=Math.round(v);draw(Math.round(v*10)/10);if(k<1)requestAnimationFrame(f);else{$("wt").value=to;draw(to);}};
+  f();
+}
+function check(){
+  const raw=$("ans").value.trim();
+  if(raw===""){alert("정답을 입력해 주세요!");return;}
+  const v=parseFloat(raw),{n,B,W}=S,d=n-1,good=Math.abs(v-W)<0.05;
+  S.tries++;
+  if(good&&!S.done){S.solved++;S.streak++;S.done=true;}
+  else if(!good){S.streak=0;}
+  $("streak").textContent=S.streak;$("solved").textContent=S.solved;$("tries").textContent=S.tries;
+  let hint="";
+  if(!good){
+    if(Math.abs(v-B)<0.05)hint="💡 물체 무게와 같다고 답했어요. 이 문제에서는 막대 중심이 줄에서 L만 떨어진 게 아니라 (n−1)L/2 만큼 떨어져 있는지 확인해 보세요.";
+    else if(Math.abs(v-B*n)<0.05||Math.abs(v-B/n)<0.05)hint="💡 줄에서 막대 <b>끝</b>까지의 거리를 썼나요? 막대의 무게는 <b>무게중심(가운데)</b>에 작용해요.";
+    else hint="💡 회전축을 줄이 묶인 점으로 잡고, 중심까지의 거리를 다시 구해 보세요.";
+  }
+  const T=B+W;
+  $("fb").className="card "+(good?"ok":"no");$("fb").style.display="block";
+  $("fb").innerHTML=`
+  <h3>${good?"🎉 정답이에요! W = "+W+" N":"❌ 아쉬워요. 정답은 "+W+" N"}</h3>
+  ${hint?`<div class="step">${hint}</div>`:""}
+  <div class="step"><b>① 무게중심 찾기</b><br>막대는 재질이 균일하므로 무게 W는 막대의 <b>정중앙</b>에 작용해요. 막대 전체 길이는 L+${n}L = ${n+1}L 이므로, 왼쪽 끝에서 ${(n+1)/2}L 지점이에요.</div>
+  <div class="step"><b>② 회전축(줄)에서의 거리(팔 길이)</b><br>중심까지 거리 = ${(n+1)/2}L − L = <b>${d/2}L</b> (줄의 오른쪽)<br>물체까지 거리 = <b>L</b> (줄의 왼쪽)</div>
+  <div class="step"><b>③ 회전 평형: 알짜 토크 = 0</b>
+   <div class="formula">반시계 토크 = 시계 토크<br>${B} N × L = W × ${d/2}L<br>W = ${B} × L ÷ ${d/2}L = ${W} N</div></div>
+  <div class="step"><b>④ 줄의 장력 확인 (힘의 평형)</b>
+   <div class="formula">T = ${B} + ${W} = ${T} N</div></div>
+  <details open><summary>🧠 탐구 질문 3가지 (시뮬레이션을 조작하며 답해 보세요)</summary>
+   <div class="step">Q1. 시험 무게 슬라이더를 정답보다 키우면 막대는 어느 쪽으로 기울까? 그 이유를 토크로 설명해 보자.<br><span class="hint">→ 오른쪽이 내려가요. 시계 방향 토크(W×${d/2}L)가 반시계 토크(${B}×L)보다 커지기 때문이에요.</span></div>
+   <div class="step">Q2. 물체의 무게가 2배가 되면 막대의 무게 W는 몇 배가 되어야 수평을 유지할까?<br><span class="hint">→ 2배. W = 2B/(n−1)이므로 B에 비례해요.</span></div>
+   <div class="step">Q3. 수평 정지 상태에서 ‘힘의 평형’과 ‘회전 평형’ 조건은 각각 무엇일까?<br><span class="hint">→ 힘의 평형: 합력 = 0 (T = B+W), 회전 평형: 임의의 축에 대한 알짜 토크 = 0.</span></div>
+  </details>`;
+  if(good)warp(1100);
+  if(good)anim(parseFloat($("wt").value),W);
+  else anim(parseFloat($("wt").value),Math.min(120,Math.max(0,v)));
+  $("fb").scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+$("wt").addEventListener("input",e=>draw(parseFloat(e.target.value)));
+$("chk").addEventListener("click",check);
+$("newq").addEventListener("click",newProblem);
+$("ans").addEventListener("keydown",e=>{if(e.key==="Enter")check();});
+
+const COLS=['#ff7aa8','#6fe3ff','#ffc93c','#b48cff','#ff8a4c','#7dffb2','#5b8cff'];
+const bg=$("bg"),bx=bg.getContext("2d");let P=[];
+function sizeBg(){bg.width=innerWidth;bg.height=innerHeight;
+ P=Array.from({length:Math.min(110,Math.floor(innerWidth*innerHeight/6000))},(_,i)=>({x:Math.random()*bg.width,y:Math.random()*bg.height,r:Math.random()*2.4+.6,c:COLS[i%COLS.length],v:Math.random()*.25+.05,p:Math.random()*6.28,ring:Math.random()<.12}));}
+function loop(t){bx.clearRect(0,0,bg.width,bg.height);
+ for(const q of P){q.y-=q.v;if(q.y<-10){q.y=bg.height+10;q.x=Math.random()*bg.width}
+  bx.globalAlpha=.35+.65*(.5+.5*Math.sin(t/700+q.p));bx.fillStyle=q.c;bx.shadowColor=q.c;bx.shadowBlur=q.r*4;
+  bx.beginPath();bx.arc(q.x,q.y,q.r,0,6.283);bx.fill();
+  if(q.ring){bx.strokeStyle=q.c;bx.lineWidth=1;bx.beginPath();bx.ellipse(q.x,q.y,q.r*3,q.r*1.1,-.4,0,6.283);bx.stroke();}}
+ requestAnimationFrame(loop);}
+const wp=$("warp"),wx=wp.getContext("2d");
+function warp(ms){wp.width=innerWidth;wp.height=innerHeight;
+ const cx=wp.width/2,cy=wp.height/2,R=Math.hypot(cx,cy);
+ const L=Array.from({length:140},(_,i)=>({a:Math.random()*6.283,s:Math.random()*.6+.4,c:COLS[i%COLS.length],w:Math.random()*2.5+1}));
+ const t0=performance.now();
+ (function f(now){const k=(now-t0)/ms;wx.clearRect(0,0,wp.width,wp.height);if(k>=1)return;
+  wx.globalAlpha=1-k;wx.lineCap="round";
+  for(const l of L){const r0=R*k*k*l.s*.9,r1=r0+R*.35*k*l.s;
+   wx.strokeStyle=l.c;wx.lineWidth=l.w;wx.shadowColor=l.c;wx.shadowBlur=10;
+   wx.beginPath();wx.moveTo(cx+Math.cos(l.a)*r0,cy+Math.sin(l.a)*r0);wx.lineTo(cx+Math.cos(l.a)*r1,cy+Math.sin(l.a)*r1);wx.stroke();}
+  requestAnimationFrame(f);})(t0);}
+const DECOR=(()=>{const C=['#ff7aa8','#6fe3ff','#ffc93c','#b48cff','#ff8a4c','#7dffb2'];
+ let s='<defs><linearGradient id="fog" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff7aa8" stop-opacity="0"/><stop offset="1" stop-color="#b48cff" stop-opacity=".6"/></linearGradient><radialGradient id="glow"><stop offset="0" stop-color="#fff" stop-opacity=".9"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient></defs>';
+ s+='<rect x="0" y="185" width="360" height="65" fill="url(#fog)"/>';
+ for(let i=0;i<50;i++)s+=`<circle cx="${(i*83.7)%360}" cy="${(i*47.3)%190}" r="${.7+(i%4)*.45}" fill="${C[i%6]}" opacity=".85"/>`;
+ [[306,48,20],[44,40,13],[200,22,9]].forEach(([x,y,r],j)=>{s+=`<circle cx="${x}" cy="${y}" r="${r*1.8}" fill="url(#glow)" opacity=".25"/>`;[0,1,2,3].forEach(k=>{s+=`<circle cx="${x}" cy="${y}" r="${r*(1-k*.24)}" fill="${C[(j+k*2)%6]}" opacity="${k?.9:.55}"/>`})});
+ let u='';for(let a=0;a<28;a++){const t=a/28*6.283;u+=`<line x1="${Math.cos(t)*7}" y1="${Math.sin(t)*7}" x2="${Math.cos(t)*16}" y2="${Math.sin(t)*16}"/>`}
+ s+=`<g transform="translate(322,150)" stroke="#b48cff" stroke-width="1.2" opacity=".9">${u}<circle r="6" fill="#ff7aa8" stroke="none"/><circle r="2.5" fill="#1a0d3a" stroke="none"/></g>`;
+ for(let i=0;i<26;i++){const x=8+i*13.6,h=10+(i*7)%22,c=C[i%6];s+=`<line x1="${x}" y1="250" x2="${x}" y2="${250-h}" stroke="${c}" stroke-width="1.2" opacity=".8"/><circle cx="${x}" cy="${250-h}" r="${2+(i%3)}" fill="${c}"/>`}
+ return s})();
+sizeBg();requestAnimationFrame(loop);addEventListener("resize",sizeBg);
+newProblem();
+</script>
+</body>
+</html>

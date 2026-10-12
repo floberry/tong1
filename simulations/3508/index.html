@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>합력 크기 연습</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f4f5f7;color:#171717;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR",sans-serif}
+.app{width:min(100%,520px);margin:auto;padding:16px 12px 28px}
+.card{background:#fff;border:1px solid #ddd;border-radius:18px;padding:17px}
+h1{font-size:21px;margin:0 0 8px}
+.question{font-size:17px;line-height:1.55;font-weight:650}
+.sub{font-size:14px;color:#666;line-height:1.5}
+.diagram{background:#fff;border:1px solid #ddd;border-radius:14px;margin:14px 0;padding:6px;min-height:300px}
+#diagram{display:block;width:100%;height:auto}
+.answer-row{display:flex;gap:8px;margin-top:6px}
+input{flex:1;min-width:0;height:48px;border:1px solid #ccc;border-radius:12px;padding:0 13px;font-size:17px}
+input:focus{outline:3px solid #dbe7ff;border-color:#2563eb}
+button{min-height:46px;border:0;border-radius:12px;padding:0 17px;font-size:15px;font-weight:700}
+.primary{background:#2563eb;color:#fff}
+.secondary{width:100%;background:#ececef;color:#222;margin-top:10px}
+.result{margin-top:14px;padding:15px;border-radius:14px;border:1px solid #ddd;background:#fff;line-height:1.6}
+.correct{border-color:#86c59a;background:#f2fbf4}
+.wrong{border-color:#e3a0a0;background:#fff6f6}
+.solution{margin-top:10px;padding-top:10px;border-top:1px solid #ddd;font-size:14px}
+.formula{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:#f5f5f6;border-radius:8px;padding:8px 10px;margin-top:7px;overflow-wrap:anywhere}
+.stats{display:flex;justify-content:space-between;margin-top:10px;font-size:13px;color:#777}
+@media(max-width:380px){.answer-row{flex-direction:column}.primary{width:100%}}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="card">
+<h1>⚡ 합력 크기 연습</h1>
+<div class="question">그림과 같이 마찰이 없는 평면에 놓인 물체 A에 세 힘이 작용한다.</div>
+<div class="sub">격자 한 칸은 1 N이다. A에 작용하는 알짜힘의 크기를 입력하세요.</div>
+
+<div class="diagram">
+<svg id="diagram" viewBox="0 0 360 330" xmlns="http://www.w3.org/2000/svg" aria-label="세 힘의 방향과 크기를 나타내는 그림">
+<defs>
+<marker id="arrow0" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#2563eb"/></marker>
+<marker id="arrow1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#dc2626"/></marker>
+<marker id="arrow2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#059669"/></marker>
+</defs>
+<rect width="360" height="330" fill="white"/>
+<g id="grid"></g>
+<g id="vectors"></g>
+<circle cx="180" cy="165" r="13" fill="white" stroke="#222" stroke-width="2"/>
+<circle cx="180" cy="165" r="3" fill="#222"/>
+<text x="192" y="169" font-size="15" font-weight="700">A</text>
+<text x="260" y="307" font-size="13" fill="#555">격자 1칸 = 1 N</text>
+</svg>
+</div>
+
+<form id="answerForm">
+<label class="sub" for="answer">정답</label>
+<div class="answer-row">
+<input id="answer" inputmode="decimal" autocomplete="off" placeholder="예: √2 또는 1.41">
+<button class="primary" type="submit">확인</button>
+</div>
+</form>
+<button id="newProblem" class="secondary" type="button">새 문제</button>
+
+<div class="stats"><span id="problemNo">문제 1</span><span id="score">정답 0 / 0</span></div>
+<div id="result" class="result" aria-live="polite" hidden></div>
+</div>
+</div>
+
+<script>
+(function(){
+var svg=document.getElementById("diagram");
+var grid=document.getElementById("grid");
+var vectorsGroup=document.getElementById("vectors");
+var form=document.getElementById("answerForm");
+var input=document.getElementById("answer");
+var result=document.getElementById("result");
+var newBtn=document.getElementById("newProblem");
+var problemNo=document.getElementById("problemNo");
+var scoreEl=document.getElementById("score");
+
+var vectors=[], answer=0, answerExact="", problem=1, correct=0, attempted=0;
+var colors=["#2563eb","#dc2626","#059669"];
+var names=["F₁","F₂","F₃"];
+var NS="http://www.w3.org/2000/svg";
+
+function el(tag,attrs,parent){
+ var e=document.createElementNS(NS,tag);
+ for(var k in attrs)e.setAttribute(k,attrs[k]);
+ parent.appendChild(e);
+ return e;
+}
+function randInt(a,b){return Math.floor(Math.random()*(b-a+1))+a}
+function radical(n){
+ if(n===0)return "0";
+ var outside=1,inside=n;
+ for(var p=2;p*p<=inside;p++){
+  while(inside%(p*p)===0){inside/=p*p;outside*=p}
+ }
+ if(inside===1)return String(outside);
+ return (outside===1?"":outside+"·")+"√"+inside;
+}
+function drawGrid(){
+ while(grid.firstChild)grid.removeChild(grid.firstChild);
+ var ox=180,oy=165,cell=38;
+ for(var i=-4;i<=4;i++){
+  el("line",{x1:ox+i*cell,y1:12,x2:ox+i*cell,y2:318,stroke:"#e5e7eb","stroke-width":"1"},grid);
+  el("line",{x1:28,y1:oy+i*cell,x2:332,y2:oy+i*cell,stroke:"#e5e7eb","stroke-width":"1"},grid);
+ }
+}
+function drawVectors(){
+ while(vectorsGroup.firstChild)vectorsGroup.removeChild(vectorsGroup.firstChild);
+ var ox=180,oy=165,cell=38;
+ var offsets=[[-20,-14],[-24,18],[10,17]];
+ for(var i=0;i<vectors.length;i++){
+  var v=vectors[i],x2=ox+v.x*cell,y2=oy-v.y*cell;
+  el("line",{x1:ox,y1:oy,x2:x2,y2:y2,stroke:colors[i],"stroke-width":"4","marker-end":"url(#arrow"+i+")","stroke-linecap":"round"},vectorsGroup);
+  var t=el("text",{x:x2+offsets[i][0],y:y2+offsets[i][1],fill:colors[i],"font-size":"18","font-weight":"700"},vectorsGroup);
+  t.textContent=names[i];
+ }
+}
+function makeProblem(){
+ vectors=[];
+ for(var i=0;i<3;i++){
+  var x=0,y=0;
+  while(x===0&&y===0){x=randInt(-3,3);y=randInt(-3,3)}
+  vectors.push({x:x,y:y});
+ }
+ var sx=0,sy=0;
+ vectors.forEach(function(v){sx+=v.x;sy+=v.y});
+ var n=sx*sx+sy*sy;
+ answer=Math.sqrt(n);
+ answerExact=radical(n);
+ drawVectors();
+ input.value="";
+ result.hidden=true;
+ problemNo.textContent="문제 "+problem;
+ scoreEl.textContent="정답 "+correct+" / "+attempted;
+}
+function parseAnswer(s){
+ s=s.trim().replace(/√/g,"sqrt").replace(/,/g,"");
+ if(!s)return NaN;
+ var m=s.match(/^([0-9]+(?:\.[0-9]+)?)?\s*(?:sqrt\s*([0-9]+))?$/i);
+ if(m&&(m[1]||m[2])){
+  var a=m[1]?Number(m[1]):1,b=m[2]?Number(m[2]):1;
+  return a*Math.sqrt(b);
+ }
+ var n=Number(s);
+ return isFinite(n)?n:NaN;
+}
+function check(){
+ var user=parseAnswer(input.value);
+ if(!isFinite(user)){
+  result.hidden=false;result.className="result wrong";
+  result.innerHTML="<strong>정답을 숫자 또는 √ 형태로 입력해 주세요.</strong><div class='solution'>예: 1.41, √2, 2√5</div>";
+  return;
+ }
+ attempted++;
+ var ok=Math.abs(user-answer)<0.015;
+ if(ok)correct++;
+ var sx=0,sy=0;
+ vectors.forEach(function(v){sx+=v.x;sy+=v.y});
+ var n=sx*sx+sy*sy;
+ function fmt(v){return v>0?"+"+v:v}
+ result.hidden=false;
+ result.className="result "+(ok?"correct":"wrong");
+ result.innerHTML="<strong>"+(ok?"정답입니다!":"아쉬워요. 정답은 "+answerExact+" N입니다.")+
+ "</strong><div class='solution'><b>풀이</b>"+
+ "<div class='formula'>x방향 합력 = "+vectors[0].x+" "+fmt(vectors[1].x)+" "+fmt(vectors[2].x)+" = "+sx+" N</div>"+
+ "<div class='formula'>y방향 합력 = "+vectors[0].y+" "+fmt(vectors[1].y)+" "+fmt(vectors[2].y)+" = "+sy+" N</div>"+
+ "<div class='formula'>알짜힘 크기 = √("+sx+"² + "+sy+"²) = √"+n+" = "+answerExact+" N</div></div>";
+ scoreEl.textContent="정답 "+correct+" / "+attempted;
+}
+form.addEventListener("submit",function(e){e.preventDefault();check()});
+newBtn.addEventListener("click",function(){problem++;makeProblem()});
+drawGrid();
+makeProblem();
+})();
+</script>
+</body>
+</html>
